@@ -853,10 +853,13 @@ def main():
 
     yTitle_eff = 'L1T efficiency'
     yTitle_nMatch = '# best matched probes'
-    xMax=300
-    rebinPt = 2
-    rebinEta = 2
-    rebinPhi = 2
+    xMax=100
+    rebinPt = 1
+    rebinEta = 1
+    rebinPhi = 1
+    #rebinPt = 2
+    #rebinEta = 2
+    #rebinPhi = 2
 
     if opts.eff:
         for etaRange in etaRanges:
