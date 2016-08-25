@@ -344,8 +344,9 @@ def plot_effs(hDefs, xTitle=None, yTitle='# muons', prefix='', notes=None, autoZ
             xBuff = eg.GetX()
             xBuff.SetSize(eg.GetN())
             xList = list(xBuff)
-            minBin = xAxis.FindBin(xList[0])
-            maxBin = xAxis.FindBin(xList[-1])
+            if len(xList) > 0:
+                minBin = xAxis.FindBin(xList[0])
+                maxBin = xAxis.FindBin(xList[-1])
         xAxis.SetRange(minBin, maxBin)
         xAxis.SetLabelSize(0.03)
         xAxis.SetNdivisions(508)
