@@ -1373,6 +1373,13 @@ def main():
             objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.vtx', etaRange+'24.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
             objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
 
+            #if opts.runnr == 'all_runs':
+            #    # run plots
+            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.run', etaRange+'24.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
+            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
+            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
+            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
+
             # charge plots
             objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.charge', etaRange+'24.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
             objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
