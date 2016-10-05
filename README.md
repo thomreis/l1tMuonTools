@@ -14,7 +14,7 @@ Produce efficiency plots
 ```
 python plotTPEff.py -f work_dir/out/ugmt_tandp_eff_histos.root plotTPEff --eff --2d --emul
 python plotTPEff.py -f work_dir/out/ugmt_tandp_eff_histos.root plotTPEff --eff --2d --run 123456
-python plotTPEff.py -f work_dir/out/ugmt_tandp_eff_histos.root plotTPEff --fname2 work_dir2/out/ugmt_tandp_eff_histos.root --leg-txt1 text1 --leg-txt1 text2
+python plotTPEff.py -f work_dir/out/ugmt_tandp_eff_histos.root plotTPEff --fname2 work_dir2/out/ugmt_tandp_eff_histos.root --leg-txt1 text1 --leg-txt2 text2
 
 ```
 
