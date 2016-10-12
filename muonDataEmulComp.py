@@ -148,20 +148,20 @@ def analyse(evt, hm, hm2d):
             hm.fill('data_emul_othermatched_muons.dr', matched_muons[i][2])
             hm.fill('data_emul_othermatched_muons.deta', matched_muons[i][3])
             hm.fill('data_emul_othermatched_muons.dphi', matched_muons[i][4])
-            #if matched_muons[i][2] < 1.e-1:
-            #    uncancelled_muon_ctr += 1
-            #    dIdx = matched_muons[i][0]
-            #    eIdx = matched_muons[i][1]
-            #    print 'Found a further match with dR={dr}:'.format(dr=matched_muons[i][2])
-            #    print '    data: pt={pt}, eta={eta}, phi={phi}, qual={qual}, muIdx={muIdx}'.format(pt=dataColl.muonEt[dIdx], eta=dataColl.muonEta[dIdx], phi=dataColl.muonPhi[dIdx], qual=dataColl.muonQual[dIdx], muIdx=dataColl.muonTfMuonIdx[dIdx])
-            #    print '    emul: pt={pt}, eta={eta}, phi={phi}, qual={qual}, muIdx={muIdx}'.format(pt=emulColl.muonEt[eIdx], eta=emulColl.muonEta[eIdx], phi=emulColl.muonPhi[eIdx], qual=emulColl.muonQual[eIdx], muIdx=emulColl.muonTfMuonIdx[eIdx])
-            #    print '    previous matches:'
-            #    ctr = 0
-            #    for dIdx, eIdx in zip(dataMuonsUsed, emulMuonsUsed):
-            #        ctr += 1
-            #        print '    {ctr}:'.format(ctr=ctr)
-            #        print '    data: pt={pt}, eta={eta}, phi={phi}, qual={qual}, muIdx={muIdx}'.format(pt=dataColl.muonEt[dIdx], eta=dataColl.muonEta[dIdx], phi=dataColl.muonPhi[dIdx], qual=dataColl.muonQual[dIdx], muIdx=dataColl.muonTfMuonIdx[dIdx])
-            #        print '    emul: pt={pt}, eta={eta}, phi={phi}, qual={qual}, muIdx={muIdx}'.format(pt=emulColl.muonEt[eIdx], eta=emulColl.muonEta[eIdx], phi=emulColl.muonPhi[eIdx], qual=emulColl.muonQual[eIdx], muIdx=emulColl.muonTfMuonIdx[eIdx])
+            if matched_muons[i][2] < 1.e-5:
+                uncancelled_muon_ctr += 1
+                dIdx = matched_muons[i][0]
+                eIdx = matched_muons[i][1]
+                print 'Found a further match with dR={dr} in event {run}:{ls}:{evt}:'.format(dr=matched_muons[i][2], run=evt.event.run, ls=evt.event.lumi, evt=evt.event.event)
+                print '    data: pt={pt}, eta={eta}, phi={phi}, qual={qual}, muIdx={muIdx}'.format(pt=dataColl.muonEt[dIdx], eta=dataColl.muonEta[dIdx], phi=dataColl.muonPhi[dIdx], qual=dataColl.muonQual[dIdx], muIdx=dataColl.muonTfMuonIdx[dIdx])
+                print '    emul: pt={pt}, eta={eta}, phi={phi}, qual={qual}, muIdx={muIdx}'.format(pt=emulColl.muonEt[eIdx], eta=emulColl.muonEta[eIdx], phi=emulColl.muonPhi[eIdx], qual=emulColl.muonQual[eIdx], muIdx=emulColl.muonTfMuonIdx[eIdx])
+                print '    previous matches:'
+                ctr = 0
+                for dIdx, eIdx in zip(dataMuonsUsed, emulMuonsUsed):
+                    ctr += 1
+                    print '    {ctr}:'.format(ctr=ctr)
+                    print '    data: pt={pt}, eta={eta}, phi={phi}, qual={qual}, muIdx={muIdx}'.format(pt=dataColl.muonEt[dIdx], eta=dataColl.muonEta[dIdx], phi=dataColl.muonPhi[dIdx], qual=dataColl.muonQual[dIdx], muIdx=dataColl.muonTfMuonIdx[dIdx])
+                    print '    emul: pt={pt}, eta={eta}, phi={phi}, qual={qual}, muIdx={muIdx}'.format(pt=emulColl.muonEt[eIdx], eta=emulColl.muonEta[eIdx], phi=emulColl.muonPhi[eIdx], qual=emulColl.muonQual[eIdx], muIdx=emulColl.muonTfMuonIdx[eIdx])
 
 
 def save_histos(hm, hm2d, outfile):
