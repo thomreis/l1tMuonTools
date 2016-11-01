@@ -863,7 +863,8 @@ def main():
     #etaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5, reco_0to0p7, reco_0p8to0p85, reco_1p24to1p7, reco_1p7to1p85, reco_1p85to2p5]
     #etaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5, reco_1p24to1p7, reco_1p7to1p85, reco_1p85to2p5]
     #etaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5, reco_1p2to1p55, reco_1p55to1p85, reco_1p85to2p5]
-    etaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4, reco_1p2to1p55, reco_1p55to1p85, reco_1p85to2p4]
+    #etaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4, reco_1p2to1p55, reco_1p55to1p85, reco_1p85to2p4]
+    etaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
     #tfEtaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5]
     tfEtaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
 
@@ -881,139 +882,96 @@ def main():
         for etaRange in etaRanges:
             ## pt plots
             # quality 12
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
-
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
             # quality 8
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
-
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
             # quality 4
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
             ## p plots
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
-
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
             # phi plots
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.phi', etaRange+'24.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
 
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.phi', etaRange+'10.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.phi', etaRange+'20.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.phi', etaRange+'8.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.phi', etaRange+'16.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
 
         ## eta plots
         etaRange = reco_0to2p4
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.eta', etaRange+'24.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.eta', etaRange+'10.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.eta', etaRange+'20.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
         for etaRange in tfEtaRanges:
             # nVtx plots
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.vtx', etaRange+'24.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
 
             if opts.runnr == 'all_runs':
                 # run plots
-                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.run', etaRange+'24.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, autoZoomX=True))
-                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, autoZoomX=True))
-                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, autoZoomX=True))
-                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, autoZoomX=True))
+                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, autoZoomX=True))
 
             # charge plots
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.charge', etaRange+'24.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul))
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul))
 
     if opts.qualcomp:
         for etaRange in etaRanges:
             ## pt plots
-            objects.append(plot_eff_qual(hm, 'l1_muon_qualMinXX_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
-            objects.append(plot_eff_qual(hm, 'l1_muon_qualMinXX_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
+            objects.append(plot_eff_qual(hm, 'l1_muon_qualMinXX_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
         ## eta plots
         etaRange = reco_0to2p4
-        objects.append(plot_eff_qual(hm, 'l1_muon_qualMinXX_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
-        objects.append(plot_eff_qual(hm, 'l1_muon_qualMinXX_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_qual(hm, 'l1_muon_qualMinXX_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
     if opts.delta:
         etaRange = reco_0to2p4
         # delta R plots
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'100.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'100.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'100.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
 
         # delta eta plots
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_deta0.5_matched_'+etaRange+'0.5.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_deta0.5_matched_'+etaRange+'24.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_deta0.5_matched_'+etaRange+'40.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_deta0.5_matched_'+etaRange+'100.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_deta0.5_matched_'+etaRange+'0.5.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_deta0.5_matched_'+etaRange+'30.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_deta0.5_matched_'+etaRange+'40.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_deta0.5_matched_'+etaRange+'100.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'0.5.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'30.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'100.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
 
         # delta phi plots
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_dphi0.5_matched_'+etaRange+'0.5.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_dphi0.5_matched_'+etaRange+'24.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_dphi0.5_matched_'+etaRange+'40.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin18_dphi0.5_matched_'+etaRange+'100.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_dphi0.5_matched_'+etaRange+'0.5.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_dphi0.5_matched_'+etaRange+'30.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_dphi0.5_matched_'+etaRange+'40.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin25_dphi0.5_matched_'+etaRange+'100.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'0.5.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'30.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'100.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
 
         # reco - L1 plots
         for etaRange in tfEtaRanges:
             plotNames = [etaRange+'0.5_dr0.5_matched_l1_muon_qualMin12_ptmin0.5',
-                         etaRange+'0.5_dr0.5_matched_l1_muon_qualMin12_ptmin18',
-                         etaRange+'24_dr0.5_matched_l1_muon_qualMin12_ptmin18',
-                         etaRange+'40_dr0.5_matched_l1_muon_qualMin12_ptmin18',
-                         etaRange+'100_dr0.5_matched_l1_muon_qualMin12_ptmin18',
-                         etaRange+'0.5_dr0.5_matched_l1_muon_qualMin12_ptmin25',
-                         etaRange+'30_dr0.5_matched_l1_muon_qualMin12_ptmin25',
-                         etaRange+'40_dr0.5_matched_l1_muon_qualMin12_ptmin25',
-                         etaRange+'100_dr0.5_matched_l1_muon_qualMin12_ptmin25']
+                         etaRange+'0.5_dr0.5_matched_l1_muon_qualMin12_ptmin22',
+                         etaRange+'30_dr0.5_matched_l1_muon_qualMin12_ptmin22',
+                         etaRange+'100_dr0.5_matched_l1_muon_qualMin12_ptmin22']
 
             for plotName in plotNames:
                 # inverse pt resolution
@@ -1032,282 +990,213 @@ def main():
         etaRange = reco_0to2p4
         # quality 8
         objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'0.5_dr0.5_matched_l1_muon_qualMin8_ptmin0.5.pt'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'10_dphi0.5_matched_l1_muon_qualMin8_ptmin4.eta'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'10_deta0.5_matched_l1_muon_qualMin8_ptmin4.phi'))
+        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'8_dphi0.5_matched_l1_muon_qualMin8_ptmin5.eta'))
+        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'8_deta0.5_matched_l1_muon_qualMin8_ptmin5.phi'))
 
         for etaRange in etaRanges2d:
             objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'0.5_dr0.5_matched_l1_muon_qualMin8_ptmin0.5.pt'))
-            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'10_deta0.5_matched_l1_muon_qualMin8_ptmin4.phi'))
+            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'8_deta0.5_matched_l1_muon_qualMin8_ptmin5.phi'))
 
         # quality 12
         etaRange = reco_0to2p4
         objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'0.5_dr0.5_matched_l1_muon_qualMin12_ptmin0.5.pt'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'24_dphi0.5_matched_l1_muon_qualMin12_ptmin18.eta'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'24_deta0.5_matched_l1_muon_qualMin12_ptmin18.phi'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'40_dphi0.5_matched_l1_muon_qualMin12_ptmin18.eta'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'40_deta0.5_matched_l1_muon_qualMin12_ptmin18.phi'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_dphi0.5_matched_l1_muon_qualMin12_ptmin18.eta'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_deta0.5_matched_l1_muon_qualMin12_ptmin18.phi'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'30_dphi0.5_matched_l1_muon_qualMin12_ptmin25.eta'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'30_deta0.5_matched_l1_muon_qualMin12_ptmin25.phi'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'40_dphi0.5_matched_l1_muon_qualMin12_ptmin25.eta'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'40_deta0.5_matched_l1_muon_qualMin12_ptmin25.phi'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_dphi0.5_matched_l1_muon_qualMin12_ptmin25.eta'))
-        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_deta0.5_matched_l1_muon_qualMin12_ptmin25.phi'))
+        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'30_dphi0.5_matched_l1_muon_qualMin12_ptmin22.eta'))
+        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'30_deta0.5_matched_l1_muon_qualMin12_ptmin22.phi'))
+        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_dphi0.5_matched_l1_muon_qualMin12_ptmin22.eta'))
+        objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_deta0.5_matched_l1_muon_qualMin12_ptmin22.phi'))
 
         for etaRange in etaRanges2d:
             objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'0.5_dr0.5_matched_l1_muon_qualMin12_ptmin0.5.pt'))
-            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'24_deta0.5_matched_l1_muon_qualMin12_ptmin18.phi'))
-            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'40_deta0.5_matched_l1_muon_qualMin12_ptmin18.phi'))
-            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_deta0.5_matched_l1_muon_qualMin12_ptmin18.phi'))
-            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'30_deta0.5_matched_l1_muon_qualMin12_ptmin25.phi'))
-            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'40_deta0.5_matched_l1_muon_qualMin12_ptmin25.phi'))
-            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_deta0.5_matched_l1_muon_qualMin12_ptmin25.phi'))
+            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'30_deta0.5_matched_l1_muon_qualMin12_ptmin22.phi'))
+            objects.append(plot_2dhist(hm2d, prefix+'2d_best_'+etaRange+'100_deta0.5_matched_l1_muon_qualMin12_ptmin22.phi'))
 
     if opts.dataemul:
         for etaRange in etaRanges:
             ## pt plots
             # quality 12
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # quality 8
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # quality 4
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             ## p plots
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # phi plots
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.phi', etaRange+'24.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
 
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.phi', etaRange+'10.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.phi', etaRange+'20.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.phi', etaRange+'8.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.phi', etaRange+'16.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
 
         ## eta plots
         etaRange = reco_0to2p4
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.eta', etaRange+'24.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.eta', etaRange+'10.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.eta', etaRange+'20.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
         for etaRange in tfEtaRanges:
             # nVtx plots
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.vtx', etaRange+'24.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff))
 
             if opts.runnr == 'all_runs':
                 # run plots
-                objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.run', etaRange+'24.run', 'best_', xTitle='run number', yTitle=yTitle_eff, autoZoomX=True))
-                objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run number', yTitle=yTitle_eff, autoZoomX=True))
-                objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run number', yTitle=yTitle_eff, autoZoomX=True))
-                objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run number', yTitle=yTitle_eff, autoZoomX=True))
+                objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run number', yTitle=yTitle_eff, autoZoomX=True))
 
             # charge plots
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.charge', etaRange+'24.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
-            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
+            objects.append(plot_eff_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
 
     if opts.bytf:
         for etaRange in etaRanges:
             # quality 12
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # quality 8
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # quality 4
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             ## p plots
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # phi plots
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.phi', etaRange+'24.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
 
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.phi', etaRange+'10.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.phi', etaRange+'20.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.phi', etaRange+'8.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.phi', etaRange+'16.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
 
         ## eta plots
         etaRange = reco_0to2p4
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.eta', etaRange+'24.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.eta', etaRange+'10.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.eta', etaRange+'20.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_tf(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
         for etaRange in tfEtaRanges:
             # charge plots
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.charge', etaRange+'24.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
-            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
+            objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
 
     if opts.bycharge:
         for etaRange in etaRanges:
             # quality 12
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # quality 8
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # quality 4
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             ## p plots
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True))
 
             # phi plots
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.phi', etaRange+'24.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
 
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.phi', etaRange+'10.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.phi', etaRange+'20.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.phi', etaRange+'8.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.phi', etaRange+'16.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi))
 
         ## eta plots
         etaRange = reco_0to2p4
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.eta', etaRange+'24.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.eta', etaRange+'10.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.eta', etaRange+'20.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
-        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
+        objects.append(plot_eff_charge(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, rebin=rebinEta))
 
         for etaRange in tfEtaRanges:
             # charge plots
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.charge', etaRange+'24.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
-            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
+            objects.append(plot_eff_charge(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff))
 
     if opts.public:
         etaRange = reco_0to2p4
         yTitle_eff = 'L1 efficiency'
         # pt plots
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=500, addOverflow=True))
         objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=500, addOverflow=True))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=500, addOverflow=True))
-
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=50))
         objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=50))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=50))
 
         objects.append(plot_eff_public_pt(hm, 'l1_muon_qualMin12_ptminXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=50))
 
         # phi plots
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.phi', etaRange+'24.phi', 'best_', xTitle='#phi', yTitle=yTitle_eff, rebin=2))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'40.phi', etaRange+'40.phi', 'best_', xTitle='#phi', yTitle=yTitle_eff, rebin=2))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.phi', etaRange+'40.phi', 'best_', xTitle='#phi', yTitle=yTitle_eff, rebin=2))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi', yTitle=yTitle_eff, rebin=2))
 
         # eta plots
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta', yTitle=yTitle_eff, rebin=2))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta', yTitle=yTitle_eff, rebin=2))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta', yTitle=yTitle_eff, rebin=2))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta', yTitle=yTitle_eff, rebin=2))
 
         # run number
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.run', etaRange+'24.run', 'best_', xTitle='run', yTitle=yTitle_eff, autoZoomX=True))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run', yTitle=yTitle_eff, autoZoomX=True))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run', yTitle=yTitle_eff, autoZoomX=True))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run', yTitle=yTitle_eff, autoZoomX=True))
 
     if opts.fname2:
         if opts.runnr2:
@@ -1321,68 +1210,57 @@ def main():
         for etaRange in etaRanges:
             ## pt plots
             # quality 12
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
-
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
 
             # quality 8
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
 
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
 
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
-
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
 
             # quality 4
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
 
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
+
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True, legTxt1=legTxt1, legTxt2=legTxt2))
 
             # phi plots
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.phi', etaRange+'40.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.phi', etaRange+'40.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi, legTxt1=legTxt1, legTxt2=legTxt2))
 
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.phi', etaRange+'10.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.phi', etaRange+'20.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.phi', etaRange+'8.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.phi', etaRange+'16.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi, legTxt1=legTxt1, legTxt2=legTxt2))
 
         ## eta plots
         etaRange = reco_0to2p4
-        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
+        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
 
-        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
+        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
+        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
+        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
 
-        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin4_dr0.5_matched_'+etaRange+'10.eta', etaRange+'10.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
-        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin11_dr0.5_matched_'+etaRange+'20.eta', etaRange+'20.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
-        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
-        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin8_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
-
-        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin18_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
-        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin25_dr0.5_matched_'+etaRange+'40.eta', etaRange+'40.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
+        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
+        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
+        objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta, legTxt1=legTxt1, legTxt2=legTxt2))
 
         for etaRange in tfEtaRanges:
             # nVtx plots
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.vtx', etaRange+'24.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
 
             #if opts.runnr == 'all_runs':
             #    # run plots
-            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.run', etaRange+'24.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
-            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
-            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
-            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'40.run', etaRange+'40.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
+            #    objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run number', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2, autoZoomX=True))
 
             # charge plots
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin18_dr0.5_matched_'+etaRange+'24.charge', etaRange+'24.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
-            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
+            objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul, legTxt1=legTxt1, legTxt2=legTxt2))
 
     # save canvases to root file
     if savePlots:
