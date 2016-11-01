@@ -6,6 +6,8 @@ opts, parser = parse_options_and_init_log()
 from L1Analysis import L1Ana, L1Ntuple
 from analysis_tools.plotting import HistManager
 from analysis_tools.selections import MuonSelections, Matcher
+import exceptions
+import json
 import ROOT as root
 
 ptScale = 0.5
@@ -19,6 +21,7 @@ def parse_options_upgradeRateHistos(parser):
     parsers = parser.add_subparsers()
     sub_parser = parsers.add_parser("makeRateHistos")
     sub_parser.add_argument("-o", "--outname", dest="outname", default="./ugmt_rate_histos.root", type=str, help="A root file name where to save the histograms.")
+    sub_parser.add_argument("-j", "--json", dest="json", type=str, default=None, help="A json file with good lumi sections per run.")
     sub_parser.add_argument("-e", "--emul", dest="emul", action='store_true', help="Use emulated collections instead of unpacked ones.")
 
     opts, unknown = parser.parse_known_args()
@@ -27,6 +30,9 @@ def parse_options_upgradeRateHistos(parser):
 def book_histograms(eta_ranges, thresholds, qualities):
     varnames = []
     binnings = {}
+
+    varnames.append('n_evts_analysed')
+    binnings['n_evts_analysed'] = [1, 0, 1, '']
 
     # define pt binning for GMT and OMTF
     pt_bins = [-1] # -1 indicates a variable binning
@@ -480,7 +486,7 @@ def main():
     #thresholds = [1, 5, 10, 12, 16, 20, 24, 30]
     #qualities = range(16)
     eta_ranges = [[0, 2.5], [0, 2.1], [0, 0.83], [0.83, 1.24], [1.24, 2.5]]
-    thresholds = [0, 4, 8, 11, 18, 20, 22]
+    thresholds = [0, 3, 5, 7, 12, 18, 22]
     qualities = [0, 4, 8, 12]
     # book the histograms
     hm = book_histograms(eta_ranges, thresholds, qualities)
@@ -492,13 +498,41 @@ def main():
     if opts.fname:
         ntuple.open_with_file(opts.fname)
 
+    # good runs from json file
+    good_ls = None
+    if opts.json:
+        with open(opts.json) as json_file:    
+            good_ls = json.load(json_file)
+
     start_evt = opts.start_event
     end_evt = opts.start_event+ntuple.nevents
-    for i in range(start_evt, end_evt):
-        event = ntuple[i]
-        if (i+1) % 1000 == 0:
-            L1Ana.log.info("Processing event: {n}".format(n=i+1))
-        analyse(event, hm, eta_ranges, thresholds, qualities, emulated)
+    analysed_evt_ctr = 0
+    try:
+        for i in range(start_evt, end_evt):
+            event = ntuple[i]
+            if (i+1) % 1000 == 0:
+                L1Ana.log.info("Processing event: {n}. Analysed events from selected runs/LS until now: {nAna}".format(n=i+1, nAna=analysed_evt_ctr))
+
+            runnr = event.event.run
+            # apply json file if loaded
+            if good_ls:
+                analyze_this_ls = False
+                ls = event.event.lumi
+                if str(runnr) in good_ls:
+                    for ls_list in good_ls[str(runnr)]:
+                        if ls >= ls_list[0] and ls <= ls_list[1]:
+                            analyze_this_ls = True
+                            break
+                if not analyze_this_ls:
+                    continue
+
+            analyse(event, hm, eta_ranges, thresholds, qualities, emulated)
+            hm.fill('n_evts_analysed', 0.5)
+            analysed_evt_ctr += 1
+    except KeyboardInterrupt:
+        L1Ana.log.info("Analysis interrupted after {n} events".format(n=i))
+
+    L1Ana.log.info("Analysis of {nAna} events in selected runs/LS finished.".format(nAna=analysed_evt_ctr))
 
     # save histos to root file
     if saveHistos:
