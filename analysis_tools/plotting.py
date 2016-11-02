@@ -172,7 +172,7 @@ class HistManager(object):
         self._stackcache[name] = [hs, stack]
         return [hs, stack]
 
-    def get_efficiency(self, varname_nom, varname_denom, addunderflow=False, addoverflow=False, rebin=1, removeHighErrorBins=False):
+    def get_efficiency(self, varname_nom, varname_denom, addunderflow=False, addoverflow=False, rebin=1, removeProbeBinsNEntriesBelow=0):
         name = "{nom}_o_{denom}".format(nom=varname_nom, denom=varname_denom)
         if name in self._effcache.keys():
             return self._effcache[name]
@@ -201,9 +201,9 @@ class HistManager(object):
             h_nom.SetBinContent(h_nom.GetNbinsX(), integral)
             h_nom.SetBinError(h_nom.GetNbinsX(), err)
 
-        if removeHighErrorBins:
+        if removeProbeBinsNEntriesBelow > 0:
             for b in range(1, h_nom.GetNbinsX()):
-                if h_denom.GetBinContent(b) < 30:
+                if h_denom.GetBinContent(b) < removeProbeBinsNEntriesBelow:
                     h_nom.SetBinContent(b, 0)
                     h_nom.SetBinError(b, 0)
                     h_denom.SetBinContent(b, 0)
@@ -215,7 +215,7 @@ class HistManager(object):
         return eff
 
 
-    def get_efficiency_int(self, varname_nom, varname_denom, integrateToFromLeft=None, integrateToFromRight=None, rebin=1, removeHighErrorBins=False):
+    def get_efficiency_int(self, varname_nom, varname_denom, integrateToFromLeft=None, integrateToFromRight=None, rebin=1, removeProbeBinsNEntriesBelow=0):
         name = "{nom}_o_{denom}".format(nom=varname_nom, denom=varname_denom)
         if name in self._effcache.keys():
             return self._effcache[name]
@@ -255,9 +255,9 @@ class HistManager(object):
                 h_nom.SetBinContent(b, integral)
                 h_nom.SetBinError(b, err)
 
-        if removeHighErrorBins:
+        if removeProbeBinsNEntriesBelow > 0:
             for b in range(1, h_nom.GetNbinsX()):
-                if h_denom.GetBinContent(b) < 30:
+                if h_denom.GetBinContent(b) < removeProbeBinsNEntriesBelow:
                     h_nom.SetBinContent(b, 0)
                     h_nom.SetBinError(b, 0)
                     h_denom.SetBinContent(b, 0)
