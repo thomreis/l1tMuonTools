@@ -286,9 +286,9 @@ def plot_effs(hDefs, xTitle=None, yTitle='# muons', prefix='', notes=None, autoZ
             print 'Error: ' + hDef['num'] + ' or ' + hDef['den'] + ' not found.'
             continue
         if addOverflow and xMax != None:
-            eff = hm.get_efficiency_int(hDef['num'], hDef['den'], integrateToFromRight=xMax, rebin=rebin).Clone()
+            eff = hm.get_efficiency_int(hDef['num'], hDef['den'], integrateToFromRight=xMax, rebin=rebin, removeHighErrorBins=False).Clone()
         else:
-            eff = hm.get_efficiency(hDef['num'], hDef['den'], addoverflow=addOverflow, rebin=rebin).Clone()
+            eff = hm.get_efficiency(hDef['num'], hDef['den'], addoverflow=addOverflow, rebin=rebin, removeHighErrorBins=False).Clone()
 
         eff.SetLineColor(hDef['lc'])
         eff.SetLineStyle(hDef['ls'])
