@@ -98,7 +98,7 @@ def plot_2dhist(hm2d, hName, drawDiag=True):
     return [c, h, tex, lines]
 
 
-def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefix='', notes=None, autoZoomX=False, xMax=None, addOverflow=False):
+def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefix='', notes=None, autoZoomX=False, xMax=None, addOverflow=False):
     name = prefix
     if hDefs[0]['den']:
         name += hDefs[0]['num']+'_over_'+hDefs[0]['den']
@@ -106,7 +106,7 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, p
         legYmin = 0.34
     else:
         name = hDefs[0]['num']
-        legYmin = 0.86
+        legYmin = 0.81
     if addOverflow:
         name += '_withOverflow'
     if normToBinWidth:
@@ -126,6 +126,7 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, p
     hStack = root.THStack()
     # get all the histograms and set their plot style
     for hDef in hDefs:
+        hm = hDef['hm']
         if hDef['den']:
             if hDef['num'] not in hm.get_varnames() or hDef['den'] not in hm.get_varnames():
                 print 'Error: ' + hDef['num'] + ' or ' + hDef['den'] + ' not found.'
@@ -148,6 +149,9 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, p
         h.SetLineColor(hDef['lc'])
         h.SetLineStyle(hDef['ls'])
         h.SetLineWidth(2)
+        h.SetMarkerColor(hDef['mc'])
+        h.SetMarkerStyle(hDef['ms'])
+        h.SetMarkerSize(0.75)
         legStyle = 'lep'
         if hDef['fc']:
             h.SetFillColor(hDef['fc'])
@@ -630,7 +634,7 @@ def extract_notes_from_name(name, xBase, yBase, etaTxt=True, qualTxt=True, ptTxt
 def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', stacked=False, normToBinWidth=False, autoZoomX=False, xMax=None, addOverflow=False):
     styles = hist_styles(stacked)
 
-    h_dict = {'num':hNamePrefix+hName, 'den':den}
+    h_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
     h_dict.update(styles['data'])
     hDefs = [h_dict]
 
@@ -641,7 +645,27 @@ def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='
         yBase = 0.13
     notes = extract_notes_from_name(hName, xBase, yBase)
 
-    return plot_hists(hm, hDefs, xTitle, yTitle, normToBinWidth, '', notes, autoZoomX, xMax, addOverflow)
+    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, '', notes, autoZoomX, xMax, addOverflow)
+
+# plot data and emulator histogram
+def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', normToBinWidth=False, autoZoomX=False, xMax=None, addOverflow=False):
+    styles = hist_styles(False)
+
+    data_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
+    data_dict.update(styles['data'])
+    emul_dict = {'hm':hm, 'num':'emu_'+hNamePrefix+hName, 'den':den}
+    emul_dict.update(styles['emul'])
+    hDefs = [data_dict]
+    hDefs.append(emul_dict)
+
+    xBase = 0.17
+    yBase = 0.71
+    if den:
+        xBase = 0.5
+        yBase = 0.13
+    notes = extract_notes_from_name(hName, xBase, yBase)
+
+    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, 'dataEmulHisto_', notes, autoZoomX, xMax, addOverflow)
 
 # plot efficiency
 def plot_eff_standard(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=False, autoZoomX=False, xMax=None, addOverflow=False, rebin=1):
@@ -952,19 +976,19 @@ def main():
     if opts.delta:
         etaRange = reco_0to2p4
         # delta R plots
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'100.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'100.dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch))
 
         # delta eta plots
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'0.5.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'30.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'100.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'0.5.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'30.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_deta0.5_matched_'+etaRange+'100.deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch))
 
         # delta phi plots
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'0.5.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'30.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
-        objects.append(plot_hists_standard(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'100.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'0.5.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'30.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin22_dphi0.5_matched_'+etaRange+'100.dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch))
 
         # reco - L1 plots
         for etaRange in tfEtaRanges:
@@ -975,13 +999,13 @@ def main():
 
             for plotName in plotNames:
                 # inverse pt resolution
-                objects.append(plot_hists_standard(hm, plotName+'.dinvpt', hNamePrefix=prefix+'res_best_', xTitle='1/p_{T}^{RECO} - 1/p_{T}^{L1}'))
+                objects.append(plot_hists_data_emul(hm, plotName+'.dinvpt', hNamePrefix=prefix+'res_best_', xTitle='1/p_{T}^{RECO} - 1/p_{T}^{L1}'))
                 # pt resolution
-                objects.append(plot_hists_standard(hm, plotName+'.dpt', hNamePrefix=prefix+'res_best_', xTitle='p_{T}^{RECO} - p_{T}^{L1}'))
+                objects.append(plot_hists_data_emul(hm, plotName+'.dpt', hNamePrefix=prefix+'res_best_', xTitle='p_{T}^{RECO} - p_{T}^{L1}'))
                 # eta resolution
-                objects.append(plot_hists_standard(hm, plotName+'.deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{RECO} - #eta_{L1}'))
+                objects.append(plot_hists_data_emul(hm, plotName+'.deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{RECO} - #eta_{L1}'))
                 # phi resolution
-                objects.append(plot_hists_standard(hm, plotName+'.dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{RECO} - #phi_{L1}'))
+                objects.append(plot_hists_data_emul(hm, plotName+'.dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{RECO} - #phi_{L1}'))
 
     # 2d reco vs. L1 plots
     if opts.twod:

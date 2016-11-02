@@ -754,7 +754,7 @@ if __name__ == "__main__":
     useInvMassCut = False
     invMassMin = 71
     invMassMax = 111
-    useVtxExtraCoord=True
+    useVtxExtraCoord=False
     prefix = ''
     tftype = -1
     saveHistos = True
