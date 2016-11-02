@@ -57,7 +57,7 @@ def book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=False):
     dphi_str = '_dphi'+str(match_deltas['dphi'])
     deta_str = '_deta'+str(match_deltas['deta'])
 
-    vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['vtx', 60, 0, 60], ['run', 5000, 273725, 278725]]
+    vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['vtx', 60, 0, 60], ['run', 17000, 271725, 288725]]
     x_title_vars = {'pt':'p_{T}', 'eta':'#eta', 'phi':'#phi', 'charge':'charge', 'vtx':'PU', 'run':'run number'}
     x_title_units = {'pt':'GeV/c', 'eta':None, 'phi':None, 'charge':None, 'vtx':None, 'run':None}
     probe_vars_bins = vars_bins + [['p', -1]+p_bins]
@@ -388,26 +388,25 @@ def main():
 
     # combinations of probe_pt_min and the corresponding pt_min values for a quality
     # the first line defines which thresholds are going to be used for unmatched histograms
-    ptmins_list_q12 = [[0.5, [0.5, 18, 22, 25]],
-                       [24, [18]],
-                       [30, [22, 25]],
-                       [40, [18, 22, 25]],
-                       [100, [18, 22, 25]],
+    ptmins_list_q12 = [[0.5, [0.5, 22]],
+                       [30, [22]],
+                       [100, [22]],
                       ]
 
-#    ptmins_list_q8 = [[0.5, [0.5, 4, 11, 18, 25]],
-#                      [10, [4]],
-#                      [20, [11]],
-##                      [24, [4, 11]],
-#                      [40, [18, 25]],
-#                      ]
-#
-#    ptmins_list_q4 = [[0.5, [0.5, 18, 25]],
-#                      [40, [18, 25]],
-#                      ]
+    ptmins_list_q8 = [[0.5, [0.5, 5, 12, 22]],
+                      [8, [5]],
+                      [16, [12]],
+                      [30, [22]],
+                      ]
 
-    eta_ranges = [[0, 2.4]]
-#    eta_ranges = [[0, 2.5], [0, 0.83], [0.83, 1.24], [1.24, 2.5]]
+    ptmins_list_q4 = [[0.5, [0.5, 5, 12, 22]],
+                      [8, [5]],
+                      [16, [12]],
+                      [30, [22]],
+                      ]
+
+#    eta_ranges = [[0, 2.4]]
+    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
 #    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
 #    qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
     qual_ptmins_dict = {12:ptmins_list_q12}
