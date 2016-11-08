@@ -24,6 +24,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--pos-charge", dest="pos_charge", default=False, action="store_true", help="Positive probe charge only.")
     sub_parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative probe charge only.")
     sub_parser.add_argument("--use-inv-mass-cut", dest="invmasscut", default=False, action="store_true", help="Use an invariant mass range for the tag and probe pair.")
+    sub_parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
@@ -209,6 +210,7 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
 
     # get all probe muon indices
     all_probe_idcs = MuonSelections.select_probe_muons(recoColl, pt_min=0., pos_eta=pos_eta, neg_eta=neg_eta, pos_charge=pos_charge, neg_charge=neg_charge)
+    #all_probe_idcs = MuonSelections.select_probe_muons(recoColl, pt_min=0., pt_max=15., pos_eta=pos_eta, neg_eta=neg_eta, pos_charge=pos_charge, neg_charge=neg_charge)
  
     # get all ugmt l1 muons
     bx_min = 0
@@ -632,6 +634,9 @@ def main():
     global useInvMassCut
     useInvMassCut = opts.invmasscut
 
+    global useVtxExtraCoord
+    useVtxExtraCoord = opts.extraCoord
+
     global prefix
     prefix = opts.prefix
 
@@ -665,8 +670,8 @@ def main():
                       ]
 
 #    eta_ranges = [[0, 2.4]]
-    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
-#    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
+#    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
+    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
     qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
     match_deltas = {'dr':0.5, 'deta':0.5, 'dphi':0.5} # max deltas for matching
 
@@ -754,7 +759,7 @@ if __name__ == "__main__":
     useInvMassCut = False
     invMassMin = 71
     invMassMax = 111
-    useVtxExtraCoord=False
+    useVtxExtraCoord = False
     prefix = ''
     tftype = -1
     saveHistos = True

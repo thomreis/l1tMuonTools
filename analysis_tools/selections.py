@@ -179,12 +179,14 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_reco_muons(reco, pt_min=0.5, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
+    def select_reco_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
         if idcs is None:
             idcs = range(reco.nMuons)
         indices = []
         for i in idcs:
             if reco.pt[i] < pt_min:
+                continue
+            if reco.pt[i] > pt_max:
                 continue
             if math.fabs(reco.eta[i]) < abs_eta_min or math.fabs(reco.eta[i]) > abs_eta_max:
                 continue
@@ -200,9 +202,9 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_tag_muons(reco, pt_min=0.5, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
+    def select_tag_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
         indices = []
-        reco_indices = MuonSelections.select_reco_muons(reco, pt_min, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, idcs)
+        reco_indices = MuonSelections.select_reco_muons(reco, pt_min, pt_max, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, idcs)
         for i in reco_indices:
             if not reco.isTightMuon[i]:
                 continue
@@ -216,9 +218,9 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_probe_muons(reco, pt_min=0.5, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
+    def select_probe_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
         indices = []
-        reco_indices = MuonSelections.select_reco_muons(reco, pt_min, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, idcs)
+        reco_indices = MuonSelections.select_reco_muons(reco, pt_min, pt_max, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, idcs)
         for i in reco_indices:
             if not reco.isTightMuon[i]:
                 continue
