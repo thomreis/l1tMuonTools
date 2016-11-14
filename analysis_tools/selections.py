@@ -81,7 +81,7 @@ class MuonSelections(object):
 
 
     @staticmethod
-    def select_ugmt_muons(ugmt, pt_min=0.5, qual_min=0, abs_eta_min=0, abs_eta_max=4, bx_min=-1e6, bx_max=1e6, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, tftype=None, idcs=None, useVtxExtraCoord=False):
+    def select_ugmt_muons(ugmt, pt_min=0.5, qual_min=0, qual_max=15, abs_eta_min=0, abs_eta_max=4, bx_min=-1e6, bx_max=1e6, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, tftype=None, idcs=None, useVtxExtraCoord=False):
         type_acc = tftype
         if isinstance(tftype, int):
             type_acc.append(tftype)
@@ -110,6 +110,8 @@ class MuonSelections(object):
             if math.fabs(eta) < abs_eta_min or math.fabs(eta) > abs_eta_max:
                 continue
             if ugmt.muonQual[i] < qual_min:
+                continue
+            if ugmt.muonQual[i] > qual_max:
                 continue
             if ugmt.muonBx[i] < bx_min or ugmt.muonBx[i] > bx_max:
                 continue
