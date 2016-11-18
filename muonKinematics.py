@@ -44,7 +44,7 @@ def book_histograms():
                  ['mu1pt', -1]+pt_bins, ['mu1eta', 100, -2.5, 2.5], ['mu1etaVtx', 100, -2.5, 2.5], ['mu1phi', 70, -3.5, 3.5], ['mu1phiVtx', 70, -3.5, 3.5], ['mu1charge', 3, -1, 2], ['mu1qual', 16, 0, 15], ['mu1tfMuonIdx', 108, 0, 107],
                  ['mu2pt', -1]+pt_bins, ['mu2eta', 100, -2.5, 2.5], ['mu2etaVtx', 100, -2.5, 2.5], ['mu2phi', 70, -3.5, 3.5], ['mu2phiVtx', 70, -3.5, 3.5], ['mu2charge', 3, -1, 2], ['mu2qual', 16, 0, 15], ['mu2tfMuonIdx', 108, 0, 107],
                  ['mu3pt', -1]+pt_bins, ['mu3eta', 100, -2.5, 2.5], ['mu3etaVtx', 100, -2.5, 2.5], ['mu3phi', 70, -3.5, 3.5], ['mu3phiVtx', 70, -3.5, 3.5], ['mu3charge', 3, -1, 2], ['mu3qual', 16, 0, 15], ['mu3tfMuonIdx', 108, 0, 107],
-                 ['n', 9, 0, 9], ['dpt', 300, 0, 300], ['dptoverpt', 50, 0, 1], ['dr', 600, 0, 6], ['deta', 480, 0, 4.8], ['dphi', 320, 0, 3.2]]
+                 ['n', 9, 0, 9], ['dpt', 600, 0, 300], ['dptoverpt', 50, 0, 1], ['dr', 600, 0, 6], ['deta', 480, 0, 4.8], ['dphi', 320, 0, 3.2]]
 
     x_title_vars = {'pt':'p_{T}', 'eta':'#eta', 'etaVtx':'#eta_{Vtx}', 'phi':'#phi', 'phiVtx':'#phi_{Vtx}', 'charge':'charge', 'qual':'qual', 'tfMuonIdx':'TF muon index',
                     'mu1pt':'p_{T}^{#mu1}', 'mu1eta':'#eta^{#mu1}', 'mu1etaVtx':'#eta_{Vtx}^{#mu1}', 'mu1phi':'#phi^{#mu1}', 'mu1phiVtx':'#phi_{Vtx}^{#mu1}', 'mu1charge':'charge^{#mu1}', 'mu1qual':'qual^{#mu1}', 'mu1tfMuonIdx':'TF muon index^{#mu1}',
@@ -105,6 +105,7 @@ def analyse(evt, hm, hm2d):
         nMu = len(l1_muon_idcs)
         nMuQmin = len(l1_muon_idcs_qmin)
         hm.fill(histoprefix+'.n', nMu)
+        hm.fill(histoprefixqmin+'.n', nMuQmin)
 
         for idx in l1_muon_idcs:
             hm.fill(histoprefix+'.pt', l1Coll.muonEt[idx])

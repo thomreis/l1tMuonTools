@@ -356,6 +356,9 @@ def define_styles():
     styles['data_q12'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
     styles['data_q8'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
     styles['data_q4'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kYellow, 'mc':root.kYellow, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
+    styles['data_qmin12'] = {'lc':root.kViolet, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
+    styles['data_qmin8'] = {'lc':root.kCyan+3, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
+    styles['data_qmin4'] = {'lc':root.kOrange-2, 'ls':root.kSolid, 'fc':root.kYellow, 'mc':root.kYellow, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
     styles['emul'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kBlue, 'mc':root.kBlue, 'ms':root.kFullCircle, 'legtext':'emul'}
     styles['emul_q12'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'emul Q #geq 12'}
     styles['emul_q8'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'emul Q #geq 8'}
@@ -403,10 +406,16 @@ def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', thresh
 
 def plot_hists_qstack(hm, hName, den=None, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, xMax=None, reg='', scaleFactor=1., data=False):
     hDefs = []
+    if stacked:
+        stylePref = 'data_q'
+        lw=1
+    else:
+        stylePref = 'data_qmin'
+        lw=2
     if reg == '':
         for q in reversed(range(4,16,4)):
-            ugmt_q_dict = {'num':hName.replace('qXX', 'q{q}'.format(q=q)), 'den':den, 'drawopt':'hist', 'stacked':stacked, 'err':False}
-            ugmt_q_dict.update(hist_style('data_q{q}'.format(q=q), filled=True))
+            ugmt_q_dict = {'num':hName.replace('XX', '{q}'.format(q=q)), 'den':den, 'drawopt':'hist', 'stacked':stacked, 'err':False}
+            ugmt_q_dict.update(hist_style(stylePref+str(q), filled=stacked, lw=lw))
             hDefs.append(ugmt_q_dict)
 
     if (hName.find('.pt') != -1 or hName.find('.n') != -1) and not den:
@@ -497,7 +506,7 @@ def main():
 
     # quality stack
     if opts.qstack:
-        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.n', xTitle='#mu multiplicity', stacked=True, data=isData))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qminXX.n', xTitle='#mu multiplicity', data=isData))
         objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.pt', xTitle='p_{T} (GeV/c)', yTitle='# muons/(GeV/c)', normToBinWidth=True, stacked=True, data=isData))
         objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.eta', stacked=True, data=isData))
         objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.phi', stacked=True, data=isData))
