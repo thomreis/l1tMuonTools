@@ -652,26 +652,31 @@ def main():
 
     # combinations of probe_pt_min and the corresponding pt_min values for a quality
     # the first line defines which thresholds are going to be used for unmatched histograms
-    ptmins_list_q12 = [[0.5, [0.5, 22]],
+    ptmins_list_q12 = [[0.5, [0.5, 3, 5, 12, 22]],
+                       [5, [3]],
+                       [8, [5]],
+                       [16, [12]],
                        [30, [22]],
                        [100, [22]],
                       ]
 
-    ptmins_list_q8 = [[0.5, [0.5, 5, 12, 22]],
+    ptmins_list_q8 = [[0.5, [0.5, 3, 5, 12, 22]],
+                      [5, [3]],
                       [8, [5]],
                       [16, [12]],
                       [30, [22]],
                       ]
 
-    ptmins_list_q4 = [[0.5, [0.5, 5, 12, 22]],
+    ptmins_list_q4 = [[0.5, [0.5, 3, 5, 12, 22]],
+                      [5, [3]],
                       [8, [5]],
                       [16, [12]],
                       [30, [22]],
                       ]
 
 #    eta_ranges = [[0, 2.4]]
-#    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
-    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
+    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
+#    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
     qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
     match_deltas = {'dr':0.5, 'deta':0.5, 'dphi':0.5} # max deltas for matching
 
