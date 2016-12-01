@@ -33,9 +33,9 @@ def get_tftype(tf_muon_index):
 
 def book_histograms():
 
-    vars_bins = [['iet', 256, 0, 256], ['ieta', 83, -41, 42], ['iphi', 72, 0, 73], ['qual', 16, 0, 15], ['n', 2017, 0, 4034]]
-    x_title_vars = {'iet':'iE_{T}', 'ieta':'i#eta', 'iphi':'i#phi', 'qual':'qual', 'n':'# towers'}
-    x_title_units = {'iet':None, 'ieta':None, 'iphi':None, 'qual':None, 'n':None}
+    vars_bins = [['iet', 256, 0, 256], ['ieta', 83, -41, 42], ['iphi', 72, 0, 73], ['iqual', 16, 0, 15], ['n', 2017, 0, 4034]]
+    x_title_vars = {'iet':'iE_{T}', 'ieta':'i#eta', 'iphi':'i#phi', 'iqual':'qual', 'n':'# towers'}
+    x_title_units = {'iet':None, 'ieta':None, 'iphi':None, 'iqual':None, 'n':None}
 
     x_vars_bins_2d = [['ieta', 83, -41, 42]]
     y_vars_bins_2d = [['iphi', 72, 0, 73]]
@@ -79,6 +79,7 @@ def analyse(evt, hm, hm2d):
         hm.fill(histoprefix+'.iet', l1CaloTwrColl.iet[idx])
         hm.fill(histoprefix+'.ieta', l1CaloTwrColl.ieta[idx])
         hm.fill(histoprefix+'.iphi', l1CaloTwrColl.iphi[idx])
+        hm.fill(histoprefix+'.iqual', l1CaloTwrColl.iqual[idx])
 
         hm2d.fill(histoprefix2d+'.ieta_iphi', l1CaloTwrColl.ieta[idx], l1CaloTwrColl.iphi[idx])
 
