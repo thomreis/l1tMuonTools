@@ -271,10 +271,11 @@ class HistManager(object):
 
 class HistManager2d(object):
     """Class that manages and holds 2D histograms"""
-    def __init__(self, varnames=[], binning_dict={}, ytitle="# Muons", prefix="", filename=None, subdir=None):
+    def __init__(self, varnames=[], binning_dict={}, profile_dict={}, ytitle="# Muons", prefix="", filename=None, subdir=None):
         super(HistManager2d, self).__init__()
         self.varnames = varnames
         self.binnings = binning_dict
+        self.profiles = profile_dict
         self.prefix = prefix
         root.TGaxis().SetMaxDigits(3)
 
@@ -305,13 +306,25 @@ class HistManager2d(object):
                     binsy = array('d', binning_y[1:-1])
                 # variable binning when nBins == -1
                 if binning_x[0] < 0 and binning_y[0] < 0:
-                    self.hists[vname] = root.TH2D(prefix+vname, "", nbinsx, binsx, nbinsy, binsy)
+                    if vname in self.profiles and self.profiles[vname] == True:
+                        self.hists[vname] = root.TProfile2D(prefix+vname, "", nbinsx, binsx, nbinsy, binsy)
+                    else:
+                        self.hists[vname] = root.TH2D(prefix+vname, "", nbinsx, binsx, nbinsy, binsy)
                 elif binning_x[0] < 0: # fixed binning on y axis
-                    self.hists[vname] = root.TH2D(prefix+vname, "", nbinsx, binsx, binning_y[0], binning_y[1], binning_y[2])
+                    if vname in self.profiles and self.profiles[vname] == True:
+                        self.hists[vname] = root.TProfile2D(prefix+vname, "", nbinsx, binsx, binning_y[0], binning_y[1], binning_y[2])
+                    else:
+                        self.hists[vname] = root.TH2D(prefix+vname, "", nbinsx, binsx, binning_y[0], binning_y[1], binning_y[2])
                 elif binning_y[0] < 0: # fixed binning on x axis
-                    self.hists[vname] = root.TH2D(prefix+vname, "", binning_x[0], binning_x[1], binning_x[2], nbinsy, binsy)
+                    if vname in self.profiles and self.profiles[vname] == True:
+                        self.hists[vname] = root.TProfile2D(prefix+vname, "", binning_x[0], binning_x[1], binning_x[2], nbinsy, binsy)
+                    else:
+                        self.hists[vname] = root.TH2D(prefix+vname, "", binning_x[0], binning_x[1], binning_x[2], nbinsy, binsy)
                 else: # fixed binning
-                    self.hists[vname] = root.TH2D(prefix+vname, "", binning_x[0], binning_x[1], binning_x[2], binning_y[0], binning_y[1], binning_y[2])
+                    if vname in self.profiles and self.profiles[vname] == True:
+                        self.hists[vname] = root.TProfile2D(prefix+vname, "", binning_x[0], binning_x[1], binning_x[2], binning_y[0], binning_y[1], binning_y[2])
+                    else:
+                        self.hists[vname] = root.TH2D(prefix+vname, "", binning_x[0], binning_x[1], binning_x[2], binning_y[0], binning_y[1], binning_y[2])
                 self.hists[vname].Sumw2()
 
                 if not have_unit_x:
@@ -344,8 +357,11 @@ class HistManager2d(object):
                 self.hists[hName].SetDirectory(0)
             input.Close()
 
-    def fill(self, varname, valx, valy):
-        self.hists[varname].Fill(valx, valy)
+    def fill(self, varname, valx, valy, valz=1.):
+        if varname in self.profiles and self.profiles[varname] == True:
+            self.hists[varname].Fill(valx, valy, valz)
+        else:
+            self.hists[varname].Fill(valx, valy)
 
     def get(self, varname):
         return self.hists[varname]
@@ -355,6 +371,12 @@ class HistManager2d(object):
 
     def get_binning(self, varname):
         return self.binnings[varname]
+
+    def get_profile(self, varname):
+        if varname in self.profiles:
+            return self.profiles[varname]
+        else:
+            return False
 
 
 class L1AnalysisHistManager(HistManager):
