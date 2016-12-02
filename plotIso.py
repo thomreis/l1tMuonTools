@@ -437,6 +437,9 @@ def main():
 
         histoprefix2d = '2d_caloTower'
         objects.append(plot_2dhist(hm2d, histoprefix2d+'.ieta_iphi', drawDiag=False, data=isData))
+        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ieta_iet_iphi', drawDiag=False, data=isData))
+        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_iet_iphirel', drawDiag=False, data=isData))
+        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', drawDiag=False, data=isData))
 
     ##########################################################################
     # save plots to root file
