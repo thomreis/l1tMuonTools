@@ -6,7 +6,7 @@ opts, parser = parse_options_and_init_log()
 from L1Analysis import L1Ana, L1Ntuple
 from analysis_tools.plotting import HistManager, HistManager2d
 from analysis_tools.selections import MuonSelections, Matcher
-from math import floor
+from math import floor, ceil
 import exceptions
 import json
 import ROOT as root
@@ -34,12 +34,12 @@ def get_tftype(tf_muon_index):
 
 def book_histograms():
 
-    vars_bins = [['iet', 256, 0, 256], ['ieta', 83, -41, 42], ['iphi', 72, 0, 73], ['iqual', 16, 0, 15], ['n', 2017, 0, 4034]]
-    x_title_vars = {'iet':'iE_{T}', 'ieta':'i#eta', 'iphi':'i#phi', 'iqual':'qual', 'n':'# towers'}
-    x_title_units = {'iet':None, 'ieta':None, 'iphi':None, 'iqual':None, 'n':None}
+    vars_bins = [['iet', 256, 0, 256], ['ieta', 83, -41, 42], ['iphi', 73, 0, 73], ['iqual', 16, 0, 16], ['n', 2017, 0, 4034], ['total_cone_iet', 256, 0, 256], ['inner_cone_iet', 256, 0, 256], ['outer_cone_iet', 256, 0, 256], ['outer_over_total_cone_iet', 51, 0, 1.02]]
+    x_title_vars = {'iet':'iE_{T}', 'ieta':'i#eta', 'iphi':'i#phi', 'iqual':'qual', 'n':'# towers', 'total_cone_iet':'iE_{T}^{total}', 'inner_cone_iet':'iE_{T}^{in}', 'outer_cone_iet':'iE_{T}^{out}', 'outer_over_total_cone_iet':'iE_{T}^{out}'}
+    x_title_units = {'iet':None, 'ieta':None, 'iphi':None, 'iqual':None, 'n':None, 'total_cone_iet':None, 'inner_cone_iet':None, 'outer_cone_iet':None, 'outer_over_total_cone_iet':None}
 
     x_vars_bins_2d = [['ieta', 83, -41, 42], ['iet_ieta', 83, -41, 42], ['iet_ietarel', 165, -82, 83], ['iet_ietarel_red', 31, -15, 16]]
-    y_vars_bins_2d = [['iphi', 72, 0, 73], ['iet_iphi', 72, 0, 73], ['iet_iphirel', 73, -36, 37], ['iet_iphirel_red', 31, -15, 16]]
+    y_vars_bins_2d = [['iphi', 73, 0, 73], ['iet_iphi', 73, 0, 73], ['iet_iphirel', 73, -36, 37], ['iet_iphirel_red', 31, -15, 16]]
 
     x_title_vars_2d = {'ieta':'i#eta', 'iet_ieta':'i#eta', 'iet_ietarel':'i#eta_{tower} - i#eta_{#mu}', 'iet_ietarel_red':'i#eta_{tower} - i#eta_{#mu}'}
     y_title_vars_2d = {'iphi':'i#phi', 'iet_iphi':'i#phi', 'iet_iphirel':'i#phi_{tower} - i#phi_{#mu}', 'iet_iphirel_red':'i#phi_{tower} - i#phi_{#mu}'}
@@ -72,6 +72,16 @@ def analyse(evt, hm, hm2d):
 
     bx_min = 0
     bx_max = 0
+
+    caloTwrEtas = [x*0.087 for x in range(21)]
+    caloTwrEtas.append(1.83)
+    caloTwrEtas.append(1.93)
+    caloTwrEtas.append(2.043)
+    caloTwrEtas.append(2.172)
+    caloTwrEtas.append(2.322)
+    caloTwrEtas.append(2.5)
+    caloTwrEtas.append(2.65)
+    caloTwrEtas.append(3.)
 
     # calo tower histograms
     histoprefix = 'l1_caloTower'
@@ -108,21 +118,57 @@ def analyse(evt, hm, hm2d):
     for idx in l1_muon_idcs:
         muIEta = l1MuColl.muonIEta[idx]
         muIPhi = l1MuColl.muonIPhi[idx]
+        muEta = l1MuColl.muonEta[idx]
+        muPhi = l1MuColl.muonPhi[idx]
+
+        # calculate in which caloTower the muon falls in eta
+        muInCaloTowerIEta = 0
+        if abs(muEta) < 1.83:
+            muInCaloTowerIEta = int(floor(muIEta / 8.))
+            if muIEta >= 0:
+                muInCaloTowerIEta += 1
+        else:
+            for i in range(21,29):
+                if abs(muEta) < caloTwrEtas[i]:
+                    muInCaloTowerIEta = i
+                    break
+            if muIEta < 0:
+                muInCaloTowerIEta *= -1
+        if muInCaloTowerIEta > 0:
+            muInCaloTowerIEta -= 1
+        #print 'muon eta={eta}, ieta={ieta}, caloIEta={cieta}, caloTowerBounds=[{lower}, {upper}]'.format(eta=muEta, ieta=muIEta, cieta=muInCaloTowerIEta, lower=caloTwrEtas[abs(muInCaloTowerIEta)-1], upper=caloTwrEtas[abs(muInCaloTowerIEta)])
+
+        total_cone_iet = 0
+        inner_cone_iet = 0
 
         nonZeroRelPoss = []
         nonZeroIEtaRels = []
         for i in range(nCaloTwr):
-            iEtaRel = l1CaloTwrColl.ieta[i] * 8 - muIEta
-            iPhiRel = l1CaloTwrColl.iphi[i] * 8 - muIPhi
+            caloTowerIEta = l1CaloTwrColl.ieta[i]
+            if caloTowerIEta > 0:
+                caloTowerIEta -= 1
+
+            dIEta = caloTowerIEta - muInCaloTowerIEta
+            iPhiRel = l1CaloTwrColl.iphi[i] * 8 - muIPhi - 8 # iPhi starts at +1 so subtract 8*1
+            # wrap around
             if iPhiRel < -288:
                 iPhiRel += 576
             elif iPhiRel > 287:
                 iPhiRel -= 576
-            hm2d.fill(histoprefix2d+'.iet_ietarel_iet_iphirel', floor(iEtaRel / 8), floor(iPhiRel / 8), l1CaloTwrColl.iet[i])
-            if abs(iEtaRel) < 128 and abs(iPhiRel) < 128:
-                hm2d.fill(histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', floor(iEtaRel / 8), floor(iPhiRel / 8), l1CaloTwrColl.iet[i])
-                nonZeroRelPoss.append((floor(iEtaRel / 8), floor(iPhiRel / 8)))
-                nonZeroIEtaRels.append(floor(iEtaRel / 8))
+            # back to caloTower granularity
+            dIPhi = ceil(iPhiRel / 8.)
+            iEt = l1CaloTwrColl.iet[i]
+            hm2d.fill(histoprefix2d+'.iet_ietarel_iet_iphirel', dIEta, dIPhi, iEt)
+            if abs(dIEta) < 16 and abs(dIPhi) < 16:
+                hm2d.fill(histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', dIEta, dIPhi, iEt)
+                nonZeroRelPoss.append((dIEta, dIPhi))
+                nonZeroIEtaRels.append(dIEta)
+                # 11x11 cone
+                if abs(dIEta) < 6 and abs(dIPhi) < 6:
+                    total_cone_iet += iEt
+                    # 3x3 cone
+                    if abs(dIEta) < 2 and abs(dIPhi) < 2:
+                        inner_cone_iet += iEt
         # fill positions with no towers with iet value 0
         nonZeroIEtaRels = list(set(nonZeroIEtaRels))
         for dIEta in range(-15, 16):
@@ -133,6 +179,12 @@ def analyse(evt, hm, hm2d):
             else:
                 for dIPhi in range(-15, 16):
                     hm2d.fill(histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', dIEta, dIPhi, 0.)
+
+        hm.fill(histoprefix+'.total_cone_iet', total_cone_iet)
+        hm.fill(histoprefix+'.inner_cone_iet', inner_cone_iet)
+        hm.fill(histoprefix+'.outer_cone_iet', total_cone_iet - inner_cone_iet)
+        if total_cone_iet > 0:
+            hm.fill(histoprefix+'.outer_over_total_cone_iet', (total_cone_iet - inner_cone_iet) / float(total_cone_iet))
 
 def save_histos(hm, hm2d, outfile):
     '''
@@ -217,6 +269,7 @@ def main():
         output.Close()
 
 if __name__ == "__main__":
+    muEtaScale = 0.010875
     saveHistos = True
     main()
 

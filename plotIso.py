@@ -385,7 +385,7 @@ def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', thresh
     if reg == '':
         hDefs.append(ugmt_dict)
 
-    if (hName[-4:] == '.iet' or hName.find('.n') != -1) and not den:
+    if (hName[-3:] == 'iet' or hName.find('.n') != -1) and not den:
         logy = True
     else:
         logy = False
@@ -430,6 +430,10 @@ def main():
         objects.append(plot_hists_standard(hm, 'l1_caloTower.ieta', xTitle='i#eta', data=isData))
         objects.append(plot_hists_standard(hm, 'l1_caloTower.iphi', xTitle='i#phi', data=isData))
         objects.append(plot_hists_standard(hm, 'l1_caloTower.iqual', xTitle='i qual', data=isData))
+        objects.append(plot_hists_standard(hm, 'l1_caloTower.total_cone_iet', xTitle='iE_{T}^{total}', data=isData))
+        objects.append(plot_hists_standard(hm, 'l1_caloTower.inner_cone_iet', xTitle='iE_{T}^{in}', data=isData))
+        objects.append(plot_hists_standard(hm, 'l1_caloTower.outer_cone_iet', xTitle='iE_{T}^{out}', data=isData))
+        objects.append(plot_hists_standard(hm, 'l1_caloTower.outer_over_total_cone_iet', xTitle='iE_{T}^{out} / iE_{T}^{total}', data=isData))
 
     # 2d plots
     if opts.twod:
