@@ -1,6 +1,6 @@
+from analysis_tools.isolation.caloTowerIso import CaloTowerIsolator
 import math
 import ROOT as root
-
 
 class Matcher(object):
     """Class containing static functions for matching L1Analysis collections"""
@@ -120,6 +120,17 @@ class MuonSelections(object):
                 continue
 
             indices.append(i)
+        return indices
+
+    @staticmethod
+    def select_iso_ugmt_muons(ugmt, caloTowers, iso_min=0., iso_max=1., idcs=None):
+        indices = []
+        if idcs is None:
+            idcs = range(ugmt.nMuons)
+        for i in idcs:
+            iso = CaloTowerIsolator.calc_out_over_tot_iso(ugmt, caloTowers, i)
+            if iso >= iso_min and iso <= iso_max:
+                indices.append(i)
         return indices
 
     @staticmethod
