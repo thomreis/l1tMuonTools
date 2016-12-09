@@ -92,7 +92,7 @@ def extract_notes_from_name(name, xBase, yBase, etaTxt=True, qualTxt=True, ptTxt
             notes.append([xBase, yBase+0.05, 'p_{T}^{L1} #geq '+l1_ptmin_strs[0]+' GeV', True])
     return notes
 
-def plot_2dhist(hm2d, hName, drawDiag=True, data=False):
+def plot_2dhist(hm2d, hName, drawDiag=True, data=False, scaleFactor=1.):
     canvas_name = hName
 
     # create canvas and draw on it
@@ -105,6 +105,9 @@ def plot_2dhist(hm2d, hName, drawDiag=True, data=False):
     if hName not in hm2d.get_varnames():
         return [c]
     h = hm2d.get(hName).Clone()
+
+    if scaleFactor != 1.:
+        h.Scale(scaleFactor)
 
     h.GetXaxis().SetTitleFont(font)
     h.GetXaxis().SetLabelFont(font)
@@ -416,6 +419,8 @@ def main():
 
     hm = HistManager(filename=opts.fname, subdir='all_runs')
 
+    nEvents = hm.get('l1_caloTower.n').Integral()
+
     L1Ana.init_l1_analysis()
     print ""
 
@@ -441,9 +446,9 @@ def main():
 
         histoprefix2d = '2d_caloTower'
         objects.append(plot_2dhist(hm2d, histoprefix2d+'.ieta_iphi', drawDiag=False, data=isData))
-        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ieta_iet_iphi', drawDiag=False, data=isData))
-        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_iet_iphirel', drawDiag=False, data=isData))
-        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', drawDiag=False, data=isData))
+        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ieta_iet_iphi', drawDiag=False, data=isData, scaleFactor=1/nEvents))
+        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_iet_iphirel', drawDiag=False, data=isData, scaleFactor=1/nEvents))
+        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', drawDiag=False, data=isData, scaleFactor=1/nEvents))
 
     ##########################################################################
     # save plots to root file

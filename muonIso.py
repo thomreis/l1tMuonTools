@@ -6,6 +6,7 @@ opts, parser = parse_options_and_init_log()
 from L1Analysis import L1Ana, L1Ntuple
 from analysis_tools.plotting import HistManager, HistManager2d
 from analysis_tools.selections import MuonSelections, Matcher
+from analysis_tools.isolation.caloTowerIso import CaloTowerIsolator
 from math import floor, ceil
 import exceptions
 import json
@@ -48,7 +49,7 @@ def book_histograms():
     y_title_units_2d = {'iphi':None, 'iet_iphi':None, 'iet_iphirel':None, 'iet_iphirel_red':None}
 
     # the 2d histograms that should be tprofiles
-    profile_2d = {'2d_caloTower.iet_ieta_iet_iphi':True, '2d_caloTower.iet_ietarel_iet_iphirel':True, '2d_caloTower.iet_ietarel_red_iet_iphirel_red':True}
+    #profile_2d = {'2d_caloTower.iet_ieta_iet_iphi':True, '2d_caloTower.iet_ietarel_iet_iphirel':True, '2d_caloTower.iet_ietarel_red_iet_iphirel_red':True}
 
     varnames = []
     binnings = {}
@@ -63,7 +64,7 @@ def book_histograms():
         varnames2d.append('2d_caloTower.{xvar}_{yvar}'.format(xvar=var_bin_2d_x[0], yvar=var_bin_2d_y[0]))
         binnings2d['2d_caloTower.{xvar}_{yvar}'.format(xvar=var_bin_2d_x[0], yvar=var_bin_2d_y[0])] = [var_bin_2d_x[1:]+[x_title_vars_2d[var_bin_2d_x[0]], x_title_units_2d[var_bin_2d_x[0]]], var_bin_2d_y[1:]+[y_title_vars_2d[var_bin_2d_y[0]], y_title_units_2d[var_bin_2d_y[0]]]]
 
-    return HistManager(list(set(varnames)), binnings), HistManager2d(list(set(varnames2d)), binnings2d, profile_2d)
+    return HistManager(list(set(varnames)), binnings), HistManager2d(list(set(varnames2d)), binnings2d)
 
 def analyse(evt, hm, hm2d):
     
@@ -73,24 +74,12 @@ def analyse(evt, hm, hm2d):
     bx_min = 0
     bx_max = 0
 
-    caloTwrEtas = [x*0.087 for x in range(21)]
-    caloTwrEtas.append(1.83)
-    caloTwrEtas.append(1.93)
-    caloTwrEtas.append(2.043)
-    caloTwrEtas.append(2.172)
-    caloTwrEtas.append(2.322)
-    caloTwrEtas.append(2.5)
-    caloTwrEtas.append(2.65)
-    caloTwrEtas.append(3.)
-
     # calo tower histograms
     histoprefix = 'l1_caloTower'
     histoprefix2d = '2d_caloTower'
 
     nCaloTwr = l1CaloTwrColl.nTower
     hm.fill(histoprefix+'.n', nCaloTwr)
-    nonZeroTowers = []
-    nonZeroIEta = []
     for i in range(nCaloTwr):
         hm.fill(histoprefix+'.iet', l1CaloTwrColl.iet[i])
         hm.fill(histoprefix+'.ieta', l1CaloTwrColl.ieta[i])
@@ -99,18 +88,6 @@ def analyse(evt, hm, hm2d):
 
         hm2d.fill(histoprefix2d+'.ieta_iphi', l1CaloTwrColl.ieta[i], l1CaloTwrColl.iphi[i])
         hm2d.fill(histoprefix2d+'.iet_ieta_iet_iphi', l1CaloTwrColl.ieta[i], l1CaloTwrColl.iphi[i], l1CaloTwrColl.iet[i])
-        nonZeroTowers.append((l1CaloTwrColl.ieta[i], l1CaloTwrColl.iphi[i]))
-        nonZeroIEta.append(l1CaloTwrColl.ieta[i])
-    # fill positions with no towers with iet value 0
-    #nonZeroIEta = list(set(nonZeroIEta))
-    #for iEta in range(-41, 42):
-    #    if iEta in nonZeroIEta:
-    #        for iPhi in range(0, 73):
-    #            if (iEta, iPhi) not in nonZeroTowers:
-    #                hm2d.fill(histoprefix2d+'.iet_ieta_iet_iphi', iEta, iPhi, 0.)
-    #    else:
-    #        for iPhi in range(0, 73):
-    #            hm2d.fill(histoprefix2d+'.iet_ieta_iet_iphi', iEta, iPhi, 0.)
 
     # calo towers around L1 muons
     l1_muon_idcs = MuonSelections.select_ugmt_muons(l1MuColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max)
@@ -118,67 +95,19 @@ def analyse(evt, hm, hm2d):
     for idx in l1_muon_idcs:
         muIEta = l1MuColl.muonIEta[idx]
         muIPhi = l1MuColl.muonIPhi[idx]
-        muEta = l1MuColl.muonEta[idx]
-        muPhi = l1MuColl.muonPhi[idx]
 
-        # calculate in which caloTower the muon falls in eta
-        muInCaloTowerIEta = 0
-        if abs(muEta) < 1.83:
-            muInCaloTowerIEta = int(floor(muIEta / 8.))
-            if muIEta >= 0:
-                muInCaloTowerIEta += 1
-        else:
-            for i in range(21,29):
-                if abs(muEta) < caloTwrEtas[i]:
-                    muInCaloTowerIEta = i
-                    break
-            if muIEta < 0:
-                muInCaloTowerIEta *= -1
-        if muInCaloTowerIEta > 0:
-            muInCaloTowerIEta -= 1
-        #print 'muon eta={eta}, ieta={ieta}, caloIEta={cieta}, caloTowerBounds=[{lower}, {upper}]'.format(eta=muEta, ieta=muIEta, cieta=muInCaloTowerIEta, lower=caloTwrEtas[abs(muInCaloTowerIEta)-1], upper=caloTwrEtas[abs(muInCaloTowerIEta)])
+        muInCaloTowerIEta = CaloTowerIsolator.calc_muon_calo_tower_ieta(muIEta)
+        muInCaloTowerIPhi = CaloTowerIsolator.calc_muon_calo_tower_iphi(muIPhi)
 
-        total_cone_iet = 0
-        inner_cone_iet = 0
+        # get towers relative to muon position and energy sums around
+        relTwrs, iEtSums = CaloTowerIsolator.calc_calo_tower_sums(l1CaloTwrColl, muInCaloTowerIEta, muInCaloTowerIPhi, [(1, 1), (5, 5)])
+        inner_cone_iet = iEtSums[1]
+        total_cone_iet = iEtSums[2]
 
-        nonZeroRelPoss = []
-        nonZeroIEtaRels = []
-        for i in range(nCaloTwr):
-            caloTowerIEta = l1CaloTwrColl.ieta[i]
-            if caloTowerIEta > 0:
-                caloTowerIEta -= 1
-
-            dIEta = caloTowerIEta - muInCaloTowerIEta
-            iPhiRel = l1CaloTwrColl.iphi[i] * 8 - muIPhi - 8 # iPhi starts at +1 so subtract 8*1
-            # wrap around
-            if iPhiRel < -288:
-                iPhiRel += 576
-            elif iPhiRel > 287:
-                iPhiRel -= 576
-            # back to caloTower granularity
-            dIPhi = ceil(iPhiRel / 8.)
-            iEt = l1CaloTwrColl.iet[i]
-            hm2d.fill(histoprefix2d+'.iet_ietarel_iet_iphirel', dIEta, dIPhi, iEt)
-            if abs(dIEta) < 16 and abs(dIPhi) < 16:
-                hm2d.fill(histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', dIEta, dIPhi, iEt)
-                nonZeroRelPoss.append((dIEta, dIPhi))
-                nonZeroIEtaRels.append(dIEta)
-                # 11x11 cone
-                if abs(dIEta) < 6 and abs(dIPhi) < 6:
-                    total_cone_iet += iEt
-                    # 3x3 cone
-                    if abs(dIEta) < 2 and abs(dIPhi) < 2:
-                        inner_cone_iet += iEt
-        # fill positions with no towers with iet value 0
-        nonZeroIEtaRels = list(set(nonZeroIEtaRels))
-        for dIEta in range(-15, 16):
-            if dIEta in nonZeroIEtaRels:
-                for dIPhi in range(-15, 16):
-                    if (dIEta, dIPhi) not in nonZeroRelPoss:
-                        hm2d.fill(histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', dIEta, dIPhi, 0.)
-            else:
-                for dIPhi in range(-15, 16):
-                    hm2d.fill(histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', dIEta, dIPhi, 0.)
+        for relTwr in relTwrs:
+            hm2d.fill(histoprefix2d+'.iet_ietarel_iet_iphirel', relTwr[0], relTwr[1], relTwr[2])
+            if abs(relTwr[0]) < 16 and abs(relTwr[1]) < 16:
+                hm2d.fill(histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', relTwr[0], relTwr[1], relTwr[2])
 
         hm.fill(histoprefix+'.total_cone_iet', total_cone_iet)
         hm.fill(histoprefix+'.inner_cone_iet', inner_cone_iet)

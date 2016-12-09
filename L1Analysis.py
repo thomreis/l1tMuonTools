@@ -105,6 +105,7 @@ class L1Data(object):
         self.towers2x2 = None
         self.towers = None
         self.caloTowers = None
+        self.caloTowersEmu = None
         self.gt = None
         self.rct = None
         self.dttf = None
@@ -137,6 +138,7 @@ class L1Ntuple(object):
         self.do_upgradeTf = False
         self.do_upgradeTfEmu = False
         self.do_caloTowers = False
+        self.do_caloTowersEmu = False
         self.do_reco = False
         self.do_muonreco = False
         self.do_l1extra = False
@@ -150,6 +152,7 @@ class L1Ntuple(object):
         self.tree_upgradeTf = None
         self.tree_upgradeTfEmu = None
         self.tree_caloTowers = None
+        self.tree_caloTowersEmu = None
         self.tree_muon = None
         self.tree_muonupgrade = None
         self.tree_reco = None
@@ -205,6 +208,7 @@ class L1Ntuple(object):
         self.tree_upgradeTf = root.TChain("l1UpgradeTfMuonTree/L1UpgradeTfMuonTree")
         self.tree_upgradeTfEmu = root.TChain("l1UpgradeTfMuonEmuTree/L1UpgradeTfMuonTree")
         self.tree_caloTowers = root.TChain("l1CaloTowerTree/L1CaloTowerTree")
+        self.tree_caloTowersEmu = root.TChain("l1CaloTowerEmuTree/L1CaloTowerTree")
         self.tree_muon = root.TChain("l1MuonRecoTree/Muon2RecoTree")
         self.tree_reco = root.TChain("l1RecoTree/RecoTree")
         self.tree_extra = root.TChain("l1ExtraTreeProducer/L1ExtraTree")
@@ -224,6 +228,8 @@ class L1Ntuple(object):
                 self.tree_upgradeTfEmu.Add(fname)
             if self.do_caloTowers:
                 self.tree_caloTowers.Add(fname)
+            if self.do_caloTowersEmu:
+                self.tree_caloTowersEmu.Add(fname)
             if self.do_reco:
                 self.tree_reco.Add(fname)
             if self.do_muonreco:
@@ -247,6 +253,8 @@ class L1Ntuple(object):
             self.tree_main.AddFriend(self.tree_upgradeTfEmu)
         if self.do_caloTowers:
             self.tree_main.AddFriend(self.tree_caloTowers)
+        if self.do_caloTowersEmu:
+            self.tree_main.AddFriend(self.tree_caloTowersEmu)
         if self.do_reco:
             self.tree_main.AddFriend(self.tree_reco)
         if self.do_muonreco:
@@ -312,6 +320,7 @@ class L1Ntuple(object):
         upgradeTf = self.curr_file.Get("l1UpgradeTfMuonTree/L1UpgradeTfMuonTree")
         upgradeTfEmu = self.curr_file.Get("l1UpgradeTfMuonEmuTree/L1UpgradeTfMuonTree")
         caloTowers = self.curr_file.Get("l1CaloTowerTree/L1CaloTowerTree")
+        caloTowersEmu = self.curr_file.Get("l1CaloTowerEmuTree/L1CaloTowerTree")
         muon = self.curr_file.Get("l1MuonRecoTree/Muon2RecoTree")
         jets = self.curr_file.Get("l1RecoTree/RecoTree")
         extra = self.curr_file.Get("l1ExtraTreeProducer/L1ExtraTree")
@@ -359,6 +368,13 @@ class L1Ntuple(object):
         else:
             L1Ana.log.warning(
                 "Could not find L1CaloTowerTree... It will be skipped.")
+
+        if caloTowersEmu:
+            L1Ana.log.info("Found L1CaloTowerEmuTree... Will add access to it.")
+            self.do_caloTowersEmu = True
+        else:
+            L1Ana.log.warning(
+                "Could not find L1CaloTowerEmuTree... It will be skipped.")
 
         if muon:
             L1Ana.log.info("Found MuonRecoTree... Will add access to it.")
@@ -507,6 +523,11 @@ class L1Ntuple(object):
             L1Ana.log.info("Setting branch addresses for L1CaloTowerTree")
             self.data.caloTowers = root.L1Analysis.L1AnalysisL1CaloTowerDataFormat()
             self.tree_caloTowers.SetBranchAddress("L1CaloTower", root.AddressOf(self.data.caloTowers))
+
+        if self.do_caloTowersEmu:
+            L1Ana.log.info("Setting branch addresses for L1CaloTowerEmuTree")
+            self.data.caloTowersEmu = root.L1Analysis.L1AnalysisL1CaloTowerDataFormat()
+            self.tree_caloTowersEmu.SetBranchAddress("L1CaloTower", root.AddressOf(self.data.caloTowersEmu))
 
         if self.do_reco:
             L1Ana.log.info("Setting branch addresses for RecoTree.")
