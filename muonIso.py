@@ -101,8 +101,8 @@ def analyse(evt, hm, hm2d):
 
         # get towers relative to muon position and energy sums around
         relTwrs, iEtSums = CaloTowerIsolator.calc_calo_tower_sums(l1CaloTwrColl, muInCaloTowerIEta, muInCaloTowerIPhi, [(1, 1), (5, 5)])
-        inner_cone_iet = iEtSums[1]
-        total_cone_iet = iEtSums[2]
+        inner_cone_iet = iEtSums[0]
+        total_cone_iet = iEtSums[1]
 
         for relTwr in relTwrs:
             hm2d.fill(histoprefix2d+'.iet_ietarel_iet_iphirel', relTwr[0], relTwr[1], relTwr[2])
