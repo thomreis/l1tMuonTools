@@ -26,6 +26,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--use-inv-mass-cut", dest="invmasscut", default=False, action="store_true", help="Use an invariant mass range for the tag and probe pair.")
     sub_parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
+    sub_parser.add_argument("--pa", dest="pa_run", default=False, action="store_true", help="Setup for pA run.")
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
 
@@ -196,7 +197,7 @@ def fill_matched_muons(evt, hm, matched_muons, muon_type='', eta_strs = ['', '']
         hm.fill(muon_str+qual_min_str+ptmin_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.phi', recoColl.phi[matched_muon[1]])
         hm.fill(muon_str+qual_min_str+ptmin_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.dr', matched_muon[2])
 
-def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match_deltas, emul=False):
+def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match_deltas, emul=False, pp_run=True):
     recoColl = evt.recoMuon
 
     # at least 2 reco muons for tag and probe
@@ -204,7 +205,10 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
         return
 
     # get tag muon indices
-    tag_idcs = MuonSelections.select_tag_muons(recoColl, pt_min=27., abs_eta_max=2.4)
+    if pp_run:
+        tag_idcs = MuonSelections.select_tag_muons(recoColl, pt_min=27., abs_eta_max=2.4, pp_run=pp_run)
+    else:
+        tag_idcs = MuonSelections.select_tag_muons(recoColl, pt_min=18., abs_eta_max=2.4, pp_run=pp_run)
     if len(tag_idcs) < 1:
         return
 
@@ -649,6 +653,7 @@ def main():
         tftype = 2
 
     emul = opts.emul
+    pp_run = not opts.pa_run
 
     # combinations of probe_pt_min and the corresponding pt_min values for a quality
     # the first line defines which thresholds are going to be used for unmatched histograms
@@ -740,9 +745,9 @@ def main():
 
             # now do the analysis for all pt cut combinations
             if perRunHistos:
-                analyse(event, hm, hm2d, hm_runs[runnr], hm2d_runs[runnr], eta_ranges, qual_ptmins_dict, match_deltas, emul=emul)
+                analyse(event, hm, hm2d, hm_runs[runnr], hm2d_runs[runnr], eta_ranges, qual_ptmins_dict, match_deltas, emul=emul, pp_run=pp_run)
             else:
-                analyse(event, hm, hm2d, None, None, eta_ranges, qual_ptmins_dict, match_deltas, emul=emul)
+                analyse(event, hm, hm2d, None, None, eta_ranges, qual_ptmins_dict, match_deltas, emul=emul, pp_run=pp_run)
             analysed_evt_ctr += 1
     except KeyboardInterrupt:
         L1Ana.log.info("Analysis interrupted after {n} events".format(n=i))

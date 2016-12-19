@@ -204,7 +204,7 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_tag_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
+    def select_tag_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None, pp_run=True):
         indices = []
         reco_indices = MuonSelections.select_reco_muons(reco, pt_min, pt_max, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, idcs)
         for i in reco_indices:
@@ -212,10 +212,16 @@ class MuonSelections(object):
                 continue
             if reco.iso[i] >= 0.15:
                 continue
-            if reco.hlt_isomu[i] != 1:
-                continue
-            if reco.hlt_isoDeltaR[i] >= 0.3:
-                continue
+            if pp_run:
+                if reco.hlt_isomu[i] != 1:
+                    continue
+                if reco.hlt_isoDeltaR[i] >= 0.3:
+                    continue
+            else:
+                if reco.hlt_mu[i] != 1:
+                    continue
+                if reco.hlt_deltaR[i] >= 0.3:
+                    continue
             indices.append(i)
         return indices
 
