@@ -136,6 +136,7 @@ class L1Ntuple(object):
         self.do_upgradeTf = False
         self.do_upgradeTfEmu = False
         self.do_reco = False
+        self.do_gen = False
         self.do_muonreco = False
         self.do_l1extra = False
         self.do_l1emuextra = False
@@ -147,6 +148,7 @@ class L1Ntuple(object):
         self.tree_upgradeEmu = None
         self.tree_upgradeTf = None
         self.tree_upgradeTfEmu = None
+        self.tree_gen = None
         self.tree_muon = None
         self.tree_muonupgrade = None
         self.tree_reco = None
@@ -202,6 +204,7 @@ class L1Ntuple(object):
         self.tree_upgradeTf = root.TChain("l1UpgradeTfMuonTree/L1UpgradeTfMuonTree")
         self.tree_upgradeTfEmu = root.TChain("l1UpgradeTfMuonEmuTree/L1UpgradeTfMuonTree")
         self.tree_muon = root.TChain("l1MuonRecoTree/Muon2RecoTree")
+        self.tree_gen = root.TChain("l1GeneratorTree/L1GenTree")
         self.tree_reco = root.TChain("l1RecoTree/RecoTree")
         self.tree_extra = root.TChain("l1ExtraTreeProducer/L1ExtraTree")
         self.tree_emu_extra = root.TChain("l1EmulatorExtraTree/L1ExtraTree")
@@ -218,6 +221,8 @@ class L1Ntuple(object):
                 self.tree_upgradeTf.Add(fname)
             if self.do_upgradeTfEmu:
                 self.tree_upgradeTfEmu.Add(fname)
+            if self.do_gen:
+                self.tree_gen.Add(fname)
             if self.do_reco:
                 self.tree_reco.Add(fname)
             if self.do_muonreco:
@@ -239,6 +244,8 @@ class L1Ntuple(object):
             self.tree_main.AddFriend(self.tree_upgradeTf)
         if self.do_upgradeTfEmu:
             self.tree_main.AddFriend(self.tree_upgradeTfEmu)
+        if self.do_gen:
+            self.tree_main.AddFriend(self.tree_gen)
         if self.do_reco:
             self.tree_main.AddFriend(self.tree_reco)
         if self.do_muonreco:
@@ -304,6 +311,7 @@ class L1Ntuple(object):
         upgradeTf = self.curr_file.Get("l1UpgradeTfMuonTree/L1UpgradeTfMuonTree")
         upgradeTfEmu = self.curr_file.Get("l1UpgradeTfMuonEmuTree/L1UpgradeTfMuonTree")
         muon = self.curr_file.Get("l1MuonRecoTree/Muon2RecoTree")
+        gen = self.curr_file.Get("l1GeneratorTree/L1GenTree")
         jets = self.curr_file.Get("l1RecoTree/RecoTree")
         extra = self.curr_file.Get("l1ExtraTreeProducer/L1ExtraTree")
         emuextra = self.curr_file.Get("l1EmulatorExtraTree/L1ExtraTree")
@@ -350,6 +358,13 @@ class L1Ntuple(object):
         else:
             L1Ana.log.warning(
                 "Could not find MuonRecoTree... It will be skipped.")
+
+        if gen:
+            L1Ana.log.info("Found L1GenTree... Will add access to it.")
+            self.do_gen = True
+        else:
+            L1Ana.log.warning(
+                "Could not find L1GenTree... It will be skipped.")
 
         if jets:
             L1Ana.log.info("Found RecoTree... Will add access to it.")
@@ -452,10 +467,10 @@ class L1Ntuple(object):
         else:
             L1Ana.log.warning("Simulation branch not present...")
 
-        if self.tree_main.GetBranch("Generator"):
+        #if self.tree_main.GetBranch("Generator"):
+        if self.do_gen:
             self.data.gen = root.L1Analysis.L1AnalysisGeneratorDataFormat()
-            self.tree_main.SetBranchAddress(
-                "Generator", root.AddressOf(self.data.gen))
+            self.tree_gen.SetBranchAddress("Generator", root.AddressOf(self.data.gen))
         else:
             L1Ana.log.warning("Generator branch not present...")
 
