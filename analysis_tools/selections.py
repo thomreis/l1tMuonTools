@@ -249,22 +249,22 @@ class MuonSelections(object):
     @staticmethod
     def select_gen_muons(gen, pt_min=0.5, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
         if idcs is None:
-            idcs = range(gen.pt.size())
+            idcs = range(gen.nPart)
         indices = []
         for i in idcs:
-            if abs(gen.id[i]) != 13:  # Select muons only!
+            if abs(gen.partId[i]) != 13:  # Select muons only!
                 continue
-            if gen.pt[i] < pt_min:
+            if gen.partPt[i] < pt_min:
                 continue
-            if math.fabs(gen.eta[i]) < abs_eta_min or math.fabs(gen.eta[i]) > abs_eta_max:
+            if math.fabs(gen.partEta[i]) < abs_eta_min or math.fabs(gen.partEta[i]) > abs_eta_max:
                 continue
-            if not pos_eta and gen.eta[i] >= 0:
+            if not pos_eta and gen.partEta[i] >= 0:
                 continue
-            if not neg_eta and gen.eta[i] < 0:
+            if not neg_eta and gen.partEta[i] < 0:
                 continue
-            if not pos_charge and gen.charge[i] > 0:
+            if not pos_charge and gen.partCh[i] > 0:
                 continue
-            if not neg_charge and gen.charge[i] < 0:
+            if not neg_charge and gen.partCh[i] < 0:
                 continue
             indices.append(i)
         return indices
