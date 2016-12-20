@@ -357,11 +357,8 @@ class HistManager2d(object):
                 self.hists[hName].SetDirectory(0)
             input.Close()
 
-    def fill(self, varname, valx, valy, valz=1.):
-        if varname in self.profiles and self.profiles[varname] == True:
-            self.hists[varname].Fill(valx, valy, valz)
-        else:
-            self.hists[varname].Fill(valx, valy)
+    def fill(self, varname, valx, valy, weight=1.):
+            self.hists[varname].Fill(valx, valy, weight) # In case of TProfile2d weight is the z value
 
     def get(self, varname):
         return self.hists[varname]
