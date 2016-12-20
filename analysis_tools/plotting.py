@@ -5,10 +5,11 @@ from math import sqrt
 
 class HistManager(object):
     """Class that manages and holds histograms"""
-    def __init__(self, varnames=[], binning_dict={}, ytitle="# Muons", prefix="", filename=None, subdir=None):
+    def __init__(self, varnames=[], binning_dict={}, profile_dict={}, ytitle="# Muons", prefix="", filename=None, subdir=None):
         super(HistManager, self).__init__()
         self.varnames = varnames
         self.binnings = binning_dict
+        self.profiles = profile_dict
         self.prefix = prefix
         root.TGaxis().SetMaxDigits(3)
 
@@ -24,13 +25,22 @@ class HistManager(object):
                 have_unit = type(self.binnings[vname][-2]) is str
                 # variable binning when nBins == -1
                 if self.binnings[vname][0] < 0:
-                    if have_unit:
-                        self.hists[vname] = root.TH1D(prefix+vname, "", len(self.binnings[vname])-4, array('d', self.binnings[vname][1:-2]))
+                    if vname in self.profiles and self.profiles[vname] == True:
+                        if have_unit:
+                            self.hists[vname] = root.TProfile(prefix+vname, "", len(self.binnings[vname])-4, array('d', self.binnings[vname][1:-2]))
+                        else:
+                            self.hists[vname] = root.TProfile(prefix+vname, "", len(self.binnings[vname])-3, array('d', self.binnings[vname][1:-1]))
                     else:
-                        self.hists[vname] = root.TH1D(prefix+vname, "", len(self.binnings[vname])-3, array('d', self.binnings[vname][1:-1]))
+                        if have_unit:
+                            self.hists[vname] = root.TH1D(prefix+vname, "", len(self.binnings[vname])-4, array('d', self.binnings[vname][1:-2]))
+                        else:
+                            self.hists[vname] = root.TH1D(prefix+vname, "", len(self.binnings[vname])-3, array('d', self.binnings[vname][1:-1]))
                 # fixed binning
                 else:
-                    self.hists[vname] = root.TH1D(prefix+vname, "", self.binnings[vname][0], self.binnings[vname][1], self.binnings[vname][2])
+                    if vname in self.profiles and self.profiles[vname] == True:
+                        self.hists[vname] = root.TProfile(prefix+vname, "", self.binnings[vname][0], self.binnings[vname][1], self.binnings[vname][2])
+                    else:
+                        self.hists[vname] = root.TH1D(prefix+vname, "", self.binnings[vname][0], self.binnings[vname][1], self.binnings[vname][2])
                 self.hists[vname].Sumw2()
                 if not have_unit:
                     xtitle = self.binnings[vname][-1]
@@ -58,10 +68,10 @@ class HistManager(object):
                 self.hists[hName].SetDirectory(0)
             input.Close()
 
-    def fill(self, varname, val):
-        self.hists[varname].Fill(val)
+    def fill(self, varname, val, weight=1.):
+        self.hists[varname].Fill(val, weight) # In case of TProfile weight is the y value)
 
-    def get(self, varname, addunderflow=False, addoverflow=False):
+    def get(self, varname, addunderflow=False, addoverflow=False, rebin=1):
         h = self.hists[varname]
         if addunderflow:
             err = root.Double(0)
@@ -73,6 +83,9 @@ class HistManager(object):
             integral = h.IntegralAndError(h.GetNbinsX(), h.GetNbinsX()+1, err)
             h.SetBinContent(h.GetNbinsX(), integral)
             h.SetBinError(h.GetNbinsX(), err)
+        if rebin > 1:
+            h.Rebin(rebin)
+
         return h
 
     def get_varnames(self):
@@ -94,12 +107,20 @@ class HistManager(object):
     def get_binning(self, varname):
         return self.binnings[varname]
 
-    def get_threshold_hist(self, varname):
+    def get_profile(self, varname):
+        if varname in self.profiles:
+            return self.profiles[varname]
+        else:
+            return False
+
+    def get_threshold_hist(self, varname, rebin=1):
         if varname in self._thresholdcache.keys():
             return self._thresholdcache[varname]
 
         h_thr = self.hists[varname].Clone()
         h = self.hists[varname]
+        if rebin > 1:
+            h.Rebin(rebin)
         bins = range(h_thr.GetNbinsX()+2)
         bins.reverse()
         bmax = h_thr.GetNbinsX()
@@ -128,7 +149,7 @@ class HistManager(object):
         self._stackcache[keyname] = [hs, stack]
         return [hs, stack]
 
-    def get_ratio(self, varname_nom, varname_denom, addunderflow=False, addoverflow=False):
+    def get_ratio(self, varname_nom, varname_denom, addunderflow=False, addoverflow=False, rebin=1):
         name = "{nom}_o_{denom}".format(nom=varname_nom, denom=varname_denom)
         if name in self._ratiocache.keys():
             return self._ratiocache[name]
@@ -151,6 +172,9 @@ class HistManager(object):
             integral = h_ratio.IntegralAndError(h_ratio.GetNbinsX(), h_ratio.GetNbinsX()+1, err)
             h_ratio.SetBinContent(h_ratio.GetNbinsX(), integral)
             h_ratio.SetBinError(h_ratio.GetNbinsX(), err)
+        if rebin > 1:
+            h_denom.Rebin(rebin)
+            h_ratio.Rebin(rebin)
         h_ratio.Divide(h_ratio, h_denom, 1, 1, "b")
 
         if not addunderflow and not addoverflow:
