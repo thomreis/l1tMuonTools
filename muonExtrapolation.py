@@ -152,10 +152,12 @@ def main():
 
     # calculate eta ranges
     # The LUT uses a reduced eta coordinate with the two LSBs removed and the MSB masked.
-    # This means 6 bits are used resulting in 64 eta ranges
-    redEtaScale = 0.0435
-    for redHwEta in range(64):
-        eta_ranges.append([redHwEta*redEtaScale, (redHwEta+1)*redEtaScale])
+    eta_scale = 0.010875
+    eta_bits = 8
+    red_eta_bits = 6
+    red_eta_scale = 2**(eta_bits - red_eta_bits) * eta_scale
+    for red_hw_eta in range(2**red_eta_bits):
+        eta_ranges.append((red_hw_eta*red_eta_scale, (red_hw_eta+1)*red_eta_scale))
 
     # book the histograms
     L1Ana.log.info("Booking combined run histograms.")

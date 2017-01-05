@@ -87,6 +87,8 @@ def fit_extrapolation_hists(hm, coordinate, eta_ranges, fit_range):
 
 def main():
     opts = parse_options_plotRates(parser)
+    coord = opts.coordinate
+
     root.gROOT.SetBatch(True)
 
     hm = HistManager(filename=opts.fname, subdir='all_runs')
@@ -94,24 +96,32 @@ def main():
     L1Ana.init_l1_analysis()
     print ""
 
+    pt_bits = 6
     pt_scale = 0.5
-    redEtaScale = 0.0435
-    lut_scale = 0.087
-
-    coord = opts.coordinate
+    lut_pt_values = 2**pt_bits
+    eta_scale = 0.010875
+    eta_bits = 8
+    red_eta_bits = 6
+    red_eta_scale = 2**(eta_bits - red_eta_bits) * eta_scale
+    phi_scale = 0.010908
+    lut_out_bits = 3
+    lut_scale_factor = 8
+    if coord == 'eta':
+        lut_scale = eta_scale * lut_scale_factor
+    else:
+        lut_scale = phi_scale * lut_scale_factor
 
     # calculate eta ranges
     # The LUT uses a reduced eta coordinate with the two LSBs removed and the MSB masked.
-    # This means 6 bits are used resulting in 64 eta ranges
     eta_ranges = []
-    for redHwEta in range(64):
-        eta_ranges.append((redHwEta*redEtaScale, (redHwEta+1)*redEtaScale))
+    for red_hw_eta in range(2**red_eta_bits):
+        eta_ranges.append((red_hw_eta*red_eta_scale, (red_hw_eta+1)*red_eta_scale))
 
-    functions = fit_extrapolation_hists(hm, coord, eta_ranges, (2., 50.))
+    functions = fit_extrapolation_hists(hm, coord, eta_ranges, (2., lut_pt_values*pt_scale))
 
     lut_header = '# '+coord+' extrapolation LUT\n'
     lut_header += '# anything after # is ignored with the exception of the header\n'
-    lut_header += '#<header> V1 12 3 </header>\n'
+    lut_header += '#<header> V1 {i} {o} </header>\n'.format(i=pt_bits+red_eta_bits, o=lut_out_bits)
     lut_payload = ''
     lut_str = ''
     lut_entry = 0
@@ -121,11 +131,11 @@ def main():
         # take special care of 0 hwPt value as it gives infinity with the fit function
         lut_payload += '{i} 0\n'.format(i=lut_entry)
         lut_entry += 1
-        for hwPt in range(1, 64):
-            func_val = functions[i].Eval(hwPt*0.5)
+        for hwPt in range(1, lut_pt_values):
+            func_val = functions[i].Eval(hwPt * pt_scale)
             lut_val = int(math.floor(func_val / lut_scale))
-            if lut_val > 7:
-                lut_val = 7
+            if lut_val > 2**lut_out_bits - 1:
+                lut_val = 2**lut_out_bits - 1
             elif lut_val < 0:
                 lut_val = 0
             lut_payload += '{i} {val}\n'.format(i=lut_entry, val=lut_val)
