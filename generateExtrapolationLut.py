@@ -17,6 +17,7 @@ def parse_options_plotRates(parser):
     """
     parsers = parser.add_subparsers()
     sub_parser = parsers.add_parser("generateExtrapolationLut")
+    sub_parser.add_argument("-i", "--interactive", dest="interactive", action='store_false', help="Draw plots on screen.")
     sub_parser.add_argument("--coordinate", dest="coordinate", type=str, default='phi', help="Coordinate (eta or phi) to generate the LUT for.")
     sub_parser.add_argument("--pt-bits", dest="ptbits", type=int, default=6, help="Number of pT input bits.")
     sub_parser.add_argument("--eta-bits", dest="etabits", type=int, default=6, help="Number of eta input bits.")
@@ -46,6 +47,7 @@ def set_root_style():
 
 def fit_extrapolation_hists(hm, coordinate, eta_ranges, fit_range):
     functions = []
+    hists = []
     for eta_range in eta_ranges:
         eta_min = eta_range[0]
         eta_max = eta_range[1]
@@ -86,18 +88,50 @@ def fit_extrapolation_hists(hm, coordinate, eta_ranges, fit_range):
             function.SetParameters(prev_function.GetParameter(0), prev_function.GetParameter(1), prev_function.GetParameter(2))
 
         functions.append(function)
+        hists.append(h)
 
-    return functions
+    return functions, hists
+
+def plot_fit(function, hist):
+    # create canvas and draw on it
+    c = root.TCanvas('c_'+hist.GetName(), hist.GetTitle(), 100, 100, 600, 600)
+    c.cd()
+    set_root_style()
+    root.gPad.SetRightMargin(0.14)
+
+    hist.GetXaxis().SetTitleFont(font)
+    hist.GetXaxis().SetLabelFont(font)
+    hist.GetXaxis().SetLabelSize(fontSize)
+    hist.GetXaxis().SetNoExponent()
+    hist.GetYaxis().SetTitleOffset(1.5)
+    hist.GetYaxis().SetTitleFont(font)
+    hist.GetYaxis().SetLabelFont(font)
+    hist.GetYaxis().SetLabelSize(fontSize)
+    hist.Draw()
+    function.Draw('same')
+
+    c.Modified()
+    c.Update()
+
+    return c
+
+def plot_fits(functions, hists):
+    canvases = []
+    for f, h in zip(functions, hists):
+        canvases.append(plot_fit(f, h))
+    return canvases
 
 def main():
     opts = parse_options_plotRates(parser)
+    batchRun = opts.interactive
     coord = opts.coordinate
     pt_bits = opts.ptbits
     red_eta_bits = opts.etabits
     lut_out_bits = opts.outbits
     lut_scale_factor = 2**opts.outshift
 
-    root.gROOT.SetBatch(True)
+    if batchRun:
+        root.gROOT.SetBatch(True)
 
     hm = HistManager(filename=opts.fname, subdir='all_runs')
 
@@ -121,7 +155,7 @@ def main():
     for red_hw_eta in range(2**red_eta_bits):
         eta_ranges.append((red_hw_eta*red_eta_scale, (red_hw_eta+1)*red_eta_scale))
 
-    functions = fit_extrapolation_hists(hm, coord, eta_ranges, (2., lut_pt_values*pt_scale))
+    functions, hists = fit_extrapolation_hists(hm, coord, eta_ranges, (2., lut_pt_values*pt_scale))
 
     lut_header = '# '+coord+' extrapolation LUT\n'
     lut_header += '# anything after # is ignored with the exception of the header\n'
@@ -149,12 +183,21 @@ def main():
 
     print lut_str
 
+    objects = plot_fits(functions, hists)
+
     out_file_name = 'lut.txt'
     with open(out_file_name, 'w') as out_file:
         out_file.write(lut_header + lut_payload)
 
+    # wait
+    if not batchRun:
+        raw_input("Press ENTER to quit.")
+
 
 if __name__ == "__main__":
     savePlots = True
+    batchRun = True
+    font = 42
+    fontSize = 0.04
     main()
 
