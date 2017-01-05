@@ -18,6 +18,10 @@ def parse_options_plotRates(parser):
     parsers = parser.add_subparsers()
     sub_parser = parsers.add_parser("generateExtrapolationLut")
     sub_parser.add_argument("--coordinate", dest="coordinate", type=str, default='phi', help="Coordinate (eta or phi) to generate the LUT for.")
+    sub_parser.add_argument("--pt-bits", dest="ptbits", type=int, default=6, help="Number of pT input bits.")
+    sub_parser.add_argument("--eta-bits", dest="etabits", type=int, default=6, help="Number of eta input bits.")
+    sub_parser.add_argument("--out-bits", dest="outbits", type=int, default=3, help="Number of output bits.")
+    sub_parser.add_argument("--out-shift", dest="outshift", type=int, default=3, help="Number of left shifts of output bits.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -88,6 +92,10 @@ def fit_extrapolation_hists(hm, coordinate, eta_ranges, fit_range):
 def main():
     opts = parse_options_plotRates(parser)
     coord = opts.coordinate
+    pt_bits = opts.ptbits
+    red_eta_bits = opts.etabits
+    lut_out_bits = opts.outbits
+    lut_scale_factor = 2**opts.outshift
 
     root.gROOT.SetBatch(True)
 
@@ -96,16 +104,12 @@ def main():
     L1Ana.init_l1_analysis()
     print ""
 
-    pt_bits = 6
     pt_scale = 0.5
-    lut_pt_values = 2**pt_bits
     eta_scale = 0.010875
-    eta_bits = 8
-    red_eta_bits = 6
-    red_eta_scale = 2**(eta_bits - red_eta_bits) * eta_scale
     phi_scale = 0.010908
-    lut_out_bits = 3
-    lut_scale_factor = 8
+    lut_pt_values = 2**pt_bits
+    eta_bits = 8
+    red_eta_scale = 2**(eta_bits - red_eta_bits) * eta_scale
     if coord == 'eta':
         lut_scale = eta_scale * lut_scale_factor
     else:
@@ -139,7 +143,7 @@ def main():
             elif lut_val < 0:
                 lut_val = 0
             lut_payload += '{i} {val}\n'.format(i=lut_entry, val=lut_val)
-            lut_str += '{val} '.format(val=lut_val)
+            lut_str += '{val:2d} '.format(val=lut_val)
             lut_entry += 1
         lut_str += '\n'
 
