@@ -3,11 +3,10 @@ from ToolBox import parse_options_and_init_log
 # have to do this first or ROOT masks the -h messages
 opts, parser = parse_options_and_init_log()
 
-from L1Analysis import L1Ana, L1Ntuple
+from L1Analysis import L1Ana
 from analysis_tools.plotting import HistManager, HistManager2d
-from analysis_tools.selections import MuonSelections, Matcher
+from analysis_tools.plottools import *
 import ROOT as root
-import re
 import os
 import math
 
@@ -26,24 +25,6 @@ def parse_options_plotRates(parser):
 
     opts, unknown = parser.parse_known_args()
     return opts
-
-def set_root_style():
-    root.gStyle.SetTitleFont(font)
-    root.gStyle.SetStatFont(font)
-    root.gStyle.SetTextFont(font)
-    root.gStyle.SetLabelFont(font)
-    root.gStyle.SetLegendFont(font)
-    root.gStyle.SetMarkerStyle(20)
-    root.gStyle.SetOptStat(0)
-    root.gStyle.SetOptFit(0)
-    root.gStyle.SetOptTitle(0)
-    root.gPad.SetTopMargin(0.08)
-    root.gPad.SetLeftMargin(0.14)
-    root.gPad.SetRightMargin(0.06)
-    root.gPad.SetTickx(1)
-    root.gPad.SetTicky(1)
-    root.gPad.SetGridx(1)
-    root.gPad.SetGridy(1)
 
 def fit_extrapolation_hists(hm, coordinate, eta_ranges, fit_range):
     functions = []
@@ -107,19 +88,30 @@ def plot_fit(function, hist):
     hist.GetYaxis().SetTitleFont(font)
     hist.GetYaxis().SetLabelFont(font)
     hist.GetYaxis().SetLabelSize(fontSize)
+    hist.GetYaxis().SetTitle('<|#phi^{L1} - #phi^{GEN}|>')
+    hist.SetLineColor(root.kRed)
+    #hist.SetLineWidth(2)
+    hist.SetMarkerStyle(root.kFullCircle)
+    hist.SetMarkerColor(root.kRed)
+    hist.SetMarkerSize(0.75)
     hist.Draw()
+    #function.SetLineColor(root.kRed)
+    #function.SetLineWidth(1)
     function.Draw('same')
+
+    notes = extract_notes_from_name(hist.GetName(), 0.5, 0.7, etaTxt=True, qualTxt=False, ptTxt=False)
+    tex = add_text(notes)
 
     c.Modified()
     c.Update()
 
-    return c
+    return c, tex
 
 def plot_fits(functions, hists):
-    canvases = []
+    objects = []
     for f, h in zip(functions, hists):
-        canvases.append(plot_fit(f, h))
-    return canvases
+        objects.append(plot_fit(f, h))
+    return objects
 
 def main():
     opts = parse_options_plotRates(parser)
@@ -155,7 +147,7 @@ def main():
     for red_hw_eta in range(2**red_eta_bits):
         eta_ranges.append((red_hw_eta*red_eta_scale, (red_hw_eta+1)*red_eta_scale))
 
-    functions, hists = fit_extrapolation_hists(hm, coord, eta_ranges, (2., lut_pt_values*pt_scale))
+    functions, hists = fit_extrapolation_hists(hm, coord, eta_ranges, (4., lut_pt_values*pt_scale))
 
     lut_header = '# '+coord+' extrapolation LUT\n'
     lut_header += '# anything after # is ignored with the exception of the header\n'
