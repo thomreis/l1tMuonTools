@@ -45,7 +45,7 @@ def fit_extrapolation_hists(hm, coordinate, eta_ranges, fit_range):
 
         # increase lower bound for fit if the previous fit failed
         if fit_res and not fit_res.IsValid():
-            for red in range(1, 6):
+            for red in range(1, 4):
                 function.SetParameters(1., 1., 0.)
                 #function.FixParameter(1, 1.)
                 fit_res_ptr = h.Fit(function, 'RS', '', fit_range[0] + red, fit_range[1])
@@ -169,7 +169,7 @@ def main():
             elif lut_val < 0:
                 lut_val = 0
             lut_payload += '{i} {val}\n'.format(i=lut_entry, val=lut_val)
-            lut_str += '{val:2d} '.format(val=lut_val)
+            lut_str += '{val:2d}'.format(val=lut_val)
             lut_entry += 1
         lut_str += '\n'
 
