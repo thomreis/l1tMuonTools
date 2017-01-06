@@ -129,6 +129,7 @@ class MuonSelections(object):
             idcs = range(ugmt.nMuons)
         for i in idcs:
             iso = CaloTowerIsolator.calc_out_over_tot_iso(ugmt, caloTowers, i)
+            #print '{imin} {i} {imax}'.format(imin=iso_min, i=iso, imax=iso_max)
             if iso >= iso_min and iso <= iso_max:
                 indices.append(i)
         return indices

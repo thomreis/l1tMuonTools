@@ -77,13 +77,13 @@ class CaloTowerIsolator(object):
 
     @staticmethod
     def calc_out_over_tot_iso(ugmt, caloTowers, muIdx):
-        muInCaloTowerIEta = CaloTowerIsolator.calc_muon_calo_tower_ieta(ugmt.ieta[i])
-        muInCaloTowerIPhi = CaloTowerIsolator.calc_muon_calo_tower_iphi(ugmt.iphi[i])
-        iEtSums = calc_calo_tower_sums(caloTowers, muInCaloTowerIEta, muInCaloTowerIPhi, [(1, 1), (5, 5)])
+        muInCaloTowerIEta = CaloTowerIsolator.calc_muon_calo_tower_ieta(ugmt.muonIEta[muIdx])
+        muInCaloTowerIPhi = CaloTowerIsolator.calc_muon_calo_tower_iphi(ugmt.muonIPhi[muIdx])
+        relTwrs, iEtSums = CaloTowerIsolator.calc_calo_tower_sums(caloTowers, muInCaloTowerIEta, muInCaloTowerIPhi, [(1, 1), (5, 5)])
         outerIEt = iEtSums[1] - iEtSums[0]
         outOverTot = 0.
         if iEtSums[1] > 0.:
-            outOverTot = outerIEt / iEtSums[1]
+            outOverTot = outerIEt / float(iEtSums[1])
 
         return outOverTot
  
