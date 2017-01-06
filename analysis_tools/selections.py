@@ -193,7 +193,7 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_reco_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
+    def select_reco_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, extrapolated=0, idcs=None):
         if idcs is None:
             idcs = range(reco.nMuons)
         indices = []
@@ -202,11 +202,20 @@ class MuonSelections(object):
                 continue
             if reco.pt[i] > pt_max:
                 continue
-            if math.fabs(reco.eta[i]) < abs_eta_min or math.fabs(reco.eta[i]) > abs_eta_max:
+            # select eta at vertex or extrapolaed eta at 1st or 2nd muon station
+            eta = reco.eta[i]
+            phi = reco.phi[i]
+            if extrapolated == 1:
+                eta = reco.etaSt1[i]
+                phi = reco.phiSt1[i]
+            elif extrapolated == 2:
+                eta = reco.etaSt1[i]
+                phi = reco.phiSt1[i]
+            if math.fabs(eta) < abs_eta_min or math.fabs(eta) > abs_eta_max:
                 continue
-            if not pos_eta and reco.eta[i] >= 0:
+            if not pos_eta and eta >= 0:
                 continue
-            if not neg_eta and reco.eta[i] < 0:
+            if not neg_eta and eta < 0:
                 continue
             if not pos_charge and reco.charge[i] > 0:
                 continue
@@ -216,25 +225,31 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_tag_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
+    def select_tag_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, pp_run=True, extrapolated=0, idcs=None):
         indices = []
-        reco_indices = MuonSelections.select_reco_muons(reco, pt_min, pt_max, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, idcs)
+        reco_indices = MuonSelections.select_reco_muons(reco, pt_min, pt_max, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, extrapolated, idcs)
         for i in reco_indices:
             if not reco.isTightMuon[i]:
                 continue
             if reco.iso[i] >= 0.15:
                 continue
-            if reco.hlt_isomu[i] != 1:
-                continue
-            if reco.hlt_isoDeltaR[i] >= 0.3:
-                continue
+            if pp_run:
+                if reco.hlt_isomu[i] != 1:
+                    continue
+                if reco.hlt_isoDeltaR[i] >= 0.3:
+                    continue
+            else:
+                if reco.hlt_mu[i] != 1:
+                    continue
+                if reco.hlt_deltaR[i] >= 0.3:
+                    continue
             indices.append(i)
         return indices
 
     @staticmethod
-    def select_probe_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
+    def select_probe_muons(reco, pt_min=0.5, pt_max=1.e99, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, extrapolated=0, idcs=None):
         indices = []
-        reco_indices = MuonSelections.select_reco_muons(reco, pt_min, pt_max, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, idcs)
+        reco_indices = MuonSelections.select_reco_muons(reco, pt_min, pt_max, abs_eta_min, abs_eta_max, pos_eta, neg_eta, pos_charge, neg_charge, extrapolated, idcs)
         for i in reco_indices:
             if not reco.isTightMuon[i]:
                 continue
@@ -246,22 +261,22 @@ class MuonSelections(object):
     @staticmethod
     def select_gen_muons(gen, pt_min=0.5, abs_eta_min=0, abs_eta_max=4, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
         if idcs is None:
-            idcs = range(gen.pt.size())
+            idcs = range(gen.nPart)
         indices = []
         for i in idcs:
-            if abs(gen.id[i]) != 13:  # Select muons only!
+            if abs(gen.partId[i]) != 13:  # Select muons only!
                 continue
-            if gen.pt[i] < pt_min:
+            if gen.partPt[i] < pt_min:
                 continue
-            if math.fabs(gen.eta[i]) < abs_eta_min or math.fabs(gen.eta[i]) > abs_eta_max:
+            if math.fabs(gen.partEta[i]) < abs_eta_min or math.fabs(gen.partEta[i]) > abs_eta_max:
                 continue
-            if not pos_eta and gen.eta[i] >= 0:
+            if not pos_eta and gen.partEta[i] >= 0:
                 continue
-            if not neg_eta and gen.eta[i] < 0:
+            if not neg_eta and gen.partEta[i] < 0:
                 continue
-            if not pos_charge and gen.charge[i] > 0:
+            if not pos_charge and gen.partCh[i] > 0:
                 continue
-            if not neg_charge and gen.charge[i] < 0:
+            if not neg_charge and gen.partCh[i] < 0:
                 continue
             indices.append(i)
         return indices

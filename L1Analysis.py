@@ -140,6 +140,7 @@ class L1Ntuple(object):
         self.do_caloTowers = False
         self.do_caloTowersEmu = False
         self.do_reco = False
+        self.do_gen = False
         self.do_muonreco = False
         self.do_l1extra = False
         self.do_l1emuextra = False
@@ -153,6 +154,7 @@ class L1Ntuple(object):
         self.tree_upgradeTfEmu = None
         self.tree_caloTowers = None
         self.tree_caloTowersEmu = None
+        self.tree_gen = None
         self.tree_muon = None
         self.tree_muonupgrade = None
         self.tree_reco = None
@@ -210,6 +212,7 @@ class L1Ntuple(object):
         self.tree_caloTowers = root.TChain("l1CaloTowerTree/L1CaloTowerTree")
         self.tree_caloTowersEmu = root.TChain("l1CaloTowerEmuTree/L1CaloTowerTree")
         self.tree_muon = root.TChain("l1MuonRecoTree/Muon2RecoTree")
+        self.tree_gen = root.TChain("l1GeneratorTree/L1GenTree")
         self.tree_reco = root.TChain("l1RecoTree/RecoTree")
         self.tree_extra = root.TChain("l1ExtraTreeProducer/L1ExtraTree")
         self.tree_emu_extra = root.TChain("l1EmulatorExtraTree/L1ExtraTree")
@@ -230,6 +233,8 @@ class L1Ntuple(object):
                 self.tree_caloTowers.Add(fname)
             if self.do_caloTowersEmu:
                 self.tree_caloTowersEmu.Add(fname)
+            if self.do_gen:
+                self.tree_gen.Add(fname)
             if self.do_reco:
                 self.tree_reco.Add(fname)
             if self.do_muonreco:
@@ -255,6 +260,8 @@ class L1Ntuple(object):
             self.tree_main.AddFriend(self.tree_caloTowers)
         if self.do_caloTowersEmu:
             self.tree_main.AddFriend(self.tree_caloTowersEmu)
+        if self.do_gen:
+            self.tree_main.AddFriend(self.tree_gen)
         if self.do_reco:
             self.tree_main.AddFriend(self.tree_reco)
         if self.do_muonreco:
@@ -322,6 +329,7 @@ class L1Ntuple(object):
         caloTowers = self.curr_file.Get("l1CaloTowerTree/L1CaloTowerTree")
         caloTowersEmu = self.curr_file.Get("l1CaloTowerEmuTree/L1CaloTowerTree")
         muon = self.curr_file.Get("l1MuonRecoTree/Muon2RecoTree")
+        gen = self.curr_file.Get("l1GeneratorTree/L1GenTree")
         jets = self.curr_file.Get("l1RecoTree/RecoTree")
         extra = self.curr_file.Get("l1ExtraTreeProducer/L1ExtraTree")
         emuextra = self.curr_file.Get("l1EmulatorExtraTree/L1ExtraTree")
@@ -382,6 +390,13 @@ class L1Ntuple(object):
         else:
             L1Ana.log.warning(
                 "Could not find MuonRecoTree... It will be skipped.")
+
+        if gen:
+            L1Ana.log.info("Found L1GenTree... Will add access to it.")
+            self.do_gen = True
+        else:
+            L1Ana.log.warning(
+                "Could not find L1GenTree... It will be skipped.")
 
         if jets:
             L1Ana.log.info("Found RecoTree... Will add access to it.")
@@ -484,10 +499,10 @@ class L1Ntuple(object):
         else:
             L1Ana.log.warning("Simulation branch not present...")
 
-        if self.tree_main.GetBranch("Generator"):
+        #if self.tree_main.GetBranch("Generator"):
+        if self.do_gen:
             self.data.gen = root.L1Analysis.L1AnalysisGeneratorDataFormat()
-            self.tree_main.SetBranchAddress(
-                "Generator", root.AddressOf(self.data.gen))
+            self.tree_gen.SetBranchAddress("Generator", root.AddressOf(self.data.gen))
         else:
             L1Ana.log.warning("Generator branch not present...")
 
