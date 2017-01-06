@@ -116,10 +116,12 @@ def plot_2dhist(hm2d, hName, drawDiag=True, data=False):
         notes.append([0.53, 0.93, 'CMS Simulation, 13 TeV', False])
     tex = add_text(notes=notes)
 
+    lines = draw_tf_eta_regions(hName=hName, xMin=h.GetXaxis().GetXmin(), yMin=h.GetYaxis().GetXmin(), xMax=h.GetXaxis().GetXmax(), yMax=h.GetYaxis().GetXmax(), twoD=True, drawDiag=drawDiag)
+
     c.Modified()
     c.Update()
     
-    return [c, h, tex]
+    return [c, h, tex, lines]
 
 
 def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinWidth=False, normalise=False, xMax=None, canvasPrefix='', notes=None, scaleFactor=1., logx=False, logy=False, data=False, rebin=1):
@@ -271,6 +273,7 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
 
     # draw vertical lines to mark TF boundaries
     lines = draw_lut_steps(hName=hDefs[0]['num'], xMin=h.GetXaxis().GetXmin(), yMin=h.GetYaxis().GetXmin(), xMax=h.GetXaxis().GetXmax(), yMax=h.GetYaxis().GetXmax())
+    lines.append(draw_tf_eta_regions(hName=hDefs[0]['num'], xMin=h.GetXaxis().GetXmin(), yMin=h.GetYaxis().GetXmin(), xMax=h.GetXaxis().GetXmax(), yMax=h.GetYaxis().GetXmax()))
 
     legend.Draw('same')
 
@@ -292,6 +295,44 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
     c.Update()
 
     return [c, hs, legend, lines, tex]
+
+# draw vertical lines to mark TF boundaries
+def draw_tf_eta_regions(hName='', xMin=0., yMin=0., xMax=1., yMax=1., twoD=False, drawDiag=False):
+    lines = []
+    if hName[-4:] == '.eta':
+        lines.append(root.TLine(0.83, yMin, 0.83, yMax))
+        lines[-1].SetLineStyle(root.kDashed)
+        lines[-1].Draw('same')
+        lines.append(root.TLine(-0.83, yMin, -0.83, yMax))
+        lines[-1].SetLineStyle(root.kDashed)
+        lines[-1].Draw('same')
+        lines.append(root.TLine(1.24, yMin, 1.24, yMax))
+        lines[-1].SetLineStyle(root.kDashed)
+        lines[-1].Draw('same')
+        lines.append(root.TLine(-1.24, yMin, -1.24, yMax))
+        lines[-1].SetLineStyle(root.kDashed)
+        lines[-1].Draw('same')
+
+        if twoD:
+            lines.append(root.TLine(xMin, 0.83, xMax, 0.83))
+            lines[-1].SetLineStyle(root.kDashed)
+            lines[-1].Draw('same')
+            lines.append(root.TLine(xMin, -0.83, xMax, -0.83))
+            lines[-1].SetLineStyle(root.kDashed)
+            lines[-1].Draw('same')
+            lines.append(root.TLine(xMin, 1.24, xMax, 1.24))
+            lines[-1].SetLineStyle(root.kDashed)
+            lines[-1].Draw('same')
+            lines.append(root.TLine(xMin, -1.24, xMax, -1.24))
+            lines[-1].SetLineStyle(root.kDashed)
+            lines[-1].Draw('same')
+
+    if drawDiag:
+        lines.append(root.TLine(xMin, yMin, xMax, yMax))
+        lines[-1].SetLineStyle(root.kSolid)
+        lines[-1].SetLineColor(root.kMagenta)
+        lines[-1].Draw('same')
+    return lines
 
 # draw steps to indicate LUT resolution for extrapolation
 def draw_lut_steps(hName='', xMin=0., yMin=0., xMax=1., yMax=1.):
@@ -321,6 +362,19 @@ def define_styles():
     styles['etarange_4'] = {'lc':root.kGreen+2, 'ls':root.kSolid, 'fc':root.kGreen+2, 'mc':root.kGreen+2, 'ms':root.kFullCircle, 'legtext':'er4'}
     styles['etarange_5'] = {'lc':root.kGreen+3, 'ls':root.kSolid, 'fc':root.kGreen+3, 'mc':root.kGreen+3, 'ms':root.kFullTriangleDown, 'legtext':'er5'}
     styles['etarange_6'] = {'lc':root.kGreen+4, 'ls':root.kSolid, 'fc':root.kGreen+4, 'mc':root.kGreen+4, 'ms':root.kFullTriangleUp, 'legtext':'er6'}
+    styles['data_q12'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
+    styles['data_q8'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
+    styles['data_q4'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kYellow, 'mc':root.kYellow, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
+    styles['data_qmin12'] = {'lc':root.kViolet, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
+    styles['data_qmin8'] = {'lc':root.kCyan+3, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
+    styles['data_qmin4'] = {'lc':root.kOrange-2, 'ls':root.kSolid, 'fc':root.kYellow, 'mc':root.kYellow, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
+    styles['emul'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kBlue, 'mc':root.kBlue, 'ms':root.kFullCircle, 'legtext':'emul'}
+    styles['emul_q12'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'emul Q #geq 12'}
+    styles['emul_q8'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'emul Q #geq 8'}
+    styles['emul_q4'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kYellow, 'mc':root.kYellow, 'ms':root.kFullSquare, 'legtext':'emul Q #geq 4'}
+    styles['mu_1'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':root.kRed, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'1^{st} muon'}
+    styles['mu_2'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':root.kBlue, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'2^{nd} muon'}
+    styles['mu_3'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':root.kGreen, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'3^{rd} muon'}
     return styles
 
 def hist_style(key, filled=False, marker=False, lw=1):
