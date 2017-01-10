@@ -93,6 +93,41 @@ def print_efficiencies(hm, hNames):
 
     print '================='
 
+def plot_roc_curve(points):
+    c = root.TCanvas('roc_curve', 'roc_curve', 100, 100, 600, 600)
+    c.cd()
+    set_root_style()
+
+    roc_curve = root.TGraph(len(points))
+    roc_curve.SetName('roc_graph')
+    roc_curve.SetMarkerStyle(root.kFullCircle)
+    for i, p in enumerate(points):
+        roc_curve.SetPoint(i, p[0], p[1])
+
+    roc_curve.Draw('ALP')
+
+    xAxis = roc_curve.GetXaxis()
+    yAxis = roc_curve.GetYaxis()
+    xAxis.SetTitle('relative rate')
+    xAxis.SetTitleFont(font)
+    xAxis.SetLabelFont(font)
+    xAxis.SetLabelSize(fontSize)
+    yAxis.SetTitle('relative efficiency')
+    yAxis.SetTitleOffset(1.5)
+    yAxis.SetTitleFont(font)
+    yAxis.SetLabelFont(font)
+    yAxis.SetLabelSize(fontSize)
+
+    line = root.TLine(0., 0., 1., 1.)
+    line.SetLineStyle(root.kDashed)
+    line.SetLineColor(root.kMagenta)
+    line.Draw('same')
+
+    c.Modified()
+    c.Update()
+
+    return c, roc_curve, line
+
 def main():
     opts = parse_options()
     plotLegacy = opts.legacy
@@ -152,10 +187,8 @@ def main():
 
     iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100., 499/500., 999/1000.]
     iso_wps.sort()
-    roc_curve = root.TGraph(len(iso_wps))
-    roc_curve.SetName('roc_graph')
-    roc_curve.SetMarkerStyle(root.kFullCircle)
-    for i, iso_wp in enumerate(iso_wps):
+    points = []
+    for iso_wp in iso_wps:
         iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
         #print_rates(hmRate, rate_str+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
         hNames = {'num':eff_l1_str.format(thr=threshold, iso=iso_wp)+'_matched_'+eff_probe_str, 'den':'emu_'+eff_probe_str}
@@ -163,9 +196,9 @@ def main():
         relRate = get_relative_rate(hmRate, rate_str+iso_wp_str+'_pt', referenceRate[0], threshold=threshold, scaleFactor=convFactorToHz / 1000.)
         relEff = get_relative_eff(hmEff, hNames, referenceEff[0])
         print 'iso {iso:.3f}: rate={rate}, eff={eff}'.format(iso=iso_wp, rate=relRate, eff=relEff)
-        roc_curve.SetPoint(i, relRate, relEff)
+        points.append((relRate, relEff))
 
-    roc_curve.Draw('ALP')
+    objects.append(plot_roc_curve(points))
 
     ##########################################################################
     # save plots to root file
