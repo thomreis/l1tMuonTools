@@ -891,9 +891,11 @@ def main():
     #etaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
     etaRanges = [reco_0to2p4]
     #tfEtaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5]
-    tfEtaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
+    #tfEtaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
+    tfEtaRanges = [reco_0to2p4]
 
-    iso_wps = [0., 1/1., 1/2., 1/3., 2/3.]
+    #iso_wps = [0., 1/1., 1/2., 1/3., 2/3.]
+    iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100., 499/500., 999/1000.]
 
     yTitle_eff = 'L1T efficiency'
     yTitle_nMatch = '# best matched probes'
@@ -911,9 +913,9 @@ def main():
             for etaRange in etaRanges:
                 ## pt plots
                 # quality 12
-                #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'0.5.pass', etaRange+'0.5.pass', 'best_', xTitle='L1 accept', yTitle=yTitle_eff, emul=emul))
+                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.pass', etaRange+'30.pass', 'best_', xTitle='L1 accept', yTitle=yTitle_eff, emul=emul))
 
-                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+                #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
                 #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
                 ## quality 8
@@ -942,14 +944,14 @@ def main():
                 #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'0.5.p', etaRange+'0.5.p', 'best_', xTitle='p_{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, addOverflow=True))
 
                 # phi plots
-                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
+                #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
 
                 #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.phi', etaRange+'8.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
                 #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin12_dr0.5_matched_'+etaRange+'16.phi', etaRange+'16.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
 
             ## eta plots
             etaRange = reco_0to2p4
-            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+            #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
             #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
             #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
@@ -962,7 +964,7 @@ def main():
 
             #for etaRange in tfEtaRanges:
             #    # nVtx plots
-            #    objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+            #    objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
 
             #    if opts.runnr == 'all_runs':
             #        # run plots

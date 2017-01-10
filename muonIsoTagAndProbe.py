@@ -502,7 +502,8 @@ def main():
 
     # combinations of probe_pt_min and the corresponding pt_min values for a quality
     # the first line defines which thresholds are going to be used for unmatched histograms
-    ptmins_list_q12 = [[0.5, [0.5, 22]],
+    ptmins_list_q12 = [[0.5, [0.5, 12, 22]],
+                       [16, [12]],
                        [30, [22]],
                       ]
 
@@ -516,7 +517,8 @@ def main():
     qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
     match_deltas = {'dr':0.5, 'deta':0.5, 'dphi':0.5} # max deltas for matching
 
-    iso_wps = [0., 1/1., 1/2., 1/3., 2/3.]
+#    iso_wps = [0., 1/1., 1/2., 1/3., 2/3.]
+    iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100., 499/500., 999/1000.]
 
     # book the histograms
     L1Ana.log.info("Booking combined run histograms.")
