@@ -28,6 +28,7 @@ def parse_options_and_init_log(loglevel=logging.INFO):
     parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative probe muon charge only.")
     parser.add_argument("--use-inv-mass-cut", dest="invmass", default=False, action="store_true", help="Use an invariant mass range for the tag and probe pair.")
     parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
+    parser.add_argument("--eta-restricted", dest="etarestricted", type=float, default=None, help="Upper eta value for isolation.")
     parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator histograms.")
     parser.add_argument("--prefix", dest="prefix", type=str, default=None, help="Prefix for histogram names")
     parser.add_argument("--tftype", dest="tftype", type=str, default=None, help="Fill L1 muons from one TF.")
@@ -122,6 +123,8 @@ def main():
                 py_string += " --use-inv-mass-cut"
             if opts.extraCoord:
                 py_string += " --use-extra-coord"
+            if opts.etarestricted:
+                py_string += " --eta-restricted {eta}".format(eta=opts.etarestricted)
             if opts.emul:
                 py_string += " --emul"
             if opts.prefix:

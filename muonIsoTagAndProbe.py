@@ -25,6 +25,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative probe charge only.")
     sub_parser.add_argument("--use-inv-mass-cut", dest="invmasscut", default=False, action="store_true", help="Use an invariant mass range for the tag and probe pair.")
     sub_parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
+    sub_parser.add_argument("--eta-restricted", dest="etarestricted", type=float, default=3., help="Upper eta value for isolation.")
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
@@ -240,7 +241,7 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
         for iso_wp in iso_wps:
             iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
             # remove non-isolated muons
-            l1_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(l1Coll, l1CaloTowerColl, iso_min=0., iso_max=iso_wp, idcs=l1_muon_idcs)
+            l1_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(l1Coll, l1CaloTowerColl, iso_min=0., iso_max=iso_wp, iso_eta_max=isoEtaMax, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
 
             # for all defined eta ranges
             for eta_range in eta_ranges:
@@ -487,6 +488,9 @@ def main():
     global useVtxExtraCoord
     useVtxExtraCoord = opts.extraCoord
 
+    global isoEtaMax
+    isoEtaMax = opts.etarestricted
+
     global prefix
     prefix = opts.prefix
 
@@ -605,6 +609,7 @@ if __name__ == "__main__":
     invMassMin = 71
     invMassMax = 111
     useVtxExtraCoord = False
+    isoEtaMax = 3.
     prefix = ''
     tftype = -1
     saveHistos = True

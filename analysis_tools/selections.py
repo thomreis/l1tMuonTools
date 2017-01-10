@@ -123,11 +123,17 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_iso_ugmt_muons(ugmt, caloTowers, iso_min=0., iso_max=1., idcs=None):
+    def select_iso_ugmt_muons(ugmt, caloTowers, iso_min=0., iso_max=1., iso_eta_max=3.0, idcs=None, useVtxExtraCoord=False):
         indices = []
         if idcs is None:
             idcs = range(ugmt.nMuons)
         for i in idcs:
+            if useVtxExtraCoord:
+                eta = ugmt.muonEtaAtVtx[i]
+            else:
+                eta = ugmt.muonEta[i]
+            if abs(eta) > iso_eta_max:
+                continue
             iso = CaloTowerIsolator.calc_out_over_tot_iso(ugmt, caloTowers, i)
             #print '{imin} {i} {imax}'.format(imin=iso_min, i=iso, imax=iso_max)
             if iso >= iso_min and iso <= iso_max:

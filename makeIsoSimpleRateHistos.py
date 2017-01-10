@@ -24,6 +24,7 @@ def parse_options_upgradeRateHistos(parser):
     sub_parser.add_argument("-j", "--json", dest="json", type=str, default=None, help="A json file with good lumi sections per run.")
     sub_parser.add_argument("-e", "--emul", dest="emul", action='store_true', help="Use emulated collections instead of unpacked ones.")
     sub_parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
+    sub_parser.add_argument("--eta-restricted", dest="etarestricted", type=float, default=3., help="Upper eta value for isolation.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -295,7 +296,7 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, iso_wps, emul):
     for iso_wp in iso_wps:
         iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
         # remove non-isolated muons
-        ugmt_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(ugmtColl, l1CaloTowerColl, iso_min=0., iso_max=iso_wp, idcs=ugmt_muon_idcs)
+        ugmt_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(ugmtColl, l1CaloTowerColl, iso_min=0., iso_max=iso_wp, iso_eta_max=isoEtaMax, idcs=ugmt_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
 
         for eta_range in eta_ranges:
             eta_min = eta_range[0]
@@ -515,6 +516,9 @@ def main():
     global useVtxExtraCoord
     useVtxExtraCoord = opts.extraCoord
 
+    global isoEtaMax
+    isoEtaMax = opts.etarestricted
+
     #eta_ranges = [[0, 2.5], [0, 2.1], [0, 0.83], [0.83, 1.24], [1.24, 2.5], [1.24, 2.1]]
     #thresholds = [1, 5, 10, 12, 16, 20, 24, 30]
     #qualities = range(16)
@@ -583,6 +587,7 @@ if __name__ == "__main__":
     pos_eta = True
     neg_eta = True
     useVtxExtraCoord = False
+    isoEtaMax = 3.
     saveHistos = True
     main()
 

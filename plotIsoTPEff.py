@@ -962,9 +962,9 @@ def main():
             #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
             #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
-            #for etaRange in tfEtaRanges:
-            #    # nVtx plots
-            #    objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+            for etaRange in tfEtaRanges:
+                # nVtx plots
+                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
 
             #    if opts.runnr == 'all_runs':
             #        # run plots
