@@ -21,6 +21,8 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("-o", "--outname", dest="outname", default="./muon_iso_histos.root", type=str, help="A root file name where to save the histograms.")
     sub_parser.add_argument("-j", "--json", dest="json", type=str, default=None, help="A json file with good lumi sections per run.")
     sub_parser.add_argument("-r", "--runs", dest="runs", type=str, default=None, help="A string of runs to check.")
+    sub_parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
+    sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -33,7 +35,10 @@ def get_tftype(tf_muon_index):
     else:
         return 2 # EMTF
 
-def book_histograms():
+def book_histograms(emul=False):
+    namePrefix = ''
+    if emul:
+        namePrefix += 'emu_'
 
     vars_bins = [['iet', 256, 0, 256], ['ieta', 83, -41, 42], ['iphi', 73, 0, 73], ['iqual', 16, 0, 16], ['n', 2017, 0, 4034], ['total_cone_iet', 256, 0, 256], ['inner_cone_iet', 256, 0, 256], ['outer_cone_iet', 256, 0, 256], ['outer_over_total_cone_iet', 51, 0, 1.02]]
     x_title_vars = {'iet':'iE_{T}', 'ieta':'i#eta', 'iphi':'i#phi', 'iqual':'qual', 'n':'# towers', 'total_cone_iet':'iE_{T}^{total}', 'inner_cone_iet':'iE_{T}^{in}', 'outer_cone_iet':'iE_{T}^{out}', 'outer_over_total_cone_iet':'iE_{T}^{out}'}
@@ -57,26 +62,31 @@ def book_histograms():
     binnings2d = {}
 
     for var_bin in vars_bins:
-        varnames.append('l1_caloTower.{var}'.format(var=var_bin[0]))
-        binnings['l1_caloTower.{var}'.format(var=var_bin[0])] = var_bin[1:]+[x_title_vars[var_bin[0]], x_title_units[var_bin[0]]]
+        varnames.append(namePrefix+'l1_caloTower.{var}'.format(var=var_bin[0]))
+        binnings[namePrefix+'l1_caloTower.{var}'.format(var=var_bin[0])] = var_bin[1:]+[x_title_vars[var_bin[0]], x_title_units[var_bin[0]]]
 
     for var_bin_2d_x, var_bin_2d_y in zip(x_vars_bins_2d, y_vars_bins_2d):
-        varnames2d.append('2d_caloTower.{xvar}_{yvar}'.format(xvar=var_bin_2d_x[0], yvar=var_bin_2d_y[0]))
-        binnings2d['2d_caloTower.{xvar}_{yvar}'.format(xvar=var_bin_2d_x[0], yvar=var_bin_2d_y[0])] = [var_bin_2d_x[1:]+[x_title_vars_2d[var_bin_2d_x[0]], x_title_units_2d[var_bin_2d_x[0]]], var_bin_2d_y[1:]+[y_title_vars_2d[var_bin_2d_y[0]], y_title_units_2d[var_bin_2d_y[0]]]]
+        varnames2d.append(namePrefix+'2d_caloTower.{xvar}_{yvar}'.format(xvar=var_bin_2d_x[0], yvar=var_bin_2d_y[0]))
+        binnings2d[namePrefix+'2d_caloTower.{xvar}_{yvar}'.format(xvar=var_bin_2d_x[0], yvar=var_bin_2d_y[0])] = [var_bin_2d_x[1:]+[x_title_vars_2d[var_bin_2d_x[0]], x_title_units_2d[var_bin_2d_x[0]]], var_bin_2d_y[1:]+[y_title_vars_2d[var_bin_2d_y[0]], y_title_units_2d[var_bin_2d_y[0]]]]
 
     return HistManager(list(set(varnames)), binnings), HistManager2d(list(set(varnames2d)), binnings2d)
 
-def analyse(evt, hm, hm2d):
-    
-    l1MuColl = evt.upgrade
-    l1CaloTwrColl = evt.caloTowers
+def analyse(evt, hm, hm2d, emul=False):
+    if emul:
+        l1MuColl = evt.upgradeEmu
+        l1CaloTwrColl = evt.caloTowersEmu
+        emuPrefix = 'emu_'
+    else:
+        l1MuColl = evt.upgrade
+        l1CaloTwrColl = evt.caloTowers
+        emuPrefix = ''
 
     bx_min = 0
     bx_max = 0
 
     # calo tower histograms
-    histoprefix = 'l1_caloTower'
-    histoprefix2d = '2d_caloTower'
+    histoprefix = emuPrefix+'l1_caloTower'
+    histoprefix2d = emuPrefix+'2d_caloTower'
 
     nCaloTwr = l1CaloTwrColl.nTower
     hm.fill(histoprefix+'.n', nCaloTwr)
@@ -90,11 +100,18 @@ def analyse(evt, hm, hm2d):
         hm2d.fill(histoprefix2d+'.iet_ieta_iet_iphi', l1CaloTwrColl.ieta[i], l1CaloTwrColl.iphi[i], l1CaloTwrColl.iet[i])
 
     # calo towers around L1 muons
-    l1_muon_idcs = MuonSelections.select_ugmt_muons(l1MuColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max)
+    l1_muon_idcs = MuonSelections.select_ugmt_muons(l1MuColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, useVtxExtraCoord=useVtxExtraCoord)
 
     for idx in l1_muon_idcs:
         muIEta = l1MuColl.muonIEta[idx]
         muIPhi = l1MuColl.muonIPhi[idx]
+        if useVtxExtraCoord:
+            muIEta += l1MuColl.muonIDEta[idx]
+            muIPhi += l1MuColl.muonIDPhi[idx]
+            if muIPhi < 0:
+                muIPhi += 576
+            elif muIPhi >= 576:
+                muIPhi -= 576
 
         muInCaloTowerIEta = CaloTowerIsolator.calc_muon_calo_tower_ieta(muIEta)
         muInCaloTowerIPhi = CaloTowerIsolator.calc_muon_calo_tower_iphi(muIPhi)
@@ -132,9 +149,14 @@ def main():
     opts = parse_options_upgradeMuonHistos(parser)
     print ""
 
+    global useVtxExtraCoord
+    useVtxExtraCoord = opts.extraCoord
+
+    emul = opts.emul
+
     # book the histograms
     L1Ana.log.info("Booking combined run histograms.")
-    hm, hm2d = book_histograms()
+    hm, hm2d = book_histograms(emul=emul)
 
     ntuple = L1Ntuple(opts.nevents)
 
@@ -183,7 +205,7 @@ def main():
                     continue
 
             # now do the analysis
-            analyse(event, hm, hm2d)
+            analyse(event, hm, hm2d, emul=emul)
             analysed_evt_ctr += 1
     except KeyboardInterrupt:
         L1Ana.log.info("Analysis interrupted after {n} events".format(n=i))
@@ -199,6 +221,7 @@ def main():
 
 if __name__ == "__main__":
     muEtaScale = 0.010875
+    useVtxExtraCoord = False
     saveHistos = True
     main()
 

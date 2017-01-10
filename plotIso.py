@@ -19,6 +19,7 @@ def parse_options_plotRates(parser):
     sub_parser.add_argument("-i", "--interactive", dest="interactive", action='store_false', help="Draw plots on screen.")
     sub_parser.add_argument("--towers", dest="towers", default=False, action='store_true', help="Plots for calo towers")
     sub_parser.add_argument("--2d", dest="twod", default=False, action='store_true', help="2D plots.")
+    sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
     sub_parser.add_argument("--public", dest="public", default=False, action='store_true', help="Plot style for publication.")
 
     opts, unknown = parser.parse_known_args()
@@ -124,7 +125,7 @@ def plot_2dhist(hm2d, hName, drawDiag=True, data=False, scaleFactor=1.):
 
     xBase = 0.56
     yBase = 0.13
-    notes = extract_notes_from_name(hName, xBase, yBase)
+    notes = extract_notes_from_name(hName, xBase, yBase, etaTxt=False, qualTxt=False, ptTxt=False)
 
     if data:
         notes.append([0.53, 0.93, 'CMS internal, 13 TeV', False])
@@ -395,7 +396,7 @@ def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', thresh
 
     xBase = 0.17
     yBase = 0.56
-    notes = extract_notes_from_name(hName, xBase, yBase)
+    notes = extract_notes_from_name(hName, xBase, yBase, etaTxt=False, qualTxt=False, ptTxt=False)
     if den:
         den_eta_number_strs = re.findall(r'[\d\.\d]+', den[den.find('EtaMin')+6:den.find('EtaMax')+12])
         if len(den_eta_number_strs) > 1 and eta_number_strs != den_eta_number_strs:
@@ -415,11 +416,15 @@ def main():
     global styles
     styles = define_styles()
 
+    namePrefix = ''
+    if opts.emul:
+        namePrefix += 'emu_'
+
     isData = True
 
     hm = HistManager(filename=opts.fname, subdir='all_runs')
 
-    nEvents = hm.get('l1_caloTower.n').Integral()
+    nEvents = hm.get(namePrefix+'l1_caloTower.n').Integral()
 
     L1Ana.init_l1_analysis()
     print ""
@@ -430,21 +435,21 @@ def main():
     ##########################################################################
     # L1 calo towers variables
     if opts.towers:
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.n', data=isData))
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.iet', xTitle='iE_{T}', yTitle='# towers', data=isData))
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.ieta', xTitle='i#eta', data=isData))
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.iphi', xTitle='i#phi', data=isData))
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.iqual', xTitle='i qual', data=isData))
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.total_cone_iet', xTitle='iE_{T}^{total}', data=isData))
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.inner_cone_iet', xTitle='iE_{T}^{in}', data=isData))
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.outer_cone_iet', xTitle='iE_{T}^{out}', data=isData))
-        objects.append(plot_hists_standard(hm, 'l1_caloTower.outer_over_total_cone_iet', xTitle='iE_{T}^{out} / iE_{T}^{total}', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.n', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.iet', xTitle='iE_{T}', yTitle='# towers', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.ieta', xTitle='i#eta', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.iphi', xTitle='i#phi', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.iqual', xTitle='i qual', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.total_cone_iet', xTitle='iE_{T}^{total}', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.inner_cone_iet', xTitle='iE_{T}^{in}', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.outer_cone_iet', xTitle='iE_{T}^{out}', data=isData))
+        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.outer_over_total_cone_iet', xTitle='iE_{T}^{out} / iE_{T}^{total}', data=isData))
 
     # 2d plots
     if opts.twod:
         hm2d = HistManager2d(filename=opts.fname, subdir='all_runs')
 
-        histoprefix2d = '2d_caloTower'
+        histoprefix2d = namePrefix+'2d_caloTower'
         objects.append(plot_2dhist(hm2d, histoprefix2d+'.ieta_iphi', drawDiag=False, data=isData))
         objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ieta_iet_iphi', drawDiag=False, data=isData, scaleFactor=1/nEvents))
         objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_iet_iphirel', drawDiag=False, data=isData, scaleFactor=1/nEvents))
