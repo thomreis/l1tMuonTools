@@ -133,11 +133,12 @@ class MuonSelections(object):
             else:
                 eta = ugmt.muonEta[i]
             if abs(eta) > iso_eta_max:
-                continue
-            iso = CaloTowerIsolator.calc_out_over_tot_iso(ugmt, caloTowers, i)
-            #print '{imin} {i} {imax}'.format(imin=iso_min, i=iso, imax=iso_max)
-            if iso >= iso_min and iso <= iso_max:
                 indices.append(i)
+            else:
+                iso = CaloTowerIsolator.calc_out_over_tot_iso(ugmt, caloTowers, i)
+                #print '{imin} {i} {imax}'.format(imin=iso_min, i=iso, imax=iso_max)
+                if iso >= iso_min and iso <= iso_max:
+                    indices.append(i)
         return indices
 
     @staticmethod
