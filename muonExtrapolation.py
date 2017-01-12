@@ -41,14 +41,14 @@ def book_histograms(eta_ranges):
     profile_vars = ['pt_dpt', 'pt_deta', 'pt_dphi']
 
     # 2d histograms
-    x_vars_bins_2d = [['pt', 150, 0, 300]]
-    y_vars_bins_2d = [['dcharge', 5, -2, 3]]
+    x_vars_bins_2d = [['pt', 150, 0, 300], ['pt', 150, 0, 300], ['pt', 150, 0, 300]]
+    y_vars_bins_2d = [['dcharge', 5, -2, 3], ['deta', 100, -1., 1.], ['dphi', 100, -1., 1.]]
 
-    x_title_vars_2d = {'pt':'p_{T}'}
-    y_title_vars_2d = {'dcharge':'charge_{L1} - charge_{GEN}'}
+    x_title_vars_2d = {'pt':'p_{T}', 'pt':'p_{T}', 'pt':'p_{T}'}
+    y_title_vars_2d = {'dcharge':'charge_{L1} - charge_{GEN}', 'deta':'#eta_{L1} - #eta_{GEN}', 'dphi':'#phi_{L1} - #phi_{GEN}'}
 
-    x_title_units_2d = {'pt':'GeV/c'}
-    y_title_units_2d = {'dcharge':None}
+    x_title_units_2d = {'pt':'GeV/c', 'pt':'GeV/c', 'pt':'GeV/c'}
+    y_title_units_2d = {'dcharge':None, 'deta':None, 'dphi':None}
 
     varnames = []
     binnings = {}
@@ -128,6 +128,8 @@ def analyse(evt, hm, hm2d, eta_ranges, emul=False):
                 if i < 7: # fill only for the first eta ranges since histograms are not used for LUT generation
                     hm.fill(histoprefix+'.pt_dpt', l1Coll.muonEt[match[1]], abs(l1Coll.muonEt[match[1]] - genColl.partPt[match[0]]))
                     hm2d.fill(histoprefix2d+'.pt_dcharge', l1Coll.muonEt[match[1]], l1Coll.muonChg[match[1]] - genColl.partCh[match[0]])
+                    hm2d.fill(histoprefix2d+'.pt_deta', l1Coll.muonEt[match[1]], match[3])
+                    hm2d.fill(histoprefix2d+'.pt_dphi', l1Coll.muonEt[match[1]], match[4])
 
         genMuonsUsed = []
         for match in matched_muons_extrapol:
@@ -138,6 +140,8 @@ def analyse(evt, hm, hm2d, eta_ranges, emul=False):
                 if i < 7: # fill only for the first eta ranges since histograms are not used for LUT generation
                     hm.fill(histoprefix_extrapol+'.pt_dpt', l1Coll.muonEt[match[1]], abs(l1Coll.muonEt[match[1]] - genColl.partPt[match[0]]))
                     hm2d.fill(histoprefix2d_extrapol+'.pt_dcharge', l1Coll.muonEt[match[1]], l1Coll.muonChg[match[1]] - genColl.partCh[match[0]])
+                    hm2d.fill(histoprefix2d_extrapol+'.pt_deta', l1Coll.muonEt[match[1]], match[3])
+                    hm2d.fill(histoprefix2d_extrapol+'.pt_dphi', l1Coll.muonEt[match[1]], match[4])
 
 
 def save_histos(hm, hm2d, outfile):

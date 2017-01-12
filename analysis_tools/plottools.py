@@ -79,8 +79,10 @@ def extract_notes_from_name(name, xBase, yBase, etaTxt=True, qualTxt=True, ptTxt
             notes.append([xBase, yBase+0.05, 'p_{T}^{L1} #geq '+l1_ptmin_strs[0]+' GeV', True])
     return notes
 
-def plot_2dhist(hm2d, hName, drawDiag=True, data=False):
+def plot_2dhist(hm2d, hName, drawDiag=True, data=False, xMax=None):
     canvas_name = hName
+    if xMax:
+        canvas_name += '_xMax{max}'.format(max=xMax)
 
     # create canvas and draw on it
     canvas_title = canvas_name
@@ -97,6 +99,8 @@ def plot_2dhist(hm2d, hName, drawDiag=True, data=False):
     h.GetXaxis().SetLabelFont(font)
     h.GetXaxis().SetLabelSize(fontSize)
     h.GetXaxis().SetNoExponent()
+    if xMax:
+        h.GetXaxis().SetRangeUser(h.GetXaxis().GetBinLowEdge(1), xMax)
     h.GetYaxis().SetTitleOffset(1.5)
     h.GetYaxis().SetTitleFont(font)
     h.GetYaxis().SetLabelFont(font)

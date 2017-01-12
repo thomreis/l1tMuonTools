@@ -80,8 +80,8 @@ def main():
     # L1 muonu kinematic variables
     if opts.delta:
         objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_dpt', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|p_{T}^{L1} - p_{T}^{GEN}|>', eta_ranges=eta_ranges, data=isData, rebin=rebinPt))
-        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_deta', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|#eta^{L1} - #eta^{GEN}|>', eta_ranges=eta_ranges, data=isData, xMax=50., rebin=rebinPt))
-        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_dphi', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|#phi^{L1} - #phi^{GEN}|>', eta_ranges=eta_ranges, data=isData, xMax=50., rebin=rebinPt))
+        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_deta', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|#eta^{L1} - #eta^{GEN}|>', eta_ranges=eta_ranges, data=isData, xMax=80., rebin=rebinPt))
+        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_dphi', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|#phi^{L1} - #phi^{GEN}|>', eta_ranges=eta_ranges, data=isData, xMax=80., rebin=rebinPt))
 
     # 2d reco vs. L1 plots
     if opts.twod:
@@ -92,6 +92,8 @@ def main():
             histoprefix2d = '2d_muon'+extrapol_str+'_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
 
             objects.append(plot_2dhist(hm2d, histoprefix2d+'.pt_dcharge', drawDiag=False, data=isData))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+'.pt_deta', drawDiag=False, data=isData, xMax=80.))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+'.pt_dphi', drawDiag=False, data=isData, xMax=80.))
 
     ##########################################################################
     # save plots to root file
