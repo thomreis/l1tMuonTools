@@ -495,22 +495,22 @@ def hist_styles(stacked=False):
     styles['data_q12'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
     styles['data_q8'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
     styles['data_q4'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
-    styles['data_iso0'] = {'lc':root.kRed+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed+1, 'ms':root.kFullCircle, 'legtext':'data iso 0'}
-    styles['data_iso1'] = {'lc':root.kOrange+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kOrange+1, 'ms':root.kFullCircle, 'legtext':'data iso 1'}
-    styles['data_iso2'] = {'lc':root.kYellow+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kYellow+1, 'ms':root.kFullCircle, 'legtext':'data iso 2'}
-    styles['data_iso3'] = {'lc':root.kGreen+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen+1, 'ms':root.kFullCircle, 'legtext':'data iso 3'}
-    styles['data_iso4'] = {'lc':root.kCyan+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kCyan+1, 'ms':root.kFullCircle, 'legtext':'data iso 4'}
-    styles['data_iso5'] = {'lc':root.kBlue+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue+1, 'ms':root.kFullCircle, 'legtext':'data iso 5'}
+    styles['data_iso0'] = {'lc':root.kRed+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed+1, 'ms':root.kFullCircle, 'legtext':'data iso {iso:.3f}'}
+    styles['data_iso1'] = {'lc':root.kOrange+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kOrange+1, 'ms':root.kFullCircle, 'legtext':'data iso {iso:.3f}'}
+    styles['data_iso2'] = {'lc':root.kYellow+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kYellow+1, 'ms':root.kFullCircle, 'legtext':'data iso {iso:.3f}'}
+    styles['data_iso3'] = {'lc':root.kGreen+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen+1, 'ms':root.kFullCircle, 'legtext':'data iso {iso:.3f}'}
+    styles['data_iso4'] = {'lc':root.kCyan+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kCyan+1, 'ms':root.kFullCircle, 'legtext':'data iso {iso:.3f}'}
+    styles['data_iso5'] = {'lc':root.kBlue+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue+1, 'ms':root.kFullCircle, 'legtext':'data iso {iso:.3f}'}
     styles['emul'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kFullCircle, 'legtext':'emul'}
     styles['emul_q12'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'emul Q #geq 12'}
     styles['emul_q8'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'emul Q #geq 8'}
     styles['emul_q4'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'emul Q #geq 4'}
-    styles['emul_iso0'] = {'lc':root.kRed+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed+1, 'ms':root.kFullCircle, 'legtext':'emul iso 0'}
-    styles['emul_iso1'] = {'lc':root.kOrange+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kOrange+1, 'ms':root.kFullCircle, 'legtext':'emul iso 1'}
-    styles['emul_iso2'] = {'lc':root.kYellow+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kYellow+1, 'ms':root.kFullCircle, 'legtext':'emul iso 2'}
-    styles['emul_iso3'] = {'lc':root.kGreen+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen+1, 'ms':root.kFullCircle, 'legtext':'emul iso 3'}
-    styles['emul_iso4'] = {'lc':root.kCyan+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kCyan+1, 'ms':root.kFullCircle, 'legtext':'emul iso 4'}
-    styles['emul_iso5'] = {'lc':root.kBlue+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue+1, 'ms':root.kFullCircle, 'legtext':'emul iso 5'}
+    styles['emul_iso0'] = {'lc':root.kRed+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed+1, 'ms':root.kFullCircle, 'legtext':'emul iso {iso:.3f}'}
+    styles['emul_iso1'] = {'lc':root.kOrange+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kOrange+1, 'ms':root.kFullCircle, 'legtext':'emul iso {iso:.3f}'}
+    styles['emul_iso2'] = {'lc':root.kYellow+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kYellow+1, 'ms':root.kFullCircle, 'legtext':'emul iso {iso:.3f}'}
+    styles['emul_iso3'] = {'lc':root.kGreen+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen+1, 'ms':root.kFullCircle, 'legtext':'emul iso {iso:.3f}'}
+    styles['emul_iso4'] = {'lc':root.kCyan+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kCyan+1, 'ms':root.kFullCircle, 'legtext':'emul iso {iso:.3f}'}
+    styles['emul_iso5'] = {'lc':root.kBlue+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue+1, 'ms':root.kFullCircle, 'legtext':'emul iso {iso:.3f}'}
     styles['data_pub'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlack, 'ms':root.kFullCircle, 'legtext':''}
     styles['data_pt18'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'p_{T}^{L1} #geq 18 GeV'}
     styles['data_pt22'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlack, 'ms':root.kOpenCircle, 'legtext':'p_{T}^{L1} #geq 22 GeV'}
@@ -814,6 +814,7 @@ def plot_eff_iso(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=Fals
     for i, iso_plot_wp in enumerate(iso_plot_wps):
         iso_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('isoMaxXX_', 'isoMax{iso:.3f}_'.format(iso=iso_plot_wp)), 'den':denPrefix+den}
         iso_dict.update(styles[styleKey+'_iso{i}'.format(i=i)])
+        iso_dict['legtext'] = iso_dict['legtext'].format(iso=iso_plot_wp)
         hDefs.append(iso_dict)
 
     xBase = 0.5
@@ -1031,13 +1032,19 @@ def main():
         ## eta plots
         etaRange = reco_0to2p4
         objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_iso(hm, 'l1_muon_qualMin8_ptmin12_isoMaxXX_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+        objects.append(plot_eff_iso(hm, 'l1_muon_qualMin4_ptmin5_isoMaxXX_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
         for etaRange in tfEtaRanges:
             # nVtx plots
+            # quality 12
             #objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin18_isoMaxXX_dr0.5_matched_'+etaRange+'26.vtx', etaRange+'26.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
             #objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin20_isoMaxXX_dr0.5_matched_'+etaRange+'28.vtx', etaRange+'28.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
             objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
             #objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin24_isoMaxXX_dr0.5_matched_'+etaRange+'32.vtx', etaRange+'32.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin8_ptmin12_isoMaxXX_dr0.5_matched_'+etaRange+'16.vtx', etaRange+'16.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin4_ptmin5_isoMaxXX_dr0.5_matched_'+etaRange+'8.vtx', etaRange+'8.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
 
     if opts.qualcomp:
         for etaRange in etaRanges:
