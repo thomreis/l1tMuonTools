@@ -18,6 +18,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("-o", "--outname", dest="outname", default="./muon_extrapolation_histos.root", type=str, help="A root file name where to save the histograms.")
     sub_parser.add_argument("--pos-charge", dest="pos_charge", default=False, action="store_true", help="Positive probe charge only.")
     sub_parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative probe charge only.")
+    sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -60,22 +61,32 @@ def book_histograms(eta_ranges):
         eta_max = eta_range[1]
         histoprefix = 'l1_muon_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
         histoprefix2d = '2d_muon_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
+        histoprefix_extrapol = 'l1_muon_extrapol_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
+        histoprefix2d_extrapol = '2d_muon_extrapol_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
         for var_bin in vars_bins:
             if i < 7 or var_bin[0] == 'pt_deta' or var_bin[0] == 'pt_dphi':
                 varnames.append(histoprefix+'.{var}'.format(var=var_bin[0]))
+                varnames.append(histoprefix_extrapol+'.{var}'.format(var=var_bin[0]))
                 binnings[histoprefix+'.{var}'.format(var=var_bin[0])] = var_bin[1:]+[x_title_vars[var_bin[0]], x_title_units[var_bin[0]]]
+                binnings[histoprefix_extrapol+'.{var}'.format(var=var_bin[0])] = var_bin[1:]+[x_title_vars[var_bin[0]], x_title_units[var_bin[0]]]
                 if var_bin[0] in profile_vars:
                     profiles[histoprefix+'.{var}'.format(var=var_bin[0])] = True
+                    profiles[histoprefix_extrapol+'.{var}'.format(var=var_bin[0])] = True
         if i < 7:
             for x_var_bin_2d, y_var_bin_2d in zip(x_vars_bins_2d, y_vars_bins_2d):
                 varnames2d.append(histoprefix2d+'.{varx}_{vary}'.format(varx=x_var_bin_2d[0], vary=y_var_bin_2d[0]))
+                varnames2d.append(histoprefix2d_extrapol+'.{varx}_{vary}'.format(varx=x_var_bin_2d[0], vary=y_var_bin_2d[0]))
                 binnings2d[histoprefix2d+'.{varx}_{vary}'.format(varx=x_var_bin_2d[0], vary=y_var_bin_2d[0])] = [x_var_bin_2d[1:]+[x_title_vars_2d[x_var_bin_2d[0]], x_title_units_2d[x_var_bin_2d[0]]], y_var_bin_2d[1:]+[y_title_vars_2d[y_var_bin_2d[0]], y_title_units_2d[y_var_bin_2d[0]]]]
+                binnings2d[histoprefix2d_extrapol+'.{varx}_{vary}'.format(varx=x_var_bin_2d[0], vary=y_var_bin_2d[0])] = [x_var_bin_2d[1:]+[x_title_vars_2d[x_var_bin_2d[0]], x_title_units_2d[x_var_bin_2d[0]]], y_var_bin_2d[1:]+[y_title_vars_2d[y_var_bin_2d[0]], y_title_units_2d[y_var_bin_2d[0]]]]
 
     return HistManager(list(set(varnames)), binnings, profiles), HistManager2d(list(set(varnames2d)), binnings2d)
 
-def analyse(evt, hm, hm2d, eta_ranges):
+def analyse(evt, hm, hm2d, eta_ranges, emul=False):
     genColl = evt.gen
-    l1Coll = evt.upgrade
+    if emul:
+        l1Coll = evt.upgradeEmu
+    else:
+        l1Coll = evt.upgrade
 
     bx_min = 0
     bx_max = 0
@@ -97,12 +108,16 @@ def analyse(evt, hm, hm2d, eta_ranges):
 
         eta_gen_muon_idcs = MuonSelections.select_gen_muons(genColl, abs_eta_min=gen_eta_min, abs_eta_max=gen_eta_max, idcs=gen_muon_idcs)
         eta_l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=l1_muon_idcs)
+        eta_extrapol_l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=l1_muon_idcs, useVtxExtraCoord=True)
 
         matched_muons = Matcher.match_dr(genColl.partEta, genColl.partPhi, l1Coll.muonEta, l1Coll.muonPhi, cut=2., idcs1=eta_gen_muon_idcs, idcs2=eta_l1_muon_idcs)
+        matched_muons_extrapol = Matcher.match_dr(genColl.partEta, genColl.partPhi, l1Coll.muonEtaAtVtx, l1Coll.muonPhiAtVtx, cut=2., idcs1=eta_gen_muon_idcs, idcs2=eta_extrapol_l1_muon_idcs)
 
         histoprefix = 'l1_muon_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
+        histoprefix_extrapol = 'l1_muon_extrapol_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
         if i < 7: # only for the first eta ranges
             histoprefix2d = '2d_muon_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
+            histoprefix2d_extrapol = '2d_muon_extrapol_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
         
         genMuonsUsed = []
         for match in matched_muons:
@@ -113,6 +128,16 @@ def analyse(evt, hm, hm2d, eta_ranges):
                 if i < 7: # fill only for the first eta ranges since histograms are not used for LUT generation
                     hm.fill(histoprefix+'.pt_dpt', l1Coll.muonEt[match[1]], abs(l1Coll.muonEt[match[1]] - genColl.partPt[match[0]]))
                     hm2d.fill(histoprefix2d+'.pt_dcharge', l1Coll.muonEt[match[1]], l1Coll.muonChg[match[1]] - genColl.partCh[match[0]])
+
+        genMuonsUsed = []
+        for match in matched_muons_extrapol:
+            if match[0] not in genMuonsUsed:
+                genMuonsUsed.append(match[0])
+                hm.fill(histoprefix_extrapol+'.pt_deta', l1Coll.muonEt[match[1]], abs(match[3]))
+                hm.fill(histoprefix_extrapol+'.pt_dphi', l1Coll.muonEt[match[1]], abs(match[4]))
+                if i < 7: # fill only for the first eta ranges since histograms are not used for LUT generation
+                    hm.fill(histoprefix_extrapol+'.pt_dpt', l1Coll.muonEt[match[1]], abs(l1Coll.muonEt[match[1]] - genColl.partPt[match[0]]))
+                    hm2d.fill(histoprefix2d_extrapol+'.pt_dcharge', l1Coll.muonEt[match[1]], l1Coll.muonChg[match[1]] - genColl.partCh[match[0]])
 
 
 def save_histos(hm, hm2d, outfile):
@@ -147,6 +172,8 @@ def main():
         pos_charge = True
         neg_charge = True
 
+    emul = opts.emul
+
 #    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
     eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
 
@@ -180,7 +207,7 @@ def main():
                 L1Ana.log.info("Processing event: {n}. Analysed events from selected runs/LS until now: {nAna}".format(n=i+1, nAna=analysed_evt_ctr))
 
             # now do the analysis
-            analyse(event, hm, hm2d, eta_ranges)
+            analyse(event, hm, hm2d, eta_ranges, emul)
             analysed_evt_ctr += 1
     except KeyboardInterrupt:
         L1Ana.log.info("Analysis interrupted after {n} events".format(n=i))
