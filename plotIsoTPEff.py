@@ -21,6 +21,7 @@ def parse_options_plotEff(parser):
     sub_parser.add_argument("-e", "--emul", dest="emul", default=False, action='store_true', help="Use emulator plots.")
     # histograms to produce
     sub_parser.add_argument("--eff", dest="eff", default=False, action='store_true', help="Plot efficiencies.")
+    sub_parser.add_argument("--iso", dest="iso", default=False, action='store_true', help="Plot efficiencies for different iso thresholds.")
     sub_parser.add_argument("--qualcomp", dest="qualcomp", default=False, action='store_true', help="Plot efficiencies for different qualities.")
     sub_parser.add_argument("--delta", dest="delta", default=False, action='store_true', help="Plot L1 - RECO difference plots.")
     sub_parser.add_argument("--2d", dest="twod", default=False, action='store_true', help="Plot 2D L1 vs. RECO plots.")
@@ -494,10 +495,22 @@ def hist_styles(stacked=False):
     styles['data_q12'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
     styles['data_q8'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
     styles['data_q4'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
+    styles['data_iso0'] = {'lc':root.kRed+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed+1, 'ms':root.kFullCircle, 'legtext':'data iso 0'}
+    styles['data_iso1'] = {'lc':root.kOrange+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kOrange+1, 'ms':root.kFullCircle, 'legtext':'data iso 1'}
+    styles['data_iso2'] = {'lc':root.kYellow+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kYellow+1, 'ms':root.kFullCircle, 'legtext':'data iso 2'}
+    styles['data_iso3'] = {'lc':root.kGreen+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen+1, 'ms':root.kFullCircle, 'legtext':'data iso 3'}
+    styles['data_iso4'] = {'lc':root.kCyan+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kCyan+1, 'ms':root.kFullCircle, 'legtext':'data iso 4'}
+    styles['data_iso5'] = {'lc':root.kBlue+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue+1, 'ms':root.kFullCircle, 'legtext':'data iso 5'}
     styles['emul'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kFullCircle, 'legtext':'emul'}
     styles['emul_q12'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'emul Q #geq 12'}
     styles['emul_q8'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'emul Q #geq 8'}
     styles['emul_q4'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'emul Q #geq 4'}
+    styles['emul_iso0'] = {'lc':root.kRed+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed+1, 'ms':root.kFullCircle, 'legtext':'emul iso 0'}
+    styles['emul_iso1'] = {'lc':root.kOrange+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kOrange+1, 'ms':root.kFullCircle, 'legtext':'emul iso 1'}
+    styles['emul_iso2'] = {'lc':root.kYellow+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kYellow+1, 'ms':root.kFullCircle, 'legtext':'emul iso 2'}
+    styles['emul_iso3'] = {'lc':root.kGreen+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen+1, 'ms':root.kFullCircle, 'legtext':'emul iso 3'}
+    styles['emul_iso4'] = {'lc':root.kCyan+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kCyan+1, 'ms':root.kFullCircle, 'legtext':'emul iso 4'}
+    styles['emul_iso5'] = {'lc':root.kBlue+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue+1, 'ms':root.kFullCircle, 'legtext':'emul iso 5'}
     styles['data_pub'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlack, 'ms':root.kFullCircle, 'legtext':''}
     styles['data_pt18'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'p_{T}^{L1} #geq 18 GeV'}
     styles['data_pt22'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlack, 'ms':root.kOpenCircle, 'legtext':'p_{T}^{L1} #geq 22 GeV'}
@@ -782,6 +795,33 @@ def plot_eff_qual(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=Fal
 
     return plot_effs(hDefs, xTitle, yTitle, 'qual_', notes, autoZoomX, xMax, addOverflow, rebin)
 
+# plot efficiencies for different iso cuts
+def plot_eff_iso(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=False, autoZoomX=False, xMax=None, addOverflow=False, rebin=1):
+    styles = hist_styles(False)
+
+    styleKey = 'data'
+    denPrefix = ''
+    if emul:
+        hNamePrefix = 'emu_'+hNamePrefix
+        denPrefix = 'emu_'
+        styleKey = 'emul'
+
+    iso_plot_wps = [0., 1/1., 1/2., 4/5., 9/10., 99/100.]
+    iso_plot_wps.sort()
+
+    hDefs = []
+
+    for i, iso_plot_wp in enumerate(iso_plot_wps):
+        iso_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('isoMaxXX_', 'isoMax{iso:.3f}_'.format(iso=iso_plot_wp)), 'den':denPrefix+den}
+        iso_dict.update(styles[styleKey+'_iso{i}'.format(i=i)])
+        hDefs.append(iso_dict)
+
+    xBase = 0.5
+    yBase = 0.13
+    notes = extract_notes_from_name(hName, xBase, yBase)
+
+    return plot_effs(hDefs, xTitle, yTitle, 'qual_', notes, autoZoomX, xMax, addOverflow, rebin)
+
 # plot efficiency contribution from each TF and overall efficiency
 def plot_eff_tf(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=False, autoZoomX=False, xMax=None, addOverflow=False, rebin=1):
     styles = hist_styles(False)
@@ -895,17 +935,18 @@ def main():
     tfEtaRanges = [reco_0to2p4]
 
     #iso_wps = [0., 1/1., 1/2., 1/3., 2/3.]
-    iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100., 499/500., 999/1000.]
+    iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100.]
+    iso_wps.sort()
 
     yTitle_eff = 'L1T efficiency'
     yTitle_nMatch = '# best matched probes'
     xMax=100
     rebinPt = 1
-    rebinEta = 1
-    rebinPhi = 1
+    #rebinEta = 1
+    #rebinPhi = 1
     #rebinPt = 2
-    #rebinEta = 2
-    #rebinPhi = 2
+    rebinEta = 2
+    rebinPhi = 2
 
     if opts.eff:
         for iso_wp in iso_wps:
@@ -951,7 +992,7 @@ def main():
 
             ## eta plots
             etaRange = reco_0to2p4
-            #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+            objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
             #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'100.eta', etaRange+'100.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
             #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin8_ptmin5_dr0.5_matched_'+etaRange+'8.eta', etaRange+'8.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
@@ -962,9 +1003,12 @@ def main():
             #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin12_dr0.5_matched_'+etaRange+'16.eta', etaRange+'16.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
             #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin4_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
 
-            for etaRange in tfEtaRanges:
+            #for etaRange in tfEtaRanges:
                 # nVtx plots
-                objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+                #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin18'+iso_wp_str+'_dr0.5_matched_'+etaRange+'26.vtx', etaRange+'26.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+                #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin20'+iso_wp_str+'_dr0.5_matched_'+etaRange+'28.vtx', etaRange+'28.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+                #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22'+iso_wp_str+'_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+                #objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin24'+iso_wp_str+'_dr0.5_matched_'+etaRange+'32.vtx', etaRange+'32.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
 
             #    if opts.runnr == 'all_runs':
             #        # run plots
@@ -972,6 +1016,28 @@ def main():
 
             #    # charge plots
             #    objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, emul=emul))
+
+    if opts.iso:
+        for etaRange in etaRanges:
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.pass', etaRange+'30.pass', 'best_', xTitle='L1 accept', yTitle=yTitle_eff, emul=emul))
+            ## pt plots
+            # quality 12
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+
+            # phi plots
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
+
+
+        ## eta plots
+        etaRange = reco_0to2p4
+        objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinEta))
+
+        for etaRange in tfEtaRanges:
+            # nVtx plots
+            #objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin18_isoMaxXX_dr0.5_matched_'+etaRange+'26.vtx', etaRange+'26.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+            #objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin20_isoMaxXX_dr0.5_matched_'+etaRange+'28.vtx', etaRange+'28.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.vtx', etaRange+'30.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
+            #objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin24_isoMaxXX_dr0.5_matched_'+etaRange+'32.vtx', etaRange+'32.vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, emul=emul))
 
     if opts.qualcomp:
         for etaRange in etaRanges:

@@ -93,40 +93,77 @@ def print_efficiencies(hm, hNames):
 
     print '================='
 
-def plot_roc_curve(points):
-    c = root.TCanvas('roc_curve', 'roc_curve', 100, 100, 600, 600)
+def plot_roc_curves(thresholdAndPointss, qual):
+    canvas_name = 'roc_curves_qualMin{q}'.format(q=qual)
+    c = root.TCanvas(canvas_name, canvas_name, 100, 100, 600, 600)
     c.cd()
     set_root_style()
 
-    roc_curve = root.TGraph(len(points))
-    roc_curve.SetName('roc_graph')
-    roc_curve.SetMarkerStyle(root.kFullCircle)
-    for i, p in enumerate(points):
-        roc_curve.SetPoint(i, p[0], p[1])
+    colors = [root.kRed+1, root.kGreen+1, root.kCyan+1, root.kBlue+1, root.kMagenta+1]
 
-    roc_curve.Draw('ALP')
+    # setup legend according to how many graphs are in the plot
+    legYmin = 0.5-0.04*len(thresholdAndPointss)
+    legXmin = 0.68
+    legXmax = 0.9
+    legend = root.TLegend(legXmin, legYmin, legXmax, 0.5)
+    legend.SetTextFont(font)
+    legend.SetTextSize(fontSize)
+    legend.SetBorderSize(0)
+    legend.SetFillColor(19)
+    legend.SetFillStyle(0)
+    #legend.SetNColumns(2)
+    legEntries = []
 
-    xAxis = roc_curve.GetXaxis()
-    yAxis = roc_curve.GetYaxis()
+    # two points to mark the edges
+    roc_curves = [root.TGraph(2)]
+    roc_curves[-1].SetPoint(0, 0., 0.)
+    roc_curves[-1].SetPoint(1, 1., 1.)
+    roc_curves[-1].SetMarkerStyle(root.kDot)
+    roc_curves[-1].Draw('AP')
+ 
+    # actual ROC curves
+    for i, thresholdAndPoints in enumerate(thresholdAndPointss):
+        thr = thresholdAndPoints[0]
+        roc_curves.append(root.TGraph(len(thresholdAndPoints[1])))
+        roc_curves[-1].SetName('roc_graph_ptmin{thr}'.format(thr=thr))
+        roc_curves[-1].SetMarkerStyle(root.kFullCircle)
+        roc_curves[-1].SetMarkerColor(colors[i])
+        roc_curves[-1].SetLineColor(colors[i])
+        for j, p in enumerate(thresholdAndPoints[1]):
+            roc_curves[-1].SetPoint(j, p[0], p[1])
+        roc_curves[-1].Draw('LP')
+        legend.AddEntry(roc_curves[-1], '{thr} GeV'.format(thr=thr), 'lp')
+
+    legend.Draw('same')
+
+    xAxis = roc_curves[0].GetXaxis()
+    yAxis = roc_curves[0].GetYaxis()
     xAxis.SetTitle('relative rate')
     xAxis.SetTitleFont(font)
     xAxis.SetLabelFont(font)
     xAxis.SetLabelSize(fontSize)
+    xAxis.SetRangeUser(0., 1.)
     yAxis.SetTitle('relative efficiency')
     yAxis.SetTitleOffset(1.5)
     yAxis.SetTitleFont(font)
     yAxis.SetLabelFont(font)
     yAxis.SetLabelSize(fontSize)
+    yAxis.SetRangeUser(0., 1.)
 
+    # diagonal line
     line = root.TLine(0., 0., 1., 1.)
     line.SetLineStyle(root.kDashed)
     line.SetLineColor(root.kMagenta)
     line.Draw('same')
 
+    notes = [[0.17, 0.86, 'quality #geq {q}'.format(q=qual), False]]
+    notes.append([0.53, 0.93, 'CMS internal, 13 TeV', False])
+    text = add_text(notes)
+
     c.Modified()
     c.Update()
 
-    return c, roc_curve, line
+    return c, roc_curves, legend, line, text
 
 def main():
     opts = parse_options()
@@ -170,45 +207,59 @@ def main():
     objects = []
 
     ##########################################################################
-    ## uGMT kinematic variables
-    #objects.append(plot_hists_standard(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_varBin_pt', xTitle='p_{T} (GeV/c)', yTitle='# muons/(GeV/c)', stacked=True, normToBinWidth=True, data=thisIsData))
-    #iso_wps = [0., 1/1., 1/2., 1/3., 2/3.]
+    plotSetups = [{'q':12, 'thr':[18, 20, 22, 24], 'pthr':[26, 28, 30, 32]},
+                 {'q':8, 'thr':[3, 5, 8, 10, 12], 'pthr':[5, 8, 12, 14, 16]},
+                 {'q':4, 'thr':[3, 5, 8, 10, 12], 'pthr':[5, 8, 12, 14, 16]}]
+    for plotSetup in plotSetups:
+        qualMin = plotSetup['q']
+        thresholdAndPointss = []
+        for threshold, probeThreshold in zip(plotSetup['thr'], plotSetup['pthr']):
+            rate_str = 'ugmt_highest_muon_absEtaMin0_absEtaMax2.5_qmin{qmin}'.format(qmin=qualMin)
+            eff_l1_str = 'emu_best_l1_muon_qualMin{qmin}_ptmin{thr}_isoMax{iso:.3f}_dr0.5'
+            eff_probe_str = 'probe_absEtaMin0_absEtaMax2.4_ptmin{pthr}.pass'.format(pthr=probeThreshold)
+            hNamesRef = {'num':eff_l1_str.format(qmin=qualMin, thr=threshold, iso=1.)+'_matched_'+eff_probe_str,
+                         'den':'emu_'+eff_probe_str}
 
-    threshold = 12
-    probeThreshold = 16
-    rate_str = 'ugmt_highest_muon_absEtaMin0_absEtaMax2.5_qmin12'
-    eff_l1_str = 'emu_best_l1_muon_qualMin12_ptmin{thr}_isoMax{iso:.3f}_dr0.5'
-    eff_probe_str = 'probe_absEtaMin0_absEtaMax2.4_ptmin{pthr}.pass'.format(pthr=probeThreshold)
-    hNamesRef = {'num':eff_l1_str.format(thr=threshold, iso=1.)+'_matched_'+eff_probe_str,
-                 'den':'emu_'+eff_probe_str}
+            referenceRate = get_rate(hmRate, rate_str+'_isoMax1.000_pt', threshold=threshold, scaleFactor=convFactorToHz / 1000.)
+            referenceEff = get_eff(hmEff, hNamesRef)
 
-    referenceRate = get_rate(hmRate, rate_str+'_isoMax1.000_pt', threshold=threshold, scaleFactor=convFactorToHz / 1000.)
-    referenceEff = get_eff(hmEff, hNamesRef)
+            iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100.]
+            iso_wps.sort()
+            points = []
+            print '==================='
+            print 'L1 threshold: {thr} GeV, probe threshold: {pthr} GeV, quality >= {qmin}'.format(thr=threshold, pthr=probeThreshold, qmin=qualMin)
+            print '-------------------'
+            print ' iso   rel. rate   rel. eff'
+            print '-------------------'
+            for iso_wp in iso_wps:
+                iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
+                #print_rates(hmRate, rate_str+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
+                hNames = {'num':eff_l1_str.format(qmin=qualMin, thr=threshold, iso=iso_wp)+'_matched_'+eff_probe_str, 'den':'emu_'+eff_probe_str}
+                #print_efficiencies(hmEff, hNames)
+                relRate = get_relative_rate(hmRate, rate_str+iso_wp_str+'_pt', referenceRate[0], threshold=threshold, scaleFactor=convFactorToHz / 1000.)
+                relEff = get_relative_eff(hmEff, hNames, referenceEff[0])
+                print '{iso:.3f}    {rate:.4f}     {eff:.4f}'.format(iso=iso_wp, rate=relRate, eff=relEff)
+                points.append((relRate, relEff))
+            thresholdAndPointss.append((threshold, points))
+            print '==================='
 
-    iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100., 499/500., 999/1000.]
-    iso_wps.sort()
-    points = []
-    for iso_wp in iso_wps:
-        iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
-        #print_rates(hmRate, rate_str+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
-        hNames = {'num':eff_l1_str.format(thr=threshold, iso=iso_wp)+'_matched_'+eff_probe_str, 'den':'emu_'+eff_probe_str}
-        #print_efficiencies(hmEff, hNames)
-        relRate = get_relative_rate(hmRate, rate_str+iso_wp_str+'_pt', referenceRate[0], threshold=threshold, scaleFactor=convFactorToHz / 1000.)
-        relEff = get_relative_eff(hmEff, hNames, referenceEff[0])
-        print 'iso {iso:.3f}: rate={rate}, eff={eff}'.format(iso=iso_wp, rate=relRate, eff=relEff)
-        points.append((relRate, relEff))
-
-    objects.append(plot_roc_curve(points))
+        objects.append(plot_roc_curves(thresholdAndPointss, qualMin))
 
     ##########################################################################
     # save plots to root file
     if savePlots:
-        plotdir = 'plots_ROC_'+opts.feff.replace('.root','').partition('/')[0]
+        effFileString = opts.feff.replace('.root','')
+        effFileString = effFileString.replace('ugmt_', '')
+        effFileString = effFileString.replace('histos_', '')
+        rateFileString = opts.frate.replace('.root','')
+        rateFileString = rateFileString.replace('ugmt_iso_', '')
+        rateFileString = rateFileString.replace('histos_', '')
+        plotdir = 'plots_ROC_'+effFileString.partition('/')[0]+'_'+rateFileString.partition('/')[0]
         if opts.public:
             plotdir += '_public'
         if not os.path.exists(plotdir):
             os.makedirs(plotdir)
-        output = root.TFile('./'+plotdir+'/ugmt_rate_plots.root', 'recreate')
+        output = root.TFile('./'+plotdir+'/ugmt_iso_roc_plots.root', 'recreate')
         output.cd()
         for obj in objects:
             c = obj[0]
