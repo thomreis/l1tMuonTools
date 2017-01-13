@@ -16,8 +16,10 @@ def parse_options_upgradeMuonHistos(parser):
     parsers = parser.add_subparsers()
     sub_parser = parsers.add_parser("muonExtrapolation")
     sub_parser.add_argument("-o", "--outname", dest="outname", default="./muon_extrapolation_histos.root", type=str, help="A root file name where to save the histograms.")
-    sub_parser.add_argument("--pos-charge", dest="pos_charge", default=False, action="store_true", help="Positive probe charge only.")
-    sub_parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative probe charge only.")
+    sub_parser.add_argument("--pos-eta", dest="pos_eta", default=False, action="store_true", help="Positive GEN eta only.")
+    sub_parser.add_argument("--neg-eta", dest="neg_eta", default=False, action="store_true", help="Negative GEN eta only.")
+    sub_parser.add_argument("--pos-charge", dest="pos_charge", default=False, action="store_true", help="Positive GEN charge only.")
+    sub_parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative GEN charge only.")
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
 
     opts, unknown = parser.parse_known_args()
@@ -34,7 +36,7 @@ def book_histograms(eta_ranges):
     # 1d histograms and tprofiles
     vars_bins = [['pt_dpt', -1]+pt_bins, ['pt_deta', -1]+pt_bins, ['pt_dphi', -1]+pt_bins]
 
-    x_title_vars = {'pt_dpt':'p_{T}', 'pt_deta':'p_{T}', 'pt_dphi':'p_{T}'}
+    x_title_vars = {'pt_dpt':'p_{T}^{L1}', 'pt_deta':'p_{T}^{L1}', 'pt_dphi':'p_{T}^{L1}'}
 
     x_title_units = {'pt_dpt':'GeV/c', 'pt_deta':'GeV/c', 'pt_dphi':'GeV/c'}
 
@@ -42,9 +44,9 @@ def book_histograms(eta_ranges):
 
     # 2d histograms
     x_vars_bins_2d = [['pt', 150, 0, 300], ['pt', 150, 0, 300], ['pt', 150, 0, 300]]
-    y_vars_bins_2d = [['dcharge', 5, -2, 3], ['deta', 100, -1., 1.], ['dphi', 100, -1., 1.]]
+    y_vars_bins_2d = [['dcharge', 5, -2, 3], ['deta', 100, -0.2, 0.2], ['dphi', 100, -1., 1.]]
 
-    x_title_vars_2d = {'pt':'p_{T}', 'pt':'p_{T}', 'pt':'p_{T}'}
+    x_title_vars_2d = {'pt':'p_{T}^{L1}', 'pt':'p_{T}^{L1}', 'pt':'p_{T}^{L1}'}
     y_title_vars_2d = {'dcharge':'charge_{L1} - charge_{GEN}', 'deta':'#eta_{L1} - #eta_{GEN}', 'dphi':'#phi_{L1} - #phi_{GEN}'}
 
     x_title_units_2d = {'pt':'GeV/c', 'pt':'GeV/c', 'pt':'GeV/c'}
@@ -94,8 +96,8 @@ def analyse(evt, hm, hm2d, eta_ranges, emul=False):
     # eta enlargement of the window for the GEN muons for matching
     gen_extra_eta_range = 0.0435
 
-    gen_muon_idcs = MuonSelections.select_gen_muons(genColl, pt_min=0.5)
-    l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0.5, bx_min=bx_min, pos_charge=pos_charge, neg_charge=neg_charge, bx_max=bx_max)
+    gen_muon_idcs = MuonSelections.select_gen_muons(genColl, pt_min=0.5, pos_eta=pos_eta, neg_eta=neg_eta, pos_charge=pos_charge, neg_charge=neg_charge)
+    l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0.5, bx_min=bx_min, bx_max=bx_max)
 
     for i, eta_range in enumerate(eta_ranges):
         eta_min = eta_range[0]
@@ -125,6 +127,10 @@ def analyse(evt, hm, hm2d, eta_ranges, emul=False):
                 genMuonsUsed.append(match[0])
                 hm.fill(histoprefix+'.pt_deta', l1Coll.muonEt[match[1]], abs(match[3]))
                 hm.fill(histoprefix+'.pt_dphi', l1Coll.muonEt[match[1]], abs(match[4]))
+                #if l1Coll.muonEt[match[1]] < 8. and abs(match[4]) < 0.05:
+                #    print matched_muons
+                #    for match2 in matched_muons:
+                #        print 'strange muon: pT L1: {ptl}, pT GEN: {ptg}, dr: {dr}, tfi: {tfi}, eta L1: {etal}, eta GEN: {etag}'.format(ptl=l1Coll.muonEt[match2[1]], ptg=genColl.partPt[match2[0]], dr=match2[2], tfi=l1Coll.muonTfMuonIdx[match2[1]], etal=l1Coll.muonEta[match2[1]], etag=genColl.partEta[match2[0]])
                 if i < 7: # fill only for the first eta ranges since histograms are not used for LUT generation
                     hm.fill(histoprefix+'.pt_dpt', l1Coll.muonEt[match[1]], abs(l1Coll.muonEt[match[1]] - genColl.partPt[match[0]]))
                     hm2d.fill(histoprefix2d+'.pt_dcharge', l1Coll.muonEt[match[1]], l1Coll.muonChg[match[1]] - genColl.partCh[match[0]])
@@ -176,6 +182,21 @@ def main():
         pos_charge = True
         neg_charge = True
 
+    global pos_eta
+    global neg_eta
+    if opts.pos_eta and not opts.neg_eta:
+        L1Ana.log.info("Only positive eta requested.")
+        pos_eta = True
+        neg_eta = False
+    elif opts.neg_eta and not opts.pos_eta:
+        L1Ana.log.info("Only negative eta requested.")
+        pos_eta = False
+        neg_eta = True
+    elif opts.pos_eta and opts.neg_eta:
+        L1Ana.log.warning("Only positive and only negative requested. Will include both eta options.")
+        pos_eta = True
+        neg_eta = True
+
     emul = opts.emul
 
 #    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
@@ -226,6 +247,8 @@ def main():
         output.Close()
 
 if __name__ == "__main__":
+    pos_eta = True
+    neg_eta = True
     pos_charge = True
     neg_charge = True
     saveHistos = True

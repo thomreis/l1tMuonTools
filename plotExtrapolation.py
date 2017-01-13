@@ -103,7 +103,10 @@ def main():
             plotdir += '_public'
         if not os.path.exists(plotdir):
             os.makedirs(plotdir)
-        output = root.TFile('./'+plotdir+'/l1_muon_extrapolation_plots.root', 'recreate')
+        fname_extra_str = ''
+        if opts.extrapolated:
+            fname_extra_str = '_extrapolated'
+        output = root.TFile('./'+plotdir+'/l1_muon_gencomp'+fname_extra_str+'_plots.root', 'recreate')
         output.cd()
         for obj in objects:
             c = obj[0]
