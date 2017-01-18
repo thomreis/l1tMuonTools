@@ -821,7 +821,7 @@ def plot_eff_iso(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=Fals
     yBase = 0.13
     notes = extract_notes_from_name(hName, xBase, yBase)
 
-    return plot_effs(hDefs, xTitle, yTitle, 'qual_', notes, autoZoomX, xMax, addOverflow, rebin)
+    return plot_effs(hDefs, xTitle, yTitle, 'iso_', notes, autoZoomX, xMax, addOverflow, rebin)
 
 # plot efficiency contribution from each TF and overall efficiency
 def plot_eff_tf(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=False, autoZoomX=False, xMax=None, addOverflow=False, rebin=1):
@@ -1022,11 +1022,14 @@ def main():
         for etaRange in etaRanges:
             objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.pass', etaRange+'30.pass', 'best_', xTitle='L1 accept', yTitle=yTitle_eff, emul=emul))
             ## pt plots
-            # quality 12
             objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin8_ptmin12_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin4_ptmin5_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
 
             # phi plots
             objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin8_ptmin12_isoMaxXX_dr0.5_matched_'+etaRange+'16.phi', etaRange+'16.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
+            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin4_ptmin5_isoMaxXX_dr0.5_matched_'+etaRange+'8.phi', etaRange+'8.phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, emul=emul, rebin=rebinPhi))
 
 
         ## eta plots
