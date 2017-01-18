@@ -18,6 +18,7 @@ def parse_options_plotRates(parser):
     sub_parser.add_argument("-i", "--interactive", dest="interactive", action='store_false', help="Draw plots on screen.")
     sub_parser.add_argument("--delta", dest="delta", default=False, action='store_true', help="Plot Gen delta TProfile plots.")
     sub_parser.add_argument("--2d", dest="twod", default=False, action='store_true', help="Plot 2D L1 muon1 vs. muon2 plots.")
+    sub_parser.add_argument("--extrapolated", dest="extrapolated", default=False, action='store_true', help="Plots from extrapolated coordinates.")
     sub_parser.add_argument("--public", dest="public", default=False, action='store_true', help="Plot style for publication.")
 
     opts, unknown = parser.parse_known_args()
@@ -55,6 +56,10 @@ def main():
     if batchRun:
         root.gROOT.SetBatch(True)
 
+    extrapol_str = ''
+    if opts.extrapolated:
+        extrapol_str = '_extrapol'
+
     isData = False 
 
 #    eta_ranges = [[0, 0.83], [0.83, 1.24], [1.24, 2.4]]
@@ -74,9 +79,9 @@ def main():
     rebinPt = 2
     # L1 muonu kinematic variables
     if opts.delta:
-        objects.append(plot_tprof_muons(hm, 'l1_muon_absEtaMinXXXX_absEtaMaxYYYY.pt_dpt', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|p_{T}^{L1} - p_{T}^{GEN}|>', eta_ranges=eta_ranges, data=isData, rebin=rebinPt))
-        objects.append(plot_tprof_muons(hm, 'l1_muon_absEtaMinXXXX_absEtaMaxYYYY.pt_deta', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|#eta^{L1} - #eta^{GEN}|>', eta_ranges=eta_ranges, data=isData, xMax=50., rebin=rebinPt))
-        objects.append(plot_tprof_muons(hm, 'l1_muon_absEtaMinXXXX_absEtaMaxYYYY.pt_dphi', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|#phi^{L1} - #phi^{GEN}|>', eta_ranges=eta_ranges, data=isData, xMax=50., rebin=rebinPt))
+        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_dpt', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|p_{T}^{L1} - p_{T}^{GEN}|>', eta_ranges=eta_ranges, data=isData, rebin=rebinPt))
+        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_deta', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|#eta^{L1} - #eta^{GEN}|>', eta_ranges=eta_ranges, data=isData, xMax=80., rebin=rebinPt))
+        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_dphi', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|#phi^{L1} - #phi^{GEN}|>', eta_ranges=eta_ranges, data=isData, xMax=80., rebin=rebinPt))
 
     # 2d reco vs. L1 plots
     if opts.twod:
@@ -84,9 +89,11 @@ def main():
         for eta_range in eta_ranges:
             eta_min = eta_range[0]
             eta_max = eta_range[1]
-            histoprefix2d = '2d_muon_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
+            histoprefix2d = '2d_muon'+extrapol_str+'_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
 
             objects.append(plot_2dhist(hm2d, histoprefix2d+'.pt_dcharge', drawDiag=False, data=isData))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+'.pt_deta', drawDiag=False, data=isData, xMax=80.))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+'.pt_dphi', drawDiag=False, data=isData, xMax=80.))
 
     ##########################################################################
     # save plots to root file
@@ -96,7 +103,10 @@ def main():
             plotdir += '_public'
         if not os.path.exists(plotdir):
             os.makedirs(plotdir)
-        output = root.TFile('./'+plotdir+'/l1_muon_extrapolation_plots.root', 'recreate')
+        fname_extra_str = ''
+        if opts.extrapolated:
+            fname_extra_str = '_extrapolated'
+        output = root.TFile('./'+plotdir+'/l1_muon_gencomp'+fname_extra_str+'_plots.root', 'recreate')
         output.cd()
         for obj in objects:
             c = obj[0]
