@@ -314,6 +314,7 @@ def get_highest_pt_idx(candColl, idcs, gmt=False, tf=False):
             pt = candColl.Pt[i]
         if pt > highestPt:
             highestPtIdx = i
+            highestPt = pt
     return highestPtIdx
 
 
