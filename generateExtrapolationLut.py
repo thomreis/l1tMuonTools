@@ -60,13 +60,17 @@ def fit_extrapolation_hists(hm, coordinate, eta_ranges, fit_range):
             fit_res_ptr = h.Fit(function, 'RS')
             fit_res = fit_res_ptr.Get()
 
-        if fit_res:
+        if fit_res and fit_res.Ndf() != 0:
             print fit_res.Chi2()/fit_res.Ndf()
 
         # in case the fit did not work set the function parameters to be the same as for the previous range
         if not fit_res or (fit_res and not fit_res.IsValid()):
-            prev_function = functions[-1]
-            function.SetParameters(prev_function.GetParameter(0), prev_function.GetParameter(1), prev_function.GetParameter(2))
+            #if len(functions) > 0:
+            #    prev_function = functions[-1]
+            #    function.SetParameters(prev_function.GetParameter(0), prev_function.GetParameter(1), prev_function.GetParameter(2))
+            #else:
+            #    function.SetParameters(0., 0., 0.)
+            function.SetParameters(0., 0., 0.)
 
         functions.append(function)
         hists.append(h)
@@ -88,7 +92,10 @@ def plot_fit(function, hist):
     hist.GetYaxis().SetTitleFont(font)
     hist.GetYaxis().SetLabelFont(font)
     hist.GetYaxis().SetLabelSize(fontSize)
-    hist.GetYaxis().SetTitle('<|#phi^{L1} - #phi^{GEN}|>')
+    if hist.GetName().find('deta') != -1:
+        hist.GetYaxis().SetTitle('<|#eta^{L1} - #eta^{GEN}|>')
+    else:
+        hist.GetYaxis().SetTitle('<|#phi^{L1} - #phi^{GEN}|>')
     hist.SetLineColor(root.kRed)
     #hist.SetLineWidth(2)
     hist.SetMarkerStyle(root.kFullCircle)
@@ -157,7 +164,7 @@ def main():
     lut_entry = 0
     for i, eta_range in enumerate(eta_ranges):
         lut_str += '{etaMin:1.4f}-{etaMax:1.4f}: '.format(etaMin=eta_range[0], etaMax=eta_range[1])
-        lut_str += '0 '
+        lut_str += '0'
         # take special care of 0 hwPt value as it gives infinity with the fit function
         lut_payload += '{i} 0\n'.format(i=lut_entry)
         lut_entry += 1

@@ -21,6 +21,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--pos-charge", dest="pos_charge", default=False, action="store_true", help="Positive GEN charge only.")
     sub_parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative GEN charge only.")
     sub_parser.add_argument("--eta-bits", dest="etabits", type=int, default=6, help="Number of eta input bits.")
+    sub_parser.add_argument("--tftype", dest="tf", type=str, default='boe', help="Use L1 muons from these TF. BMTF (b), OMTF (o), EMTF (e).")
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
 
     opts, unknown = parser.parse_known_args()
@@ -84,12 +85,20 @@ def book_histograms(eta_ranges):
 
     return HistManager(list(set(varnames)), binnings, profiles), HistManager2d(list(set(varnames2d)), binnings2d)
 
-def analyse(evt, hm, hm2d, eta_ranges, emul=False):
+def analyse(evt, hm, hm2d, eta_ranges, emul=False, tf='boe'):
     genColl = evt.gen
     if emul:
         l1Coll = evt.upgradeEmu
     else:
         l1Coll = evt.upgrade
+
+    tftype = []
+    if tf.find('b') != -1:
+        tftype.append(0)
+    if tf.find('o') != -1:
+        tftype.append(1)
+    if tf.find('e') != -1:
+        tftype.append(2)
 
     bx_min = 0
     bx_max = 0
@@ -98,7 +107,7 @@ def analyse(evt, hm, hm2d, eta_ranges, emul=False):
     gen_extra_eta_range = 0.0435
 
     gen_muon_idcs = MuonSelections.select_gen_muons(genColl, pt_min=0.5, pos_eta=pos_eta, neg_eta=neg_eta, pos_charge=pos_charge, neg_charge=neg_charge)
-    l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0.5, bx_min=bx_min, bx_max=bx_max)
+    l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, tftype=tftype)
 
     for i, eta_range in enumerate(eta_ranges):
         eta_min = eta_range[0]
@@ -233,7 +242,7 @@ def main():
                 L1Ana.log.info("Processing event: {n}. Analysed events from selected runs/LS until now: {nAna}".format(n=i+1, nAna=analysed_evt_ctr))
 
             # now do the analysis
-            analyse(event, hm, hm2d, eta_ranges, emul)
+            analyse(event, hm, hm2d, eta_ranges, emul, opts.tf)
             analysed_evt_ctr += 1
     except KeyboardInterrupt:
         L1Ana.log.info("Analysis interrupted after {n} events".format(n=i))
