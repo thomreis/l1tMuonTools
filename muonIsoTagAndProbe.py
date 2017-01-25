@@ -242,7 +242,7 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
         for iso_wp in iso_wps:
             iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
             # remove non-isolated muons
-            if iso_type == 2:
+            if iso_type == 2 or iso_type == 4:
                 iso_min=iso_wp
                 iso_max=999
             else:

@@ -298,7 +298,7 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, iso_wps, emul):
     for iso_wp in iso_wps:
         iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
         # remove non-isolated muons
-        if iso_type == 2:
+        if iso_type == 2 or iso_type == 4:
             iso_min=iso_wp
             iso_max=999
         else:
