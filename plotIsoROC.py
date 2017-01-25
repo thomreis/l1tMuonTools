@@ -21,6 +21,7 @@ def parse_options():
     parser.add_argument("--scale", dest="scale", default=1., type=float, help="Additional scale factor for rate calculation")
     parser.add_argument("-l", "--legacy", dest="legacy", action='store_true', help="Draw plots relative to legacy.")
     parser.add_argument("--public", dest="public", default=False, action='store_true', help="Plot style for publication.")
+    parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot', 'inner2x2', 'outovertot2x2']")
 
     opts, unknown = parser.parse_known_args()
     if opts.feff == "" or opts.frate == "":
@@ -200,6 +201,19 @@ def main():
         convFactorToHz *= opts.scale
         print 'Conversion factor after applying additinoal scale factor of {sf}: {convFactorToHz}'.format(sf=opts.scale, convFactorToHz=convFactorToHz)
 
+    if opts.isomethod == 'rel':
+        iso_type = 1
+    elif opts.isomethod == 'inner':
+        iso_type = 2
+    elif opts.isomethod == 'outovertot':
+        iso_type = 3
+    elif opts.isomethod == 'inner2x2':
+        iso_type = 4
+    elif opts.isomethod == 'outovertot2x2':
+        iso_type = 5
+    else:
+        iso_type = 0
+
     #L1Ana.init_l1_analysis()
     print ""
 
@@ -217,14 +231,27 @@ def main():
             rate_str = 'ugmt_highest_muon_absEtaMin0_absEtaMax2.5_qmin{qmin}'.format(qmin=qualMin)
             eff_l1_str = 'emu_best_l1_muon_qualMin{qmin}_ptmin{thr}_isoMax{iso:.3f}_dr0.5'
             eff_probe_str = 'probe_absEtaMin0_absEtaMax2.4_ptmin{pthr}.pass'.format(pthr=probeThreshold)
-            hNamesRef = {'num':eff_l1_str.format(qmin=qualMin, thr=threshold, iso=1.)+'_matched_'+eff_probe_str,
-                         'den':'emu_'+eff_probe_str}
 
-            referenceRate = get_rate(hmRate, rate_str+'_isoMax1.000_pt', threshold=threshold, scaleFactor=convFactorToHz / 1000.)
-            referenceEff = get_eff(hmEff, hNamesRef)
-
-            iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100.]
+            if iso_type == 0:
+                ref_iso = 31.
+                iso_wps = [0, 1, 3, 5, 7, 9, 11, 15, 20, 25, 31]
+            elif iso_type == 1:
+                ref_iso = 62.
+                iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 1., 1.5, 3., 5., 10., 31., 62.]
+            elif iso_type == 3:
+                ref_iso = 1.
+                iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100.]
+            elif iso_type == 5:
+                ref_iso = 1.
+                iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31.]
+            else:
+                ref_iso = 0.
+                iso_wps = [1., 2., 3., 4., 5., 6., 7., 8., 9.]
             iso_wps.sort()
+            hNamesRef = {'num':eff_l1_str.format(qmin=qualMin, thr=threshold, iso=ref_iso)+'_matched_'+eff_probe_str,
+                         'den':'emu_'+eff_probe_str}
+            referenceRate = get_rate(hmRate, rate_str+'_isoMax{iso:.3f}_pt'.format(iso=ref_iso), threshold=threshold, scaleFactor=convFactorToHz / 1000.)
+            referenceEff = get_eff(hmEff, hNamesRef)
             points = []
             print '==================='
             print 'L1 threshold: {thr} GeV, probe threshold: {pthr} GeV, quality >= {qmin}'.format(thr=threshold, pthr=probeThreshold, qmin=qualMin)

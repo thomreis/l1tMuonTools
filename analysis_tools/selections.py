@@ -123,7 +123,7 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_iso_ugmt_muons(ugmt, caloTowers, iso_min=0., iso_max=1., iso_eta_max=3.0, idcs=None, useVtxExtraCoord=False):
+    def select_iso_ugmt_muons(ugmt, caloTowers, iso_min=0., iso_max=1., iso_eta_max=3.0, idcs=None, useVtxExtraCoord=False, iso_type=0):
         indices = []
         if idcs is None:
             idcs = range(ugmt.nMuons)
@@ -135,10 +135,22 @@ class MuonSelections(object):
             if abs(eta) > iso_eta_max:
                 indices.append(i)
             else:
-                iso = CaloTowerIsolator.calc_out_over_tot_iso(ugmt, caloTowers, i)
+                if iso_type == 0 or iso_type == 1:
+                    iso = CaloTowerIsolator.calc_calo_tower_2x2_sum(ugmt, caloTowers, i, (2, 2), maxSum=31) #absolute isolation
+                    if iso_type == 1 and ugmt.muonEt[i] > 0.:
+                        iso /= float(ugmt.muonEt[i]) #relative isolation
+                elif iso_type == 2: #inner cone over threshold
+                    iso = CaloTowerIsolator.calc_calo_tower_sum(ugmt, caloTowers, i, (1, 1))
+                elif iso_type == 3: #outer cone / total cone below threshold
+                    iso = CaloTowerIsolator.calc_out_over_tot_iso(ugmt, caloTowers, i)
+                elif iso_type == 4: #inner cone over threshold 2x2
+                    iso = CaloTowerIsolator.calc_calo_tower_2x2_sum(ugmt, caloTowers, i, (0, 0), maxSum=31)
+                elif iso_type == 5: #outer cone / total cone below threshold 2x2
+                    iso = CaloTowerIsolator.calc_out_over_tot_2x2_iso(ugmt, caloTowers, i, maxSum=31)
                 #print '{imin} {i} {imax}'.format(imin=iso_min, i=iso, imax=iso_max)
                 if iso >= iso_min and iso <= iso_max:
                     indices.append(i)
+
         return indices
 
     @staticmethod

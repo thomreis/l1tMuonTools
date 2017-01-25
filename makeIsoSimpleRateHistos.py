@@ -25,6 +25,7 @@ def parse_options_upgradeRateHistos(parser):
     sub_parser.add_argument("-e", "--emul", dest="emul", action='store_true', help="Use emulated collections instead of unpacked ones.")
     sub_parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
     sub_parser.add_argument("--eta-restricted", dest="etarestricted", type=float, default=3., help="Upper eta value for isolation.")
+    sub_parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot', 'inner2x2', 'outovertot2x2']")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -265,6 +266,7 @@ def get_highest_pt_idx(candColl, idcs, gmt=False, tf=False):
             pt = candColl.Pt[i]
         if pt > highestPt:
             highestPtIdx = i
+            highestPt = pt
     return highestPtIdx
 
 
@@ -296,7 +298,13 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, iso_wps, emul):
     for iso_wp in iso_wps:
         iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
         # remove non-isolated muons
-        ugmt_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(ugmtColl, l1CaloTowerColl, iso_min=0., iso_max=iso_wp, iso_eta_max=isoEtaMax, idcs=ugmt_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
+        if iso_type == 2:
+            iso_min=iso_wp
+            iso_max=999
+        else:
+            iso_min=0.
+            iso_max=iso_wp
+        ugmt_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(ugmtColl, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=ugmt_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
 
         for eta_range in eta_ranges:
             eta_min = eta_range[0]
@@ -516,6 +524,20 @@ def main():
     global useVtxExtraCoord
     useVtxExtraCoord = opts.extraCoord
 
+    global iso_type
+    if opts.isomethod == 'rel':
+        iso_type = 1
+    elif opts.isomethod == 'inner':
+        iso_type = 2
+    elif opts.isomethod == 'outovertot':
+        iso_type = 3
+    elif opts.isomethod == 'inner2x2':
+        iso_type = 4
+    elif opts.isomethod == 'outovertot2x2':
+        iso_type = 5
+    else:
+        iso_type = 0
+
     global isoEtaMax
     isoEtaMax = opts.etarestricted
 
@@ -525,7 +547,15 @@ def main():
     #eta_ranges = [[0, 2.5], [0, 2.1], [0, 0.83], [0.83, 1.24], [1.24, 2.5]]
     #thresholds = [0, 3, 5, 7, 12, 18, 22]
     #qualities = [0, 4, 8, 12]
-    iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100.]
+    if iso_type == 0: # absolute isolation
+        iso_wps = [0, 1, 3, 5, 7, 9, 11, 15, 20, 25, 28, 30, 31]
+    elif iso_type == 1: # relative isolation
+        iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 1., 1.5, 3., 5., 10., 31., 62.]
+    elif iso_type == 3 or iso_type == 5: # outer cone over total cone
+        iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31.]
+    else: # inner cone
+        iso_wps = [0., 1., 2., 3., 4., 5., 6., 7., 8., 9.]
+
     eta_ranges = [[0, 2.5]]
     thresholds = [0]
     qualities = [4, 8, 12]
@@ -587,6 +617,7 @@ if __name__ == "__main__":
     pos_eta = True
     neg_eta = True
     useVtxExtraCoord = False
+    iso_type = 0
     isoEtaMax = 3.
     saveHistos = True
     main()

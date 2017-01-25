@@ -29,6 +29,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
+    sub_parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot, 'inner2x2', 'outovertot2x2']")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -241,7 +242,13 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
         for iso_wp in iso_wps:
             iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
             # remove non-isolated muons
-            l1_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(l1Coll, l1CaloTowerColl, iso_min=0., iso_max=iso_wp, iso_eta_max=isoEtaMax, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
+            if iso_type == 2:
+                iso_min=iso_wp
+                iso_max=999
+            else:
+                iso_min=0.
+                iso_max=iso_wp
+            l1_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(l1Coll, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
 
             # for all defined eta ranges
             for eta_range in eta_ranges:
@@ -488,6 +495,20 @@ def main():
     global useVtxExtraCoord
     useVtxExtraCoord = opts.extraCoord
 
+    global iso_type
+    if opts.isomethod == 'rel':
+        iso_type = 1
+    elif opts.isomethod == 'inner':
+        iso_type = 2
+    elif opts.isomethod == 'outovertot':
+        iso_type = 3
+    elif opts.isomethod == 'inner2x2':
+        iso_type = 4
+    elif opts.isomethod == 'outovertot2x2':
+        iso_type = 5
+    else:
+        iso_type = 0
+
     global isoEtaMax
     isoEtaMax = opts.etarestricted
 
@@ -535,8 +556,14 @@ def main():
     qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
     match_deltas = {'dr':0.5, 'deta':0.5, 'dphi':0.5} # max deltas for matching
 
-#    iso_wps = [0., 1/1., 1/2., 1/3., 2/3.]
-    iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100.]
+    if iso_type == 0: # absolute isolation
+        iso_wps = [0, 1, 3, 5, 7, 9, 11, 15, 20, 25, 28, 30, 31]
+    elif iso_type == 1: # relative isolation
+        iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 1., 1.5, 3., 5., 10., 31., 62.]
+    elif iso_type == 3 or iso_type == 5: # outer cone over total cone
+        iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31.]
+    else: # inner cone
+        iso_wps = [0., 1., 2., 3., 4., 5., 6., 7., 8., 9.]
 
     # book the histograms
     L1Ana.log.info("Booking combined run histograms.")
@@ -623,6 +650,7 @@ if __name__ == "__main__":
     invMassMin = 71
     invMassMax = 111
     useVtxExtraCoord = False
+    iso_type = 0
     isoEtaMax = 3.
     prefix = ''
     tftype = -1
