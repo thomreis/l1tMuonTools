@@ -806,7 +806,8 @@ def plot_eff_iso(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=Fals
         denPrefix = 'emu_'
         styleKey = 'emul'
 
-    iso_plot_wps = [0., 1/1., 1/2., 4/5., 9/10., 99/100.]
+    #iso_plot_wps = [0., 1/1., 1/2., 4/5., 9/10., 99/100.]
+    iso_plot_wps = [0., 1/2., 2/3., 1., 3., 62.]
     iso_plot_wps.sort()
 
     hDefs = []

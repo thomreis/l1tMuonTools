@@ -560,8 +560,10 @@ def main():
         iso_wps = [0, 1, 3, 5, 7, 9, 11, 15, 20, 25, 28, 30, 31]
     elif iso_type == 1: # relative isolation
         iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 1., 1.5, 3., 5., 10., 31., 62.]
-    elif iso_type == 3 or iso_type == 5: # outer cone over total cone
-        iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31.]
+    elif iso_type == 3: # outer cone over total cone
+        iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31., 99/100.]
+    elif iso_type == 5: # outer cone over total cone 2x2
+        iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31., 99/100.]
     else: # inner cone
         iso_wps = [0., 1., 2., 3., 4., 5., 6., 7., 8., 9.]
 
