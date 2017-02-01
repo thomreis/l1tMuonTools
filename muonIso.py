@@ -40,9 +40,9 @@ def book_histograms(emul=False):
     if emul:
         namePrefix += 'emu_'
 
-    vars_bins = [['iet', 256, 0, 256], ['ieta', 83, -41, 42], ['iphi', 73, 0, 73], ['iqual', 16, 0, 16], ['n', 2017, 0, 4034], ['total_cone_iet', 256, 0, 256], ['inner_cone_iet', 256, 0, 256], ['outer_cone_iet', 256, 0, 256], ['outer_over_total_cone_iet', 51, 0, 1.02]]
-    x_title_vars = {'iet':'iE_{T}', 'ieta':'i#eta', 'iphi':'i#phi', 'iqual':'qual', 'n':'# towers', 'total_cone_iet':'iE_{T}^{total}', 'inner_cone_iet':'iE_{T}^{in}', 'outer_cone_iet':'iE_{T}^{out}', 'outer_over_total_cone_iet':'iE_{T}^{out}'}
-    x_title_units = {'iet':None, 'ieta':None, 'iphi':None, 'iqual':None, 'n':None, 'total_cone_iet':None, 'inner_cone_iet':None, 'outer_cone_iet':None, 'outer_over_total_cone_iet':None}
+    vars_bins = [['iet', 256, 0, 256], ['ieta', 83, -41, 42], ['iphi', 73, 0, 73], ['iqual', 16, 0, 16], ['n', 2017, 0, 4034], ['total_cone_iet', 256, 0, 256], ['inner_cone_iet', 256, 0, 256], ['outer_cone_iet', 256, 0, 256], ['outer_over_total_cone_iet', 51, 0, 1.02], ['total_cone_2x2_iet', 256, 0, 256], ['inner_cone_2x2_iet', 256, 0, 256], ['outer_cone_2x2_iet', 256, 0, 256], ['outer_over_total_cone_2x2_iet', 51, 0, 1.02]]
+    x_title_vars = {'iet':'iE_{T}', 'ieta':'i#eta', 'iphi':'i#phi', 'iqual':'qual', 'n':'# towers', 'total_cone_iet':'iE_{T}^{total}', 'inner_cone_iet':'iE_{T}^{in}', 'outer_cone_iet':'iE_{T}^{out}', 'outer_over_total_cone_iet':'iE_{T}^{out}', 'total_cone_2x2_iet':'iE_{T}^{total 2x2}', 'inner_cone_2x2_iet':'iE_{T}^{in 2x2}', 'outer_cone_2x2_iet':'iE_{T}^{out 2x2}', 'outer_over_total_cone_2x2_iet':'iE_{T}^{out 2x2}'}
+    x_title_units = {'iet':None, 'ieta':None, 'iphi':None, 'iqual':None, 'n':None, 'total_cone_iet':None, 'inner_cone_iet':None, 'outer_cone_iet':None, 'outer_over_total_cone_iet':None, 'total_cone_2x2_iet':None, 'inner_cone_2x2_iet':None, 'outer_cone_2x2_iet':None, 'outer_over_total_cone_2x2_iet':None}
 
     x_vars_bins_2d = [['ieta', 83, -41, 42], ['iet_ieta', 83, -41, 42], ['iet_ietarel', 165, -82, 83], ['iet_ietarel_red', 31, -15, 16]]
     y_vars_bins_2d = [['iphi', 73, 0, 73], ['iet_iphi', 73, 0, 73], ['iet_iphirel', 73, -36, 37], ['iet_iphirel_red', 31, -15, 16]]
@@ -120,6 +120,11 @@ def analyse(evt, hm, hm2d, emul=False):
         relTwrs, iEtSums = CaloTowerIsolator.calc_calo_tower_sums(l1CaloTwrColl, muInCaloTowerIEta, muInCaloTowerIPhi, [(1, 1), (5, 5)])
         inner_cone_iet = iEtSums[0]
         total_cone_iet = iEtSums[1]
+        # energy sums of 2x2 towers
+        iEtSums2x2 = CaloTowerIsolator.calc_calo_tower_2x2_sums(l1CaloTwrColl, muInCaloTowerIEta, muInCaloTowerIPhi, [(1, 1), (2, 2)])
+        inner_cone_2x2_iet = iEtSums2x2[0]
+        total_cone_2x2_iet = iEtSums2x2[1]
+        #print '{i} {t} {i2} {t2}'.format(i=inner_cone_iet, t=total_cone_iet, i2=inner_cone_2x2_iet, t2=total_cone_2x2_iet)
 
         for relTwr in relTwrs:
             hm2d.fill(histoprefix2d+'.iet_ietarel_iet_iphirel', relTwr[0], relTwr[1], relTwr[2])
@@ -131,6 +136,12 @@ def analyse(evt, hm, hm2d, emul=False):
         hm.fill(histoprefix+'.outer_cone_iet', total_cone_iet - inner_cone_iet)
         if total_cone_iet > 0:
             hm.fill(histoprefix+'.outer_over_total_cone_iet', (total_cone_iet - inner_cone_iet) / float(total_cone_iet))
+
+        hm.fill(histoprefix+'.total_cone_2x2_iet', total_cone_2x2_iet)
+        hm.fill(histoprefix+'.inner_cone_2x2_iet', inner_cone_2x2_iet)
+        hm.fill(histoprefix+'.outer_cone_2x2_iet', total_cone_2x2_iet - inner_cone_2x2_iet)
+        if total_cone_2x2_iet > 0:
+            hm.fill(histoprefix+'.outer_over_total_cone_2x2_iet', (total_cone_2x2_iet - inner_cone_2x2_iet) / float(total_cone_2x2_iet))
 
 def save_histos(hm, hm2d, outfile):
     '''

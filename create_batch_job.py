@@ -34,6 +34,7 @@ def parse_options_and_init_log(loglevel=logging.INFO):
     parser.add_argument("--tftype", dest="tftype", type=str, default=None, help="Fill L1 muons from one TF.")
     parser.add_argument("--eta-bits", dest="etabits", type=int, default=None, help="Number of eta input bits for extrapolation LUT.")
     parser.add_argument("--iso-method", dest="isomethod", type=str, default=None, help="Isolation method. ['abs', 'rel', 'inner', 'outovertot', 'inner2x2', 'outovertot2x2']")
+    parser.add_argument("--nvtx-min", dest="nvtxmin", type=int, default=None, help="Minimum number of vertices.")
 
     opts, unknown = parser.parse_known_args()
     if opts.fname == "" and opts.flist == "":
@@ -137,6 +138,8 @@ def main():
                 py_string += " --eta-bits {b}".format(b=opts.etabits)
             if opts.isomethod:
                 py_string += " --iso-method {i}".format(i=opts.isomethod)
+            if opts.nvtxmin:
+                py_string += " --nvtx-min {i}".format(i=opts.nvtxmin)
             py_string += "\n"
             job_script.write(py_string)
             sub_string = "bsub -q {queue} -cwd {cwd} -J job_{i} {dir}/job_{i}.sh\n".format(queue=opts.queue, cwd=out_dir, dir=job_dir, i=i)

@@ -64,7 +64,7 @@ class CaloTowerIsolator(object):
         return relTwrs
 
     @staticmethod
-    def calc_calo_tower_sums(caloTowers, ieta, iphi, radii):
+    def calc_calo_tower_sums(caloTowers, ieta, iphi, radii, iEtMin=0):
         #calc sums around ieta and iphi
         iEtSums = [0] * len(radii)
         relTwrs = CaloTowerIsolator.get_rel_calo_towers(caloTowers, ieta, iphi)
@@ -72,14 +72,16 @@ class CaloTowerIsolator(object):
         for relTwr in relTwrs:
             for i, xyRadii in enumerate(radii):
                 if abs(relTwr[0]) <= xyRadii[0] and abs(relTwr[1]) <= xyRadii[1]:
+                    if relTwr[2] < iEtMin:
+                        continue
                     iEtSums[i] += relTwr[2]
         return relTwrs, iEtSums
 
     @staticmethod
-    def calc_out_over_tot_iso(ugmt, caloTowers, muIdx):
+    def calc_out_over_tot_iso(ugmt, caloTowers, muIdx, iEtMin=0):
         muInCaloTowerIEta = CaloTowerIsolator.calc_muon_calo_tower_ieta(ugmt.muonIEta[muIdx])
         muInCaloTowerIPhi = CaloTowerIsolator.calc_muon_calo_tower_iphi(ugmt.muonIPhi[muIdx])
-        relTwrs, iEtSums = CaloTowerIsolator.calc_calo_tower_sums(caloTowers, muInCaloTowerIEta, muInCaloTowerIPhi, [(1, 1), (5, 5)])
+        relTwrs, iEtSums = CaloTowerIsolator.calc_calo_tower_sums(caloTowers, muInCaloTowerIEta, muInCaloTowerIPhi, [(1, 1), (5, 5)], iEtMin)
         outerIEt = iEtSums[1] - iEtSums[0]
         outOverTot = 0.
         if iEtSums[1] > 0.:
@@ -87,14 +89,14 @@ class CaloTowerIsolator(object):
         return outOverTot
 
     @staticmethod
-    def calc_calo_tower_sum(ugmt, caloTowers, muIdx, radius=(0, 0)):
+    def calc_calo_tower_sum(ugmt, caloTowers, muIdx, radius=(0, 0), iEtMin=0):
         muInCaloTowerIEta = CaloTowerIsolator.calc_muon_calo_tower_ieta(ugmt.muonIEta[muIdx])
         muInCaloTowerIPhi = CaloTowerIsolator.calc_muon_calo_tower_iphi(ugmt.muonIPhi[muIdx])
-        relTwrs, iEtSums = CaloTowerIsolator.calc_calo_tower_sums(caloTowers, muInCaloTowerIEta, muInCaloTowerIPhi, [radius])
+        relTwrs, iEtSums = CaloTowerIsolator.calc_calo_tower_sums(caloTowers, muInCaloTowerIEta, muInCaloTowerIPhi, [radius], iEtMin)
         return iEtSums[0]
 
     @staticmethod
-    def calc_calo_tower_2x2_sums(caloTowers, ieta, iphi, radii):
+    def calc_calo_tower_2x2_sums(caloTowers, ieta, iphi, radii, iEtMin=0):
         #calc 2x2 sums around ieta and iphi
         iEtSums = [0] * len(radii)
         relTwrs = CaloTowerIsolator.get_rel_calo_towers(caloTowers, ieta, iphi)
@@ -114,6 +116,8 @@ class CaloTowerIsolator(object):
                 dIPhi = dIPhi - 1 + phiShift
             for i, xyRadii in enumerate(radii):
                 if abs(dIEta) <= xyRadii[0]*2 and abs(dIPhi) <= xyRadii[1]*2:
+                    if relTwr[2] < iEtMin:
+                        continue
                     iEtSums[i] += relTwr[2]
         return iEtSums
 

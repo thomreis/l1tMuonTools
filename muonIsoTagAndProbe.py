@@ -30,6 +30,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
     sub_parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot, 'inner2x2', 'outovertot2x2']")
+    sub_parser.add_argument("--nvtx-min", dest="nvtxmin", type=int, default=None, help="Minimum number of vertices.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -58,7 +59,7 @@ def book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, iso_wps, emul=Fa
 
     dr_str = '_dr'+str(match_deltas['dr'])
 
-    vars_bins = [['pass', 1, 1, 2], ['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['vtx', 60, 0, 60], ['run', 17000, 271725, 288725]]
+    vars_bins = [['pass', 1, 1, 2], ['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['vtx', 100, 0, 100], ['run', 17000, 271725, 288725]]
     x_title_vars = {'pass':'pass', 'pt':'p_{T}', 'eta':'#eta', 'phi':'#phi', 'charge':'charge', 'vtx':'PU', 'run':'run number'}
     x_title_units = {'pass':None, 'pt':'GeV/c', 'eta':None, 'phi':None, 'charge':None, 'vtx':None, 'run':None}
     probe_vars_bins = vars_bins + [['p', -1]+p_bins]
@@ -618,6 +619,11 @@ def main():
                             analyze_this_ls = True
                             break
                 if not analyze_this_ls:
+                    continue
+
+            # process only if event has minimum number of vertices
+            if opts.nvtxmin:
+                if event.recoVertex.nVtx < opts.nvtxmin:
                     continue
 
             # book histograms for this event's run number if not already done
