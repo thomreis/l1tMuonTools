@@ -127,16 +127,22 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
     hStack = root.THStack()
     # get all the histograms and set their plot style
     for hDef in hDefs:
+        hName = hDef['num']
+        if hName[:4] == 'gmt_':
+            hName = hName.replace('qmin12', 'qmin5')
+            hName = hName.replace('qmin8', 'qmin3')
+            hName = hName.replace('qmin4', 'qmin2')
+
         if threshold:
-            h = hm.get_threshold_hist(hDef['num']).Clone()
+            h = hm.get_threshold_hist(hName).Clone()
             if den:
                 hDen = hm.get_threshold_hist(den)
                 h.Divide(h, hDen, 1, 1, "b")
         else:
             if den:
-                h = hm.get_ratio(hDef['num'], den).Clone()
+                h = hm.get_ratio(hName, den).Clone()
             else:
-                h = hm.get(hDef['num']).Clone()
+                h = hm.get(hName).Clone()
 
         if normToBinWidth and not threshold and not den:
             for bin in range(1, h.GetNbinsX()+1):
@@ -248,7 +254,7 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
     return [c, hs, legend, lines, tex]
 
 def print_rates(hm, hName, scaleFactor=1.):
-    hNames = ['gmt_'+hName.replace('qmin12', 'qmin8'), 'ugmt_'+hName, 'bmtf_ugmt_'+hName, 'omtf_ugmt_'+hName, 'emtf_ugmt_'+hName]
+    hNames = ['gmt_'+hName.replace('qmin12', 'qmin5'), 'ugmt_'+hName, 'bmtf_ugmt_'+hName, 'omtf_ugmt_'+hName, 'emtf_ugmt_'+hName]
 
     print '===== Rates ====='
     print hName
@@ -379,7 +385,10 @@ def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', thresh
             gmt_dict = {'num':den, 'den':den}
             gmt_dict.update(styles['gmt'])
         else:
-            gmt_dict = {'num':'gmt_'+hName.replace('qmin12', 'qmin8'), 'den':den}
+            hName_gmt = hName.replace('qmin12', 'qmin5')
+            hName_gmt = hName_gmt.replace('qmin8', 'qmin3')
+            hName_gmt = hName_gmt.replace('qmin4', 'qmin2')
+            gmt_dict = {'num':'gmt_'+hName_gmt, 'den':den}
             gmt_dict.update(styles['gmt'])
         hDefs.append(gmt_dict)
 
@@ -388,7 +397,8 @@ def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', thresh
     notes = extract_notes_from_name(hName, xBase, yBase)
     if den:
         den_eta_number_strs = re.findall(r'[\d\.\d]+', den[den.find('EtaMin')+6:den.find('EtaMax')+12])
-        if len(den_eta_number_strs) > 1 and eta_number_strs != den_eta_number_strs:
+        #if len(den_eta_number_strs) > 1 and eta_number_strs != den_eta_number_strs:
+        if len(den_eta_number_strs) > 1:
             den_note_str = den_eta_number_strs[0]+' < |#eta^{GMT}| < '+den_eta_number_strs[1]
             notes.append([xBase, yBase-0.05, den_note_str, True])
 
@@ -447,7 +457,7 @@ def plot_hists_qstack(hm, hName, den=None, xTitle='', yTitle='# muons', threshol
             gmt_dict = {'num':den, 'den':den}
             gmt_dict.update(styles['gmt'])
         else:
-            gmt_dict = {'num':'gmt_'+hName.replace('qmin12', 'qmin8'), 'den':den}
+            gmt_dict = {'num':'gmt_'+hName.replace('qmin12', 'qmin5'), 'den':den}
             gmt_dict.update(styles['gmt'])
         hDefs.append(gmt_dict)
 
@@ -456,7 +466,8 @@ def plot_hists_qstack(hm, hName, den=None, xTitle='', yTitle='# muons', threshol
     notes = extract_notes_from_name(hName, xBase, yBase, qualTxt=False)
     if den:
         den_eta_number_strs = re.findall(r'[\d\.\d]+', den[den.find('EtaMin')+6:den.find('EtaMax')+12])
-        if len(den_eta_number_strs) > 1 and eta_number_strs != den_eta_number_strs:
+        #if len(den_eta_number_strs) > 1 and eta_number_strs != den_eta_number_strs:
+        if len(den_eta_number_strs) > 1:
             den_note_str = den_eta_number_strs[0]+' < |#eta^{GMT}| < '+den_eta_number_strs[1]
             notes.append([xBase, yBase-0.05, den_note_str, True])
 
@@ -464,6 +475,7 @@ def plot_hists_qstack(hm, hName, den=None, xTitle='', yTitle='# muons', threshol
 
 def main():
     opts = parse_options_plotRates(parser)
+    global plotLegacy
     plotLegacy = opts.legacy
     batchRun = opts.interactive
     if batchRun:
@@ -565,14 +577,14 @@ def main():
     print 'Rates'
     print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', scaleFactor=convFactorToHz / 1000.)
     print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin12_pt', scaleFactor=convFactorToHz / 1000.)
-    print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin4_pt', scaleFactor=convFactorToHz / 1000.)
-    print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin4_pt', scaleFactor=convFactorToHz / 1000.)
+    #print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin4_pt', scaleFactor=convFactorToHz / 1000.)
+    #print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin4_pt', scaleFactor=convFactorToHz / 1000.)
 
     print 'Rates scaled to 1 colliding bunch'
     print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', scaleFactor=convFactorToHz / 1000. / nCollBunches)
     print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin12_pt', scaleFactor=convFactorToHz / 1000. / nCollBunches)
-    print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin4_pt', scaleFactor=convFactorToHz / 1000. / nCollBunches)
-    print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin4_pt', scaleFactor=convFactorToHz / 1000. / nCollBunches)
+    #print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin4_pt', scaleFactor=convFactorToHz / 1000. / nCollBunches)
+    #print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin4_pt', scaleFactor=convFactorToHz / 1000. / nCollBunches)
 
     # q stack uGMT rates for regions
     objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events', threshold=True, stacked=True, data=thisIsData))
@@ -589,23 +601,41 @@ def main():
     objects.append(plot_hists_qstack(hm, 'muon_ptmin22_qmin12_eta', xTitle='#eta', yTitle='', stacked=True, normToBinWidth=True, data=thisIsData))
 
     if plotLegacy:
-        # relative uGMT rates for regions
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax2.5_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin12_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0.83_absEtaMax1.24_qmin12_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin1.24_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin12_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0.83_absEtaMax1.24_qmin12_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin1.24_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
+        # relative uGMT rates for regions single muon quality
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax2.5_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin12_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0.83_absEtaMax1.24_qmin12_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin1.24_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin12_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0.83_absEtaMax1.24_qmin12_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin1.24_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
+
+        # relative uGMT rates for regions double muon quality
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin8_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax2.5_qmin3_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin8_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin3_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0.83_absEtaMax1.24_qmin8_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin3_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin1.24_absEtaMax2.5_qmin8_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin3_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin8_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin3_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0.83_absEtaMax1.24_qmin8_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin3_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin1.24_absEtaMax2.5_qmin8_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin3_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
+
+        # relative uGMT rates for regions muon open quality
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin4_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax2.5_qmin2_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin4_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin2_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0.83_absEtaMax1.24_qmin4_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin2_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin1.24_absEtaMax2.5_qmin4_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin2_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin4_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin2_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0.83_absEtaMax1.24_qmin4_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin2_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin1.24_absEtaMax2.5_qmin4_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin2_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
 
         # q stack relative uGMT rates for regions
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin0_absEtaMax2.5_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax0.83_qmin12_pt', 'gmt_muon_absEtaMin0_absEtaMax0.83_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0.83_absEtaMax1.24_qmin12_pt', 'gmt_muon_absEtaMin0.83_absEtaMax1.24_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin1.24_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin1.24_absEtaMax2.5_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax0.83_qmin12_pt', 'gmt_muon_absEtaMin0_absEtaMax0.83_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0.83_absEtaMax1.24_qmin12_pt', 'gmt_muon_absEtaMin0.83_absEtaMax1.24_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin1.24_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin1.24_absEtaMax2.5_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin0_absEtaMax2.5_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax0.83_qmin12_pt', 'gmt_muon_absEtaMin0_absEtaMax0.83_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0.83_absEtaMax1.24_qmin12_pt', 'gmt_muon_absEtaMin0.83_absEtaMax1.24_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin1.24_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin1.24_absEtaMax2.5_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax0.83_qmin12_pt', 'gmt_muon_absEtaMin0_absEtaMax0.83_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0.83_absEtaMax1.24_qmin12_pt', 'gmt_muon_absEtaMin0.83_absEtaMax1.24_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin1.24_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin1.24_absEtaMax2.5_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
 
     # uGMT TF rates for 0<|eta|<2.5
     objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax0.83_qmin12_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events', threshold=True, stacked=True, reg='b', data=thisIsData))
@@ -619,25 +649,25 @@ def main():
 
     if plotLegacy:
         # relative uGMT TF rates for 0<|eta|<2.5
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin0_absEtaMax0.83_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin0.83_absEtaMax1.24_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_highest_muon_absEtaMin1.24_absEtaMax2.5_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
 
         # q stack relative uGMT TF rates for 0<|eta|<2.5
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin0_absEtaMax0.83_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin0.83_absEtaMax1.24_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
-        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin1.24_absEtaMax2.5_qmin8_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin0_absEtaMax0.83_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='b', data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin0.83_absEtaMax1.24_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='o', data=thisIsData))
+        objects.append(plot_hists_qstack(hm, 'muon_absEtaMin0_absEtaMax2.5_qmin12_pt', 'gmt_muon_absEtaMin1.24_absEtaMax2.5_qmin5_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events / Integrated # GMT events', threshold=True, stacked=True, reg='e', data=thisIsData))
 
         # relative uGMT eta distributions
-        objects.append(plot_hists_standard(hm, 'muon_ptmin0_qmin12_eta', 'gmt_muon_ptmin0_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'muon_ptmin0_qmin12_eta', 'gmt_muon_ptmin0_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=False, data=thisIsData))
-        objects.append(plot_hists_qstack  (hm, 'muon_ptmin0_qmin12_eta', 'gmt_muon_ptmin0_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'muon_ptmin12_qmin12_eta', 'gmt_muon_ptmin12_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'muon_ptmin12_qmin12_eta', 'gmt_muon_ptmin12_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=False, data=thisIsData))
-        objects.append(plot_hists_qstack  (hm, 'muon_ptmin12_qmin12_eta', 'gmt_muon_ptmin12_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'muon_ptmin22_qmin12_eta', 'gmt_muon_ptmin22_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
-        objects.append(plot_hists_standard(hm, 'muon_ptmin22_qmin12_eta', 'gmt_muon_ptmin22_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=False, data=thisIsData))
-        objects.append(plot_hists_qstack  (hm, 'muon_ptmin22_qmin12_eta', 'gmt_muon_ptmin22_qmin8_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'muon_ptmin0_qmin12_eta', 'gmt_muon_ptmin0_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'muon_ptmin0_qmin12_eta', 'gmt_muon_ptmin0_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=False, data=thisIsData))
+        objects.append(plot_hists_qstack  (hm, 'muon_ptmin0_qmin12_eta', 'gmt_muon_ptmin0_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'muon_ptmin12_qmin12_eta', 'gmt_muon_ptmin12_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'muon_ptmin12_qmin12_eta', 'gmt_muon_ptmin12_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=False, data=thisIsData))
+        objects.append(plot_hists_qstack  (hm, 'muon_ptmin12_qmin12_eta', 'gmt_muon_ptmin12_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'muon_ptmin22_qmin12_eta', 'gmt_muon_ptmin22_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
+        objects.append(plot_hists_standard(hm, 'muon_ptmin22_qmin12_eta', 'gmt_muon_ptmin22_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=False, data=thisIsData))
+        objects.append(plot_hists_qstack  (hm, 'muon_ptmin22_qmin12_eta', 'gmt_muon_ptmin22_qmin5_eta', xTitle='#eta', yTitle='# muons / # GMT muons', stacked=True, data=thisIsData))
 
     ##########################################################################
     # save plots to root file

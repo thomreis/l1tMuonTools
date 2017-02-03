@@ -101,6 +101,7 @@ class L1Data(object):
         self.upgradeOmtfEmu = None
         self.upgradeEmtf = None
         self.upgradeEmtfEmu = None
+        self.legacyGmtEmu = None
         self.ugmt = None
         self.towers2x2 = None
         self.towers = None
@@ -135,6 +136,7 @@ class L1Ntuple(object):
         self.do_upgradeEmu = False
         self.do_upgradeTf = False
         self.do_upgradeTfEmu = False
+        self.do_legacyGmtEmu = False
         self.do_reco = False
         self.do_gen = False
         self.do_muonreco = False
@@ -148,6 +150,7 @@ class L1Ntuple(object):
         self.tree_upgradeEmu = None
         self.tree_upgradeTf = None
         self.tree_upgradeTfEmu = None
+        self.tree_legacyGmtEmu = None
         self.tree_gen = None
         self.tree_muon = None
         self.tree_muonupgrade = None
@@ -203,6 +206,7 @@ class L1Ntuple(object):
         self.tree_upgradeEmu = root.TChain("l1UpgradeEmuTree/L1UpgradeTree")
         self.tree_upgradeTf = root.TChain("l1UpgradeTfMuonTree/L1UpgradeTfMuonTree")
         self.tree_upgradeTfEmu = root.TChain("l1UpgradeTfMuonEmuTree/L1UpgradeTfMuonTree")
+        self.tree_legacyGmtEmu = root.TChain("l1legacyMuonEmuTree/L1UpgradeTree")
         self.tree_muon = root.TChain("l1MuonRecoTree/Muon2RecoTree")
         self.tree_gen = root.TChain("l1GeneratorTree/L1GenTree")
         self.tree_reco = root.TChain("l1RecoTree/RecoTree")
@@ -221,6 +225,8 @@ class L1Ntuple(object):
                 self.tree_upgradeTf.Add(fname)
             if self.do_upgradeTfEmu:
                 self.tree_upgradeTfEmu.Add(fname)
+            if self.do_legacyGmtEmu:
+                self.tree_legacyGmtEmu.Add(fname)
             if self.do_gen:
                 self.tree_gen.Add(fname)
             if self.do_reco:
@@ -244,6 +250,8 @@ class L1Ntuple(object):
             self.tree_main.AddFriend(self.tree_upgradeTf)
         if self.do_upgradeTfEmu:
             self.tree_main.AddFriend(self.tree_upgradeTfEmu)
+        if self.do_legacyGmtEmu:
+            self.tree_main.AddFriend(self.tree_legacyGmtEmu)
         if self.do_gen:
             self.tree_main.AddFriend(self.tree_gen)
         if self.do_reco:
@@ -310,6 +318,7 @@ class L1Ntuple(object):
         upgradeEmu = self.curr_file.Get("l1UpgradeEmuTree/L1UpgradeTree")
         upgradeTf = self.curr_file.Get("l1UpgradeTfMuonTree/L1UpgradeTfMuonTree")
         upgradeTfEmu = self.curr_file.Get("l1UpgradeTfMuonEmuTree/L1UpgradeTfMuonTree")
+        legacyGmtEmu = self.curr_file.Get("l1legacyMuonEmuTree/L1UpgradeTree")
         muon = self.curr_file.Get("l1MuonRecoTree/Muon2RecoTree")
         gen = self.curr_file.Get("l1GeneratorTree/L1GenTree")
         jets = self.curr_file.Get("l1RecoTree/RecoTree")
@@ -351,6 +360,13 @@ class L1Ntuple(object):
         else:
             L1Ana.log.warning(
                 "Could not find L1UpgradeTfMuonEmuTree... It will be skipped.")
+
+        if legacyGmtEmu:
+            L1Ana.log.info("Found L1legacyMuonEmuTree... Will add access to it.")
+            self.do_legacyGmtEmu = True
+        else:
+            L1Ana.log.warning(
+                "Could not find L1legacyMuonEmuTree... It will be skipped.")
 
         if muon:
             L1Ana.log.info("Found MuonRecoTree... Will add access to it.")
@@ -501,6 +517,11 @@ class L1Ntuple(object):
             self.tree_upgradeTfEmu.SetBranchAddress("L1UpgradeBmtfMuon", root.AddressOf(self.data.upgradeBmtfEmu))
             self.tree_upgradeTfEmu.SetBranchAddress("L1UpgradeOmtfMuon", root.AddressOf(self.data.upgradeOmtfEmu))
             self.tree_upgradeTfEmu.SetBranchAddress("L1UpgradeEmtfMuon", root.AddressOf(self.data.upgradeEmtfEmu))
+
+        if self.do_legacyGmtEmu:
+            L1Ana.log.info("Setting branch addresses for L1legacyMuonEmuTree")
+            self.data.legacyGmtEmu = root.L1Analysis.L1AnalysisL1UpgradeDataFormat()
+            self.tree_legacyGmtEmu.SetBranchAddress("L1Upgrade", root.AddressOf(self.data.legacyGmtEmu))
 
         if self.do_reco:
             L1Ana.log.info("Setting branch addresses for RecoTree.")
