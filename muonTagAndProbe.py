@@ -27,6 +27,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--use-l1-extra-coord", dest="l1extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
     sub_parser.add_argument("--use-reco-extra-station", dest="recoExtraStation", type=int, default=0, help="Extrapolated reco muon coordinates. 0=Vertex, 1=1st muon station, 2=2nd muon station.")
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
+    sub_parser.add_argument("--legacy", dest="legacy", default=False, action="store_true", help="Use legacy muons translated to upgrade format.")
     sub_parser.add_argument("--pa", dest="pa_run", default=False, action="store_true", help="Setup for pA run.")
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
@@ -42,7 +43,7 @@ def get_tftype(tf_muon_index):
     else:
         return 2 # EMTF
 
-def book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=False):
+def book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=False, legacy=False):
     # define pt binning
     pt_bins = range(0, 60, 2)
     pt_bins += range(60, 80, 5)
@@ -91,6 +92,8 @@ def book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=False):
         namePrefix += 'emtf_only_'
     if emul:
         namePrefix += 'emu_'
+    if legacy:
+        namePrefix += 'legacy_'
 
     varnames = []
     binnings = {}
@@ -198,7 +201,7 @@ def fill_matched_muons(evt, hm, matched_muons, muon_type='', eta_strs = ['', '']
         hm.fill(muon_str+qual_min_str+ptmin_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.phi', recoColl.phi[matched_muon[1]])
         hm.fill(muon_str+qual_min_str+ptmin_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.dr', matched_muon[2])
 
-def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match_deltas, emul=False, pp_run=True):
+def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match_deltas, emul=False, pp_run=True, legacy=False):
     recoColl = evt.recoMuon
 
     # at least 2 reco muons for tag and probe
@@ -233,6 +236,12 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
         namePrefix += 'emu_'
     else:
         l1Coll = evt.upgrade
+
+    # use translated legacy muons
+    if legacy:
+        l1Coll = evt.legacyGmtEmu
+        namePrefix += 'legacy_'
+
     l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta, useVtxExtraCoord=useVtxExtraCoord)
 
     # vertex information
@@ -658,6 +667,7 @@ def main():
         tftype = 2
 
     emul = opts.emul
+    legacy = opts.legacy
     pp_run = not opts.pa_run
 
     # combinations of probe_pt_min and the corresponding pt_min values for a quality
@@ -687,12 +697,15 @@ def main():
 #    eta_ranges = [[0, 2.4]]
     eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
 #    eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
-    qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
+    if legacy:
+        qual_ptmins_dict = {5:ptmins_list_q12, 3:ptmins_list_q8, 2:ptmins_list_q4}
+    else:
+        qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
     match_deltas = {'dr':0.5, 'deta':0.5, 'dphi':0.5} # max deltas for matching
 
     # book the histograms
     L1Ana.log.info("Booking combined run histograms.")
-    hm, hm2d = book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=emul)
+    hm, hm2d = book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=emul, legacy=legacy)
     # histogram dicts per run
     hm_runs = {}
     hm2d_runs = {}
@@ -746,13 +759,13 @@ def main():
             # book histograms for this event's run number if not already done
             if perRunHistos and not runnr in hm_runs:
                 L1Ana.log.info("Booking histograms for run {r}.".format(r=runnr))
-                hm_runs[runnr], hm2d_runs[runnr] = book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=emul)
+                hm_runs[runnr], hm2d_runs[runnr] = book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=emul, legacy=legacy)
 
             # now do the analysis for all pt cut combinations
             if perRunHistos:
-                analyse(event, hm, hm2d, hm_runs[runnr], hm2d_runs[runnr], eta_ranges, qual_ptmins_dict, match_deltas, emul=emul, pp_run=pp_run)
+                analyse(event, hm, hm2d, hm_runs[runnr], hm2d_runs[runnr], eta_ranges, qual_ptmins_dict, match_deltas, emul=emul, pp_run=pp_run, legacy=legacy)
             else:
-                analyse(event, hm, hm2d, None, None, eta_ranges, qual_ptmins_dict, match_deltas, emul=emul, pp_run=pp_run)
+                analyse(event, hm, hm2d, None, None, eta_ranges, qual_ptmins_dict, match_deltas, emul=emul, pp_run=pp_run, legacy=legacy)
             analysed_evt_ctr += 1
     except KeyboardInterrupt:
         L1Ana.log.info("Analysis interrupted after {n} events".format(n=i))
