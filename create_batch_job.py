@@ -30,6 +30,7 @@ def parse_options_and_init_log(loglevel=logging.INFO):
     parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
     parser.add_argument("--eta-restricted", dest="etarestricted", type=float, default=None, help="Upper eta value for isolation.")
     parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator histograms.")
+    parser.add_argument("--legacy", dest="legacy", default=False, action="store_true", help="Use legacy muons translated to upgrade format.")
     parser.add_argument("--prefix", dest="prefix", type=str, default=None, help="Prefix for histogram names")
     parser.add_argument("--tftype", dest="tftype", type=str, default=None, help="Fill L1 muons from one TF.")
     parser.add_argument("--eta-bits", dest="etabits", type=int, default=None, help="Number of eta input bits for extrapolation LUT.")
@@ -130,6 +131,8 @@ def main():
                 py_string += " --eta-restricted {eta}".format(eta=opts.etarestricted)
             if opts.emul:
                 py_string += " --emul"
+            if opts.legacy:
+                py_string += " --legacy"
             if opts.prefix:
                 py_string += " --prefix {pref}".format(pref=opts.prefix)
             if opts.tftype:
