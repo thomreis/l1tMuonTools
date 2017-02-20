@@ -36,6 +36,7 @@ def parse_options_and_init_log(loglevel=logging.INFO):
     parser.add_argument("--eta-bits", dest="etabits", type=int, default=None, help="Number of eta input bits for extrapolation LUT.")
     parser.add_argument("--iso-method", dest="isomethod", type=str, default=None, help="Isolation method. ['abs', 'rel', 'inner', 'outovertot', 'inner2x2', 'outovertot2x2']")
     parser.add_argument("--nvtx-min", dest="nvtxmin", type=int, default=None, help="Minimum number of vertices.")
+    parser.add_argument("--nvtx-max", dest="nvtxmax", type=int, default=None, help="Maximum number of vertices.")
 
     opts, unknown = parser.parse_known_args()
     if opts.fname == "" and opts.flist == "":
@@ -143,6 +144,8 @@ def main():
                 py_string += " --iso-method {i}".format(i=opts.isomethod)
             if opts.nvtxmin:
                 py_string += " --nvtx-min {i}".format(i=opts.nvtxmin)
+            if opts.nvtxmax:
+                py_string += " --nvtx-max {i}".format(i=opts.nvtxmax)
             py_string += "\n"
             job_script.write(py_string)
             sub_string = "bsub -q {queue} -cwd {cwd} -J job_{i} {dir}/job_{i}.sh\n".format(queue=opts.queue, cwd=out_dir, dir=job_dir, i=i)

@@ -27,6 +27,7 @@ def parse_options_upgradeRateHistos(parser):
     sub_parser.add_argument("--eta-restricted", dest="etarestricted", type=float, default=3., help="Upper eta value for isolation.")
     sub_parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot', 'inner2x2', 'outovertot2x2']")
     sub_parser.add_argument("--nvtx-min", dest="nvtxmin", type=int, default=None, help="Minimum number of vertices.")
+    sub_parser.add_argument("--nvtx-max", dest="nvtxmax", type=int, default=None, help="Maximum number of vertices.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -601,9 +602,12 @@ def main():
                 if not analyze_this_ls:
                     continue
 
-            # process only if event has minimum number of vertices
+            # process only if event has minimum or less than a maximum number of vertices
             if opts.nvtxmin:
                 if event.recoVertex.nVtx < opts.nvtxmin:
+                    continue
+            if opts.nvtxmax:
+                if event.recoVertex.nVtx > opts.nvtxmax:
                     continue
 
             analyse(event, hm, eta_ranges, thresholds, qualities, iso_wps, emulated)
