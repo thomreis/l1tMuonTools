@@ -22,6 +22,7 @@ def parse_options_plotRates(parser):
     sub_parser.add_argument("--eta-bits", dest="etabits", type=int, default=6, help="Number of eta input bits.")
     sub_parser.add_argument("--out-bits", dest="outbits", type=int, default=3, help="Number of output bits.")
     sub_parser.add_argument("--out-shift", dest="outshift", type=int, default=3, help="Number of left shifts of output bits.")
+    sub_parser.add_argument("--zero", dest="zero", default=False, action='store_true', help="Fill a zero LUT.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -128,14 +129,16 @@ def main():
     red_eta_bits = opts.etabits
     lut_out_bits = opts.outbits
     lut_scale_factor = 2**opts.outshift
+    makeZero = opts.zero
 
     if batchRun:
         root.gROOT.SetBatch(True)
 
-    hm = HistManager(filename=opts.fname, subdir='all_runs')
+    if not makeZero:
+        hm = HistManager(filename=opts.fname, subdir='all_runs')
 
-    L1Ana.init_l1_analysis()
-    print ""
+        L1Ana.init_l1_analysis()
+        print ""
 
     pt_scale = 0.5
     eta_scale = 0.010875
@@ -154,7 +157,8 @@ def main():
     for red_hw_eta in range(2**red_eta_bits):
         eta_ranges.append((red_hw_eta*red_eta_scale, (red_hw_eta+1)*red_eta_scale))
 
-    functions, hists = fit_extrapolation_hists(hm, coord, eta_ranges, (4., lut_pt_values*pt_scale))
+    if not makeZero:
+        functions, hists = fit_extrapolation_hists(hm, coord, eta_ranges, (4., lut_pt_values*pt_scale))
 
     lut_header = '# '+coord+' extrapolation LUT\n'
     lut_header += '# anything after # is ignored with the exception of the header\n'
@@ -169,8 +173,12 @@ def main():
         lut_payload += '{i} 0\n'.format(i=lut_entry)
         lut_entry += 1
         for hwPt in range(1, lut_pt_values):
-            func_val = functions[i].Eval(hwPt * pt_scale)
-            lut_val = int(math.floor(func_val / lut_scale))
+            if makeZero:
+                func_val = 0
+                lut_val = 0
+            else:
+                func_val = functions[i].Eval(hwPt * pt_scale)
+                lut_val = int(math.floor(func_val / lut_scale))
             if lut_val > 2**lut_out_bits - 1:
                 lut_val = 2**lut_out_bits - 1
             elif lut_val < 0:
@@ -182,7 +190,8 @@ def main():
 
     print lut_str
 
-    objects = plot_fits(functions, hists)
+    if not makeZero:
+        objects = plot_fits(functions, hists)
 
     out_file_name = 'lut.txt'
     with open(out_file_name, 'w') as out_file:
