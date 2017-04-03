@@ -22,6 +22,8 @@ def parse_options_and_init_log(loglevel=logging.INFO):
     parser.add_argument("--split_by_file", dest="split_by_file", action="store_true", help="File based splitting instead of event number based splitting")
     parser.add_argument("--json", dest="json", type=str, default=None, help="json file with good lumi sections")
     parser.add_argument("--runs", dest="runs", type=str, default=None, help="list of runs to analyse")
+    parser.add_argument("--pos-eta", dest="pos_eta", default=False, action="store_true", help="Positive GEN eta only.")
+    parser.add_argument("--neg-eta", dest="neg_eta", default=False, action="store_true", help="Negative GEN eta only.")
     parser.add_argument("--pos-side", dest="pos_side", default=False, action="store_true", help="Positive detector side only.")
     parser.add_argument("--neg-side", dest="neg_side", default=False, action="store_true", help="Negative detector side only.")
     parser.add_argument("--pos-charge", dest="pos_charge", default=False, action="store_true", help="Positive probe muon charge only.")
@@ -112,6 +114,10 @@ def main():
                 py_string += " --json {json}".format(json=opts.json)
             if opts.runs:
                 py_string += " --runs {runs}".format(runs=opts.runs)
+            if opts.pos_eta:
+                py_string += " --pos-eta"
+            if opts.neg_eta:
+                py_string += " --neg-eta"
             if opts.pos_side:
                 py_string += " --pos-side"
             if opts.neg_side:
