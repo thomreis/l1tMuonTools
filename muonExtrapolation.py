@@ -36,13 +36,13 @@ def book_histograms(eta_ranges):
     pt_bins.append(100)
 
     # 1d histograms and tprofiles
-    vars_bins = [['pt_dpt', -1]+pt_bins, ['pt_deta', -1]+pt_bins, ['pt_dphi', -1]+pt_bins]
+    vars_bins = [['pt_dpt', -1]+pt_bins, ['pt_deta', -1]+pt_bins, ['pt_dphi', -1]+pt_bins, ['pt_absdeta', -1]+pt_bins, ['pt_absdphi', -1]+pt_bins]
 
-    x_title_vars = {'pt_dpt':'p_{T}^{L1}', 'pt_deta':'p_{T}^{L1}', 'pt_dphi':'p_{T}^{L1}'}
+    x_title_vars = {'pt_dpt':'p_{T}^{L1}', 'pt_deta':'p_{T}^{L1}', 'pt_dphi':'p_{T}^{L1}', 'pt_absdeta':'p_{T}^{L1}', 'pt_absdphi':'p_{T}^{L1}'}
 
-    x_title_units = {'pt_dpt':'GeV/c', 'pt_deta':'GeV/c', 'pt_dphi':'GeV/c'}
+    x_title_units = {'pt_dpt':'GeV/c', 'pt_deta':'GeV/c', 'pt_dphi':'GeV/c', 'pt_absdeta':'GeV/c', 'pt_absdphi':'GeV/c'}
 
-    profile_vars = ['pt_dpt', 'pt_deta', 'pt_dphi']
+    profile_vars = ['pt_dpt', 'pt_deta', 'pt_dphi', 'pt_absdeta', 'pt_absdphi']
 
     # 2d histograms
     x_vars_bins_2d = [['pt', 150, 0, 300], ['pt', 150, 0, 300], ['pt', 150, 0, 300]]
@@ -68,7 +68,7 @@ def book_histograms(eta_ranges):
         histoprefix_extrapol = 'l1_muon_extrapol_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
         histoprefix2d_extrapol = '2d_muon_extrapol_absEtaMin{etaMin}_absEtaMax{etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
         for var_bin in vars_bins:
-            if i < 7 or var_bin[0] == 'pt_deta' or var_bin[0] == 'pt_dphi':
+            if i < 7 or var_bin[0] == 'pt_deta' or var_bin[0] == 'pt_dphi' or var_bin[0] == 'pt_absdeta' or var_bin[0] == 'pt_absdphi':
                 varnames.append(histoprefix+'.{var}'.format(var=var_bin[0]))
                 varnames.append(histoprefix_extrapol+'.{var}'.format(var=var_bin[0]))
                 binnings[histoprefix+'.{var}'.format(var=var_bin[0])] = var_bin[1:]+[x_title_vars[var_bin[0]], x_title_units[var_bin[0]]]
@@ -135,8 +135,10 @@ def analyse(evt, hm, hm2d, eta_ranges, emul=False, tf='boe'):
         for match in matched_muons:
             if match[1] not in genMuonsUsed:
                 genMuonsUsed.append(match[1])
-                hm.fill(histoprefix+'.pt_deta', l1Coll.muonEt[match[0]], abs(match[3]))
-                hm.fill(histoprefix+'.pt_dphi', l1Coll.muonEt[match[0]], abs(match[4]))
+                hm.fill(histoprefix+'.pt_deta', l1Coll.muonEt[match[0]], match[3])
+                hm.fill(histoprefix+'.pt_dphi', l1Coll.muonEt[match[0]], match[4])
+                hm.fill(histoprefix+'.pt_absdeta', l1Coll.muonEt[match[0]], abs(match[3]))
+                hm.fill(histoprefix+'.pt_absdphi', l1Coll.muonEt[match[0]], abs(match[4]))
                 #if l1Coll.muonEt[match[0]] < 8. and abs(match[4]) < 0.05:
                 #    print matched_muons
                 #    for match2 in matched_muons:
@@ -151,8 +153,10 @@ def analyse(evt, hm, hm2d, eta_ranges, emul=False, tf='boe'):
         for match in matched_muons_extrapol:
             if match[1] not in genMuonsUsed:
                 genMuonsUsed.append(match[1])
-                hm.fill(histoprefix_extrapol+'.pt_deta', l1Coll.muonEt[match[0]], abs(match[3]))
-                hm.fill(histoprefix_extrapol+'.pt_dphi', l1Coll.muonEt[match[0]], abs(match[4]))
+                hm.fill(histoprefix_extrapol+'.pt_deta', l1Coll.muonEt[match[0]], match[3])
+                hm.fill(histoprefix_extrapol+'.pt_dphi', l1Coll.muonEt[match[0]], match[4])
+                hm.fill(histoprefix_extrapol+'.pt_absdeta', l1Coll.muonEt[match[0]], abs(match[3]))
+                hm.fill(histoprefix_extrapol+'.pt_absdphi', l1Coll.muonEt[match[0]], abs(match[4]))
                 if i < 7: # fill only for the first eta ranges since histograms are not used for LUT generation
                     hm.fill(histoprefix_extrapol+'.pt_dpt', l1Coll.muonEt[match[0]], abs(l1Coll.muonEt[match[0]] - genColl.partPt[match[1]]))
                     hm2d.fill(histoprefix2d_extrapol+'.pt_dcharge', l1Coll.muonEt[match[0]], l1Coll.muonChg[match[0]] - genColl.partCh[match[1]])

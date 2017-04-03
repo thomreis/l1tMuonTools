@@ -225,6 +225,7 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
     # find max and min bins > 0
     minBinValueNonZero = 1.
     maxBinValue = hs[0].GetBinContent(hs[0].GetMaximumBin())
+    minBinValue = hs[0].GetBinContent(hs[0].GetMinimumBin())
     for h in hs[1:]:
         for b in range(1,h.GetNbinsX()+1):
             if h.GetBinContent(b) < minBinValueNonZero and h.GetBinContent(b) > 0.:
@@ -261,6 +262,8 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
     yAxis.SetLabelFont(font)
     yAxis.SetLabelSize(fontSize)
     yMin = 0.
+    if minBinValue < 0.:
+        yMin = 1.2*minBinValue
     yMax = 1.2*maxBinValue
     if c.GetLogy():
         yMin = 0.5 * minBinValueNonZero
@@ -341,13 +344,18 @@ def draw_tf_eta_regions(hName='', xMin=0., yMin=0., xMax=1., yMax=1., twoD=False
 # draw steps to indicate LUT resolution for extrapolation
 def draw_lut_steps(hName='', xMin=0., yMin=0., xMax=1., yMax=1.):
     lines = []
-    if hName[-5:] == '_deta' or hName[-5:] == '_dphi':
-        for i in range(1, 8):
-            yCoord = i * 0.087
-            lines.append(root.TLine(0., yCoord, 31., yCoord))
+    step = 0.
+    if hName[-5:] == '_deta' or hName[-8:] == '_absdeta':
+       step = 0.010875
+    if hName[-5:] == '_dphi' or hName[-8:] == '_absdphi':
+       step = 0.0435
+    if hName[-5:] == '_deta' or hName[-8:] == '_absdeta' or hName[-5:] == '_dphi' or hName[-8:] == '_absdphi':
+        for i in range(1, 16):
+            yCoord = i * step
+            lines.append(root.TLine(0., yCoord, 63., yCoord))
             lines[-1].SetLineStyle(root.kDashed)
             lines[-1].Draw('same')
-        lines.append(root.TLine(31., yMin, 31., yMax))
+        lines.append(root.TLine(63., yMin, 63., yMax))
         lines[-1].SetLineStyle(root.kDashed)
         lines[-1].Draw('same')
 
