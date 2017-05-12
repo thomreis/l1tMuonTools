@@ -2,6 +2,7 @@ from sys import exit
 import argparse
 import logging
 import os
+import subprocess
 
 from L1Analysis import L1Ana, L1Ntuple
 
@@ -20,21 +21,8 @@ def parse_options_and_init_log(loglevel=logging.INFO):
     parser.add_argument("-s", "--scriptname", dest="scriptname", default="ntuple.py", type=str, help="Script to run [default: %default]")
     parser.add_argument("-p", "--subparser", dest="subparser", default="ntuple", type=str, help="Subparser for script [default: %default]")
     parser.add_argument("--split_by_file", dest="split_by_file", action="store_true", help="File based splitting instead of event number based splitting")
-    parser.add_argument("--json", dest="json", type=str, default=None, help="json file with good lumi sections")
-    parser.add_argument("--runs", dest="runs", type=str, default=None, help="list of runs to analyse")
-    parser.add_argument("--pos-eta", dest="pos_eta", default=False, action="store_true", help="Positive GEN eta only.")
-    parser.add_argument("--neg-eta", dest="neg_eta", default=False, action="store_true", help="Negative GEN eta only.")
-    parser.add_argument("--pos-side", dest="pos_side", default=False, action="store_true", help="Positive detector side only.")
-    parser.add_argument("--neg-side", dest="neg_side", default=False, action="store_true", help="Negative detector side only.")
-    parser.add_argument("--pos-charge", dest="pos_charge", default=False, action="store_true", help="Positive probe muon charge only.")
-    parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative probe muon charge only.")
-    parser.add_argument("--use-inv-mass-cut", dest="invmass", default=False, action="store_true", help="Use an invariant mass range for the tag and probe pair.")
-    parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
-    parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator histograms.")
-    parser.add_argument("--legacy", dest="legacy", default=False, action="store_true", help="Use legacy muons translated to upgrade format.")
-    parser.add_argument("--prefix", dest="prefix", type=str, default=None, help="Prefix for histogram names")
-    parser.add_argument("--tftype", dest="tftype", type=str, default=None, help="Fill L1 muons from one TF.")
-    parser.add_argument("--eta-bits", dest="etabits", type=int, default=None, help="Number of eta input bits for extrapolation LUT.")
+    parser.add_argument("--submit", dest="submit", action="store_true", help="Submit jobs after creation")
+    parser.add_argument("--cmd-line-args", dest="args", type=str, default=None, help="Command line arguments for script")
 
     opts, unknown = parser.parse_known_args()
     if opts.fname == "" and opts.flist == "":
@@ -110,36 +98,8 @@ def main():
             if opts.fname:
                 py_string = "python {script} -f {fname} -n {n} -s {start} {subparser} -o {out}"
                 py_string = py_string.format(script=opts.scriptname, fname=opts.fname, n=n_per_job, start=i*n_per_job, subparser=opts.subparser, out=outfile)
-            if opts.json:
-                py_string += " --json {json}".format(json=opts.json)
-            if opts.runs:
-                py_string += " --runs {runs}".format(runs=opts.runs)
-            if opts.pos_eta:
-                py_string += " --pos-eta"
-            if opts.neg_eta:
-                py_string += " --neg-eta"
-            if opts.pos_side:
-                py_string += " --pos-side"
-            if opts.neg_side:
-                py_string += " --neg-side"
-            if opts.pos_charge:
-                py_string += " --pos-charge"
-            if opts.neg_charge:
-                py_string += " --neg-charge"
-            if opts.invmass:
-                py_string += " --use-inv-mass-cut"
-            if opts.extraCoord:
-                py_string += " --use-extra-coord"
-            if opts.emul:
-                py_string += " --emul"
-            if opts.legacy:
-                py_string += " --legacy"
-            if opts.prefix:
-                py_string += " --prefix {pref}".format(pref=opts.prefix)
-            if opts.tftype:
-                py_string += " --tftype {tf}".format(tf=opts.tftype)
-            if opts.etabits:
-                py_string += " --eta-bits {b}".format(b=opts.etabits)
+            if opts.args:
+                py_string += " {args}".format(args=opts.args)
             py_string += "\n"
             job_script.write(py_string)
             sub_string = "bsub -q {queue} -cwd {cwd} -J job_{i} {dir}/job_{i}.sh\n".format(queue=opts.queue, cwd=out_dir, dir=job_dir, i=i)
@@ -154,7 +114,14 @@ def main():
     os.system('chmod 744 {dir}/combine.sh'.format(dir=opts.workdir))
 
     print "Will process", n_per_job, "events per job"
-    print "execute", opts.workdir+"/submit.sh", "to submit"
+    if opts.submit:
+        print "submitting jobs"
+        os.chdir('{dir}'.format(dir=opts.workdir))
+        os.system('./submit.sh')
+        os.chdir('..')
+        print "jobs submitted"
+    else:
+        print "execute", opts.workdir+"/submit.sh", "to submit"
     print "after completion run", opts.workdir+"/combine.sh", "to combine the ntuples."
 
 if __name__ == "__main__":
