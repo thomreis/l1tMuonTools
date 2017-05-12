@@ -65,6 +65,7 @@ def main():
 #    eta_ranges = [[0, 0.83], [0.83, 1.24], [1.24, 2.4]]
 #    eta_ranges = [[1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
     eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.2, 1.55], [1.55, 1.85], [1.85, 2.4]]
+    #eta_ranges = [[0, 2.4]]
 
     hm = HistManager(filename=opts.fname, subdir='all_runs')
 
@@ -79,6 +80,8 @@ def main():
     rebinPt = 2
     # L1 muonu kinematic variables
     if opts.delta:
+        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.deta', xTitle='#eta^{L1} - #eta^{GEN}', eta_ranges=eta_ranges, data=isData))
+        objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.dphi', xTitle='#phi^{L1} - #phi^{GEN}', eta_ranges=eta_ranges, data=isData))
         objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_dpt', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<|p_{T}^{L1} - p_{T}^{GEN}|>', eta_ranges=eta_ranges, data=isData, rebin=rebinPt))
         objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_deta', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<#eta^{L1} - #eta^{GEN}>', eta_ranges=eta_ranges, data=isData, xMax=80., rebin=rebinPt))
         objects.append(plot_tprof_muons(hm, 'l1_muon'+extrapol_str+'_absEtaMinXXXX_absEtaMaxYYYY.pt_dphi', xTitle='p_{T}^{L1} (GeV/c)', yTitle='<#phi^{L1} - #phi^{GEN}>', eta_ranges=eta_ranges, data=isData, xMax=80., rebin=rebinPt))

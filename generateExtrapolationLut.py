@@ -32,7 +32,11 @@ def fit_extrapolation_hists(hm, coordinate, eta_ranges, fit_range):
     for eta_range in eta_ranges:
         eta_min = eta_range[0]
         eta_max = eta_range[1]
-        histo_name = 'l1_muon_absEtaMin{etaMin}_absEtaMax{etaMax}.pt_d{coord}'.format(etaMin=eta_min, etaMax=eta_max, coord=coordinate)
+        if coordinate == 'eta':
+            histSuffix = 'deta'
+        else:
+            histSuffix = 'absdphi'
+        histo_name = 'l1_muon_absEtaMin{etaMin}_absEtaMax{etaMax}.pt_{suffix}'.format(etaMin=eta_min, etaMax=eta_max, suffix=histSuffix)
         h = hm.get(histo_name).Clone()
 
         function = root.TF1('func', '[0] * x^(-1*[1]) + [2]', fit_range[0], fit_range[1])
@@ -92,10 +96,14 @@ def plot_fit(function, hist):
     hist.GetYaxis().SetTitleFont(font)
     hist.GetYaxis().SetLabelFont(font)
     hist.GetYaxis().SetLabelSize(fontSize)
-    if hist.GetName().find('deta') != -1:
+    if hist.GetName().find('.absdeta') != -1:
         hist.GetYaxis().SetTitle('<|#eta^{L1} - #eta^{GEN}|>')
-    else:
+    elif hist.GetName().find('.absdphi') != -1:
         hist.GetYaxis().SetTitle('<|#phi^{L1} - #phi^{GEN}|>')
+    elif hist.GetName().find('.deta') != -1:
+        hist.GetYaxis().SetTitle('<#eta^{L1} - #eta^{GEN}>')
+    else:
+        hist.GetYaxis().SetTitle('<#phi^{L1} - #phi^{GEN}>')
     hist.SetLineColor(root.kRed)
     #hist.SetLineWidth(2)
     hist.SetMarkerStyle(root.kFullCircle)
