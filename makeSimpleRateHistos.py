@@ -303,19 +303,23 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
     else:
         ugmtColl = evt.upgrade
 
+    analyseLegacy = True
     translatedGmt = True
-    if translatedGmt:
-        gmtColl = evt.legacyGmtEmu # from translated GMT collection must be EMU
-    else:
-        gmtColl = evt.gmt # from legacy GMT collection
+    if analyseLegacy:
+        if translatedGmt:
+            #gmtColl = evt.legacyGmtEmu # from translated GMT collection must be EMU
+            gmtColl = evt.upgradeEmu
+        else:
+            gmtColl = evt.gmt # from legacy GMT collection
 
     gmt_muon_idcs = [] # don't fill GMT histograms
     # get real legacy GMT muons or GMT muon translated to upgrade muon format
     # in the first case select_gmt_muons has to be used and in the second case select_ugmt_muons
-    if translatedGmt:
-        gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta)
-    else:
-        gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta)
+    if analyseLegacy:
+        if translatedGmt:
+            gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta)
+        else:
+            gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta)
     ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta)
 
     for eta_range in eta_ranges:
@@ -324,23 +328,25 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
         eta_min_str = '_absEtaMin'+str(eta_min)
         eta_max_str = '_absEtaMax'+str(eta_max)
 
-        if translatedGmt:
-            eta_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=gmt_muon_idcs)
-        else:
-            eta_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=gmt_muon_idcs)
+        if analyseLegacy:
+            if translatedGmt:
+                eta_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=gmt_muon_idcs)
+            else:
+                eta_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=gmt_muon_idcs)
         eta_ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=ugmt_muon_idcs)
 
         for threshold in thresholds:
             thr_str = '_ptmin'+str(threshold)
 
-            if translatedGmt:
-                eta_thr_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=threshold, idcs=eta_gmt_muon_idcs)
-                for i in eta_thr_gmt_muon_idcs:
-                    hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+'_qual', gmtColl.muonQual[i])
-            else:
-                eta_thr_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=threshold, idcs=eta_gmt_muon_idcs)
-                for i in eta_thr_gmt_muon_idcs:
-                    hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+'_qual', gmtColl.Qual[i])
+            if analyseLegacy:
+                if translatedGmt:
+                    eta_thr_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=threshold, idcs=eta_gmt_muon_idcs)
+                    for i in eta_thr_gmt_muon_idcs:
+                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+'_qual', gmtColl.muonQual[i])
+                else:
+                    eta_thr_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=threshold, idcs=eta_gmt_muon_idcs)
+                    for i in eta_thr_gmt_muon_idcs:
+                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+'_qual', gmtColl.Qual[i])
             eta_thr_ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, pt_min=threshold, idcs=eta_ugmt_muon_idcs)
 
             for i in eta_thr_ugmt_muon_idcs:
@@ -353,18 +359,19 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
                 elif tftype is 2:
                     hm.fill('emtf_ugmt_muon'+eta_min_str+eta_max_str+thr_str+'_qual', ugmtColl.muonQual[i])
 
-            for qMin in qualities['gmt']:
-                qMin_str = '_qmin'+str(qMin)
+            if analyseLegacy:
+                for qMin in qualities['gmt']:
+                    qMin_str = '_qmin'+str(qMin)
 
-                if translatedGmt:
-                    eta_thr_q_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, qual_min=qMin, idcs=eta_thr_gmt_muon_idcs)
-                    for i in eta_thr_q_gmt_muon_idcs:
-                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+qMin_str+'_phi', Matcher.norm_phi(gmtColl.muonPhi[i]))
-                else:
-                    eta_thr_q_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, qual_min=qMin, idcs=eta_thr_gmt_muon_idcs)
-                    for i in eta_thr_q_gmt_muon_idcs:
-                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+qMin_str+'_phi', Matcher.norm_phi(gmtColl.Phi[i]))
-                hm.fill('n_gmt_muons'+eta_min_str+eta_max_str+thr_str+qMin_str, len(eta_thr_q_gmt_muon_idcs))
+                    if translatedGmt:
+                        eta_thr_q_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, qual_min=qMin, idcs=eta_thr_gmt_muon_idcs)
+                        for i in eta_thr_q_gmt_muon_idcs:
+                            hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+qMin_str+'_phi', Matcher.norm_phi(gmtColl.muonPhi[i]))
+                    else:
+                        eta_thr_q_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, qual_min=qMin, idcs=eta_thr_gmt_muon_idcs)
+                        for i in eta_thr_q_gmt_muon_idcs:
+                            hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+qMin_str+'_phi', Matcher.norm_phi(gmtColl.Phi[i]))
+                    hm.fill('n_gmt_muons'+eta_min_str+eta_max_str+thr_str+qMin_str, len(eta_thr_q_gmt_muon_idcs))
 
             for qMin in qualities['ugmt']:
                 qMin_str = '_qmin'+str(qMin)
@@ -396,13 +403,14 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
             for qual in range(16):
                 qual_str = '_q'+str(qual)
 
-                for i in eta_thr_gmt_muon_idcs:
-                    if translatedGmt:
-                        if gmtColl.muonQual[i] == qual:
-                            hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+qual_str+'_phi', Matcher.norm_phi(gmtColl.muonPhi[i]))
-                    else:
-                        if evt.gmt.Qual[i] == qual:
-                            hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+qual_str+'_phi', Matcher.norm_phi(evt.gmt.Phi[i]))
+                if analyseLegacy:
+                    for i in eta_thr_gmt_muon_idcs:
+                        if translatedGmt:
+                            if gmtColl.muonQual[i] == qual:
+                                hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+qual_str+'_phi', Matcher.norm_phi(gmtColl.muonPhi[i]))
+                        else:
+                            if evt.gmt.Qual[i] == qual:
+                                hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+qual_str+'_phi', Matcher.norm_phi(evt.gmt.Phi[i]))
                 for i in eta_thr_ugmt_muon_idcs:
                     if ugmtColl.muonQual[i] == qual:
                         hm.fill('ugmt_muon'+eta_min_str+eta_max_str+thr_str+qual_str+'_phi', ugmtColl.muonPhi[i])
@@ -414,21 +422,22 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
                         elif tftype is 2:
                             hm.fill('emtf_ugmt_muon'+eta_min_str+eta_max_str+thr_str+qual_str+'_phi', ugmtColl.muonPhi[i])
 
-        for qMin in qualities['gmt']:
-            qMin_str = '_qmin'+str(qMin)
+        if analyseLegacy:
+            for qMin in qualities['gmt']:
+                qMin_str = '_qmin'+str(qMin)
 
-            if translatedGmt:
-                eta_q_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, qual_min=qMin, idcs=eta_gmt_muon_idcs)
-                for i in eta_q_gmt_muon_idcs:
-                    hm.fill('gmt_muon'+eta_min_str+eta_max_str+qMin_str+'_pt', gmtColl.muonEt[i])
-                    hm.fill('gmt_muon'+eta_min_str+eta_max_str+qMin_str+'_varBin_pt', gmtColl.muonEt[i])
-            else:
-                eta_q_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, qual_min=qMin, idcs=eta_gmt_muon_idcs)
+                if translatedGmt:
+                    eta_q_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, qual_min=qMin, idcs=eta_gmt_muon_idcs)
+                    for i in eta_q_gmt_muon_idcs:
+                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+qMin_str+'_pt', gmtColl.muonEt[i])
+                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+qMin_str+'_varBin_pt', gmtColl.muonEt[i])
+                else:
+                    eta_q_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, qual_min=qMin, idcs=eta_gmt_muon_idcs)
 
-            if len(eta_q_gmt_muon_idcs):
-                highestPt = get_highest_pt(gmtColl, eta_q_gmt_muon_idcs, gmt=not translatedGmt)
-                hm.fill('gmt_highest_muon'+eta_min_str+eta_max_str+qMin_str+'_pt', highestPt)
-                hm.fill('gmt_highest_muon'+eta_min_str+eta_max_str+qMin_str+'_varBin_pt', highestPt)
+                if len(eta_q_gmt_muon_idcs):
+                    highestPt = get_highest_pt(gmtColl, eta_q_gmt_muon_idcs, gmt=not translatedGmt)
+                    hm.fill('gmt_highest_muon'+eta_min_str+eta_max_str+qMin_str+'_pt', highestPt)
+                    hm.fill('gmt_highest_muon'+eta_min_str+eta_max_str+qMin_str+'_varBin_pt', highestPt)
 
         for qMin in qualities['ugmt']:
             qMin_str = '_qmin'+str(qMin)
@@ -468,15 +477,16 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
         for qual in range(16):
             qual_str = '_q'+str(qual)
 
-            for i in eta_gmt_muon_idcs:
-                if translatedGmt:
-                    if gmtColl.muonQual[i] == qual:
-                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+qual_str+'_pt', gmtColl.muonEt[i])
-                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+qual_str+'_varBin_pt', gmtColl.muonEt[i])
-                else:
-                    if evt.gmt.Qual[i] == qual:
-                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+qual_str+'_pt', evt.gmt.Pt[i])
-                        hm.fill('gmt_muon'+eta_min_str+eta_max_str+qual_str+'_varBin_pt', evt.gmt.Pt[i])
+            if analyseLegacy:
+                for i in eta_gmt_muon_idcs:
+                    if translatedGmt:
+                        if gmtColl.muonQual[i] == qual:
+                            hm.fill('gmt_muon'+eta_min_str+eta_max_str+qual_str+'_pt', gmtColl.muonEt[i])
+                            hm.fill('gmt_muon'+eta_min_str+eta_max_str+qual_str+'_varBin_pt', gmtColl.muonEt[i])
+                    else:
+                        if evt.gmt.Qual[i] == qual:
+                            hm.fill('gmt_muon'+eta_min_str+eta_max_str+qual_str+'_pt', evt.gmt.Pt[i])
+                            hm.fill('gmt_muon'+eta_min_str+eta_max_str+qual_str+'_varBin_pt', evt.gmt.Pt[i])
             for i in eta_ugmt_muon_idcs:
                 if ugmtColl.muonQual[i] == qual:
                     hm.fill('ugmt_muon'+eta_min_str+eta_max_str+qual_str+'_pt', ugmtColl.muonEt[i])
@@ -495,29 +505,31 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
     for threshold in thresholds:
         thr_str = '_ptmin'+str(threshold)
 
-        if translatedGmt:
-            thr_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=threshold, idcs=gmt_muon_idcs)
-        else:
-            thr_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=threshold, idcs=gmt_muon_idcs)
+        if analyseLegacy:
+            if translatedGmt:
+                thr_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=threshold, idcs=gmt_muon_idcs)
+            else:
+                thr_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=threshold, idcs=gmt_muon_idcs)
         thr_ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, pt_min=threshold, idcs=ugmt_muon_idcs)
 
-        for qMin in qualities['gmt']:
-            qMin_str = '_qmin'+str(qMin)
+        if analyseLegacy:
+            for qMin in qualities['gmt']:
+                qMin_str = '_qmin'+str(qMin)
 
-            if translatedGmt:
-                thr_q_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=threshold, qual_min=qMin, idcs=gmt_muon_idcs)
-                for i in thr_q_gmt_muon_idcs:
-                    hm.fill('gmt_muon'+thr_str+qMin_str+'_eta', gmtColl.muonEta[i])
-            else:
-                thr_q_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=threshold, qual_min=qMin, idcs=gmt_muon_idcs)
-                for i in thr_q_gmt_muon_idcs:
-                    hm.fill('gmt_muon'+thr_str+qMin_str+'_eta', gmtColl.muonEta[i])
+                if translatedGmt:
+                    thr_q_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=threshold, qual_min=qMin, idcs=gmt_muon_idcs)
+                    for i in thr_q_gmt_muon_idcs:
+                        hm.fill('gmt_muon'+thr_str+qMin_str+'_eta', gmtColl.muonEta[i])
+                else:
+                    thr_q_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=threshold, qual_min=qMin, idcs=gmt_muon_idcs)
+                    for i in thr_q_gmt_muon_idcs:
+                        hm.fill('gmt_muon'+thr_str+qMin_str+'_eta', gmtColl.muonEta[i])
  
         for qMin in qualities['ugmt']:
             qMin_str = '_qmin'+str(qMin)
 
             thr_q_ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, pt_min=threshold, qual_min=qMin, idcs=ugmt_muon_idcs)
-        
+ 
             for i in thr_q_ugmt_muon_idcs:
                 hm.fill('ugmt_muon'+thr_str+qMin_str+'_eta', ugmtColl.muonEta[i])
                 tftype = MuonSelections.getTfTypeFromTfMuonIdx(ugmtColl.muonTfMuonIdx[i])
@@ -531,13 +543,14 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
         for qual in range(16):
             qual_str = '_q'+str(qual)
 
-            for i in thr_gmt_muon_idcs:
-                if translatedGmt:
-                    if gmtColl.muonQual[i] == qual:
-                        hm.fill('gmt_muon'+thr_str+qual_str+'_eta', gmtColl.muonEta[i])
-                else:
-                    if evt.gmt.Qual[i] == qual:
-                        hm.fill('gmt_muon'+thr_str+qual_str+'_eta', evt.gmt.Eta[i])
+            if analyseLegacy:
+                for i in thr_gmt_muon_idcs:
+                    if translatedGmt:
+                        if gmtColl.muonQual[i] == qual:
+                            hm.fill('gmt_muon'+thr_str+qual_str+'_eta', gmtColl.muonEta[i])
+                    else:
+                        if evt.gmt.Qual[i] == qual:
+                            hm.fill('gmt_muon'+thr_str+qual_str+'_eta', evt.gmt.Eta[i])
             for i in thr_ugmt_muon_idcs:
                 if ugmtColl.muonQual[i] == qual:
                     hm.fill('ugmt_muon'+thr_str+qual_str+'_eta', ugmtColl.muonEta[i])
@@ -569,6 +582,7 @@ def main():
     eta_ranges = [[0, 2.5], [0, 2.1], [0, 0.83], [0.83, 1.24], [1.24, 2.5]]
     thresholds = [0, 3, 5, 7, 12, 18, 22]
     qualities = {'gmt':[2, 3, 4, 5], 'ugmt':[0, 4, 8, 12]}
+    #qualities = {'gmt':[0, 4, 8, 12], 'ugmt':[0, 4, 8, 12]}
     # book the histograms
     hm = book_histograms(eta_ranges, thresholds, qualities)
 
