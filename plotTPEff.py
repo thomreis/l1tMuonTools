@@ -1051,6 +1051,8 @@ def main():
                 objects.append(plot_hists_data_emul(hm, plotName+'.deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{RECO} - #eta_{L1}'))
                 # phi resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'.dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{RECO} - #phi_{L1}'))
+                # charge matching
+                objects.append(plot_hists_data_emul(hm, plotName+'.dcharge', hNamePrefix=prefix+'res_best_', xTitle='charge^{RECO} - charge^{L1}'))
 
     # 2d reco vs. L1 plots
     if opts.twod:
