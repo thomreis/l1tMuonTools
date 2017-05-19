@@ -23,6 +23,7 @@ def parse_options_upgradeRateHistos(parser):
     sub_parser.add_argument("-o", "--outname", dest="outname", default="./ugmt_rate_histos.root", type=str, help="A root file name where to save the histograms.")
     sub_parser.add_argument("-j", "--json", dest="json", type=str, default=None, help="A json file with good lumi sections per run.")
     sub_parser.add_argument("-e", "--emul", dest="emul", action='store_true', help="Use emulated collections instead of unpacked ones.")
+    sub_parser.add_argument("--use-l1-extra-coord", dest="l1extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -39,7 +40,9 @@ def book_histograms(eta_ranges, thresholds, qualities):
     pt_bins += range(8)
     pt_bins += range(8, 20, 2)
     pt_bins += range(20, 50, 5)
-    pt_bins += range(50, 110, 10)
+    pt_bins += range(50, 100, 10)
+    pt_bins += range(100, 200, 25)
+    pt_bins += range(200, 350, 50)
 
     # define eta binning
     eta_bins = [-1] # -1 indicates a variable binning
@@ -320,7 +323,7 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
             gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta)
         else:
             gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta)
-    ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta)
+    ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, pt_min=0.5, bx_min=bx_min, bx_max=bx_max, pos_eta=pos_eta, neg_eta=neg_eta, useVtxExtraCoord=useVtxExtraCoord)
 
     for eta_range in eta_ranges:
         eta_min = eta_range[0]
@@ -333,7 +336,7 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, emul):
                 eta_gmt_muon_idcs = MuonSelections.select_ugmt_muons(gmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=gmt_muon_idcs)
             else:
                 eta_gmt_muon_idcs = MuonSelections.select_gmt_muons(gmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=gmt_muon_idcs)
-        eta_ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=ugmt_muon_idcs)
+        eta_ugmt_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, abs_eta_min=eta_min, abs_eta_max=eta_max, idcs=ugmt_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
 
         for threshold in thresholds:
             thr_str = '_ptmin'+str(threshold)
@@ -576,6 +579,9 @@ def main():
     emulated = opts.emul
     print ""
 
+    global useVtxExtraCoord
+    useVtxExtraCoord = opts.l1extraCoord
+
     #eta_ranges = [[0, 2.5], [0, 2.1], [0, 0.83], [0.83, 1.24], [1.24, 2.5], [1.24, 2.1]]
     #thresholds = [1, 5, 10, 12, 16, 20, 24, 30]
     #qualities = range(16)
@@ -639,6 +645,7 @@ def main():
 if __name__ == "__main__":
     pos_eta = True
     neg_eta = True
+    useVtxExtraCoord = False
     saveHistos = True
     main()
 
