@@ -405,7 +405,7 @@ def plot_effs(hDefs, xTitle=None, yTitle='# muons', prefix='', notes=None, autoZ
         tex.DrawLatex(0.26, 0.93, extraText)
         tex.SetTextFont(font)
         tex.SetTextAlign(31)
-        tex.DrawLatex(0.9, 0.93, '2016 data   x.x fb^{-1} (13 TeV)')
+        tex.DrawLatex(0.9, 0.93, '2017 data  267 pb^{-1} (13 TeV)')
 
     c.Modified()
     c.Update()
@@ -510,8 +510,9 @@ def hist_styles(stacked=False):
     styles['legacy_q2'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'legacy Q #geq 2'}
     styles['data_pub'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlack, 'ms':root.kFullCircle, 'legtext':''}
     styles['data_pt18'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'p_{T}^{L1} #geq 18 GeV'}
-    styles['data_pt22'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlack, 'ms':root.kOpenCircle, 'legtext':'p_{T}^{L1} #geq 22 GeV'}
-    styles['data_pt25'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenSquare, 'legtext':'p_{T}^{L1} #geq 25 GeV'}
+    styles['data_pt20'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'p_{T}^{L1} #geq 20 GeV'}
+    styles['data_pt22'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'p_{T}^{L1} #geq 22 GeV'}
+    styles['data_pt25'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlack, 'ms':root.kOpenSquare, 'legtext':'p_{T}^{L1} #geq 25 GeV'}
     styles['emul_pub'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kFullCircle, 'legtext':''}
     styles['old_sel'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kFullTriangleUp, 'legtext':'old selection'}
     styles['new_sel'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kFullCircle, 'legtext':'new selection'}
@@ -737,13 +738,15 @@ def plot_eff_public_pt(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emu
         denPrefix = 'emu_'
         styleKey = 'emul'
 
-    pt18_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('ptminXX_', 'ptmin18_'), 'den':denPrefix+den}
-    pt18_dict.update(styles[styleKey+'_pt18'])
+    #pt18_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('ptminXX_', 'ptmin18_'), 'den':denPrefix+den}
+    #pt18_dict.update(styles[styleKey+'_pt18'])
+    pt20_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('ptminXX_', 'ptmin20_'), 'den':denPrefix+den}
+    pt20_dict.update(styles[styleKey+'_pt20'])
     pt22_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('ptminXX_', 'ptmin22_'), 'den':denPrefix+den}
     pt22_dict.update(styles[styleKey+'_pt22'])
     pt25_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('ptminXX_', 'ptmin25_'), 'den':denPrefix+den}
     pt25_dict.update(styles[styleKey+'_pt25'])
-    hDefs = [pt18_dict]
+    hDefs = [pt20_dict]
     hDefs.append(pt22_dict)
     hDefs.append(pt25_dict)
 
@@ -757,7 +760,7 @@ def plot_eff_data_emul(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', aut
 
     data_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
     data_dict.update(styles['data'])
-    emul_dict = {'hm':hm, 'num':'emu_'+hNamePrefix+hName, 'den':den}
+    emul_dict = {'hm':hm, 'num':'emu_'+hNamePrefix+hName, 'den':'emu_'+den}
     emul_dict.update(styles['emul'])
     #data_dict.update(styles['old_sel'])
     #emul_dict = {'num':'newSel_'+hNamePrefix+hName, 'den':'newSel_'+den}
@@ -1461,19 +1464,20 @@ def main():
         etaRange = reco_0to2p4
         yTitle_eff = 'L1 efficiency'
         # pt plots
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=500, addOverflow=True))
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=50))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=500, addOverflow=True))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=400, addOverflow=True))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=50))
 
         objects.append(plot_eff_public_pt(hm, 'l1_muon_qualMin12_ptminXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T} (GeV)', yTitle=yTitle_eff, xMax=50))
 
         # phi plots
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.phi', etaRange+'30.phi', 'best_', xTitle='#phi', yTitle=yTitle_eff, rebin=2))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'33.phi', etaRange+'33.phi', 'best_', xTitle='#phi', yTitle=yTitle_eff, rebin=2))
 
         # eta plots
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.eta', etaRange+'30.eta', 'best_', xTitle='#eta', yTitle=yTitle_eff, rebin=2))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'33.eta', etaRange+'33.eta', 'best_', xTitle='#eta', yTitle=yTitle_eff, rebin=2))
 
         # run number
-        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.run', etaRange+'30.run', 'best_', xTitle='run', yTitle=yTitle_eff, autoZoomX=True))
+        objects.append(plot_eff_public(hm, 'l1_muon_qualMin12_ptmin25_dr0.5_matched_'+etaRange+'33.run', etaRange+'33.run', 'best_', xTitle='run', yTitle=yTitle_eff, autoZoomX=True))
 
     if opts.fname2:
         if opts.runnr2:

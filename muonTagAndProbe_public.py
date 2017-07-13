@@ -24,7 +24,11 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--pos-charge", dest="pos_charge", default=False, action="store_true", help="Positive probe charge only.")
     sub_parser.add_argument("--neg-charge", dest="neg_charge", default=False, action="store_true", help="Negative probe charge only.")
     sub_parser.add_argument("--use-inv-mass-cut", dest="invmasscut", default=False, action="store_true", help="Use an invariant mass range for the tag and probe pair.")
+    sub_parser.add_argument("--use-l1-extra-coord", dest="l1extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
+    sub_parser.add_argument("--use-reco-extra-station", dest="recoExtraStation", type=int, default=0, help="Extrapolated reco muon coordinates. 0=Vertex, 1=1st muon station, 2=2nd muon station.")
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
+    sub_parser.add_argument("--legacy", dest="legacy", default=False, action="store_true", help="Use legacy muons translated to upgrade format.")
+    sub_parser.add_argument("--pa", dest="pa_run", default=False, action="store_true", help="Setup for pA run.")
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
 
@@ -373,6 +377,15 @@ def main():
     global useInvMassCut
     useInvMassCut = opts.invmasscut
 
+    global useVtxExtraCoord
+    useVtxExtraCoord = opts.l1extraCoord
+
+    global recoExtraStation
+    if opts.recoExtraStation == 1 or opts.recoExtraStation == 2:
+        recoExtraStation = opts.recoExtraStation
+    else:
+        recoExtraStation = 0
+
     global prefix
     prefix = opts.prefix
 
@@ -485,6 +498,8 @@ if __name__ == "__main__":
     useInvMassCut = False
     invMassMin = 71
     invMassMax = 111
+    useVtxExtraCoord = False
+    recoExtraStation = 0
     prefix = ''
     tftype = -1
     saveHistos = True

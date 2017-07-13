@@ -31,6 +31,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--pa", dest="pa_run", default=False, action="store_true", help="Setup for pA run.")
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
+    sub_parser.add_argument("--era", dest="era", type=str, default='2017pp', help="Era to select run numbers for plots.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -61,7 +62,15 @@ def book_histograms(eta_ranges, qual_ptmins_dict, match_deltas, emul=False, lega
     dphi_str = '_dphi'+str(match_deltas['dphi'])
     deta_str = '_deta'+str(match_deltas['deta'])
 
-    vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['vtx', 60, 0, 60], ['run', 17000, 271725, 288725]]
+    vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['vtx', 60, 0, 60]]
+    if era == '2016pp':
+        vars_bins.append(['run', 13100, 271000, 284100])
+    elif era == '2016pPb':
+        vars_bins.append(['run', 2500, 284100, 286600])
+    elif era == '2017pp':
+        vars_bins.append(['run', 25000, 294645, 319645])
+    else:
+        vars_bins.append(['run', 10, 0, 10])
     x_title_vars = {'pt':'p_{T}', 'eta':'#eta', 'phi':'#phi', 'charge':'charge', 'vtx':'PU', 'run':'run number'}
     x_title_units = {'pt':'GeV/c', 'eta':None, 'phi':None, 'charge':None, 'vtx':None, 'run':None}
     probe_vars_bins = vars_bins + [['p', -1]+p_bins]
@@ -672,17 +681,22 @@ def main():
     elif opts.tftype == 'emtf':
         tftype = 2
 
+    global era
+    era = opts.era
+
     emul = opts.emul
     legacy = opts.legacy
     pp_run = not opts.pa_run
 
     # combinations of probe_pt_min and the corresponding pt_min values for a quality
     # the first line defines which thresholds are going to be used for unmatched histograms
-    ptmins_list_q12 = [[0.5, [0.5, 3, 5, 12, 22]],
+    ptmins_list_q12 = [[0.5, [0.5, 3, 5, 12, 20, 22, 25]],
                        [5, [3]],
                        [8, [5]],
                        [16, [12]],
+                       [28, [20]],
                        [30, [22]],
+                       [33, [25]],
                        [100, [22]],
                       ]
 
@@ -797,6 +811,7 @@ if __name__ == "__main__":
     recoExtraStation = 0
     prefix = ''
     tftype = -1
+    era = ''
     saveHistos = True
     best_only = False
     perRunHistos = False
