@@ -49,7 +49,10 @@ def main():
         with open(opts.flist) as flistfile:
             lines = flistfile.readlines()
             nLines = len(lines)
-            files_per_job = nLines / opts.njobs
+            if opts.njobs <= nLines:
+                files_per_job = nLines / opts.njobs
+            else:
+                files_per_job = 1
     else:
         ntuple = L1Ntuple(opts.nevents)
         if opts.flist:
