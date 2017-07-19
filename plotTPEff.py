@@ -30,6 +30,7 @@ def parse_options_plotEff(parser):
     sub_parser.add_argument("--by-charge", dest="bycharge", default=False, action='store_true', help="Plot efficiencies by charge.")
     sub_parser.add_argument("--by-tf", dest="bytf", default=False, action='store_true', help="Plot efficiencies by track finder.")
     sub_parser.add_argument("--public", dest="public", default=False, action='store_true', help="Plot style for publication.")
+    sub_parser.add_argument("--control", dest="control", default=False, action='store_true', help="Plot control histograms.")
     # options to compare histograms from two files/runs
     sub_parser.add_argument("--fname2", dest="fname2", default=None, help="Second file to take reference histograms from.")
     sub_parser.add_argument("--run2", dest="runnr2", default=None, help="Run number for reference plots. If none is given the same as for the test plot is taken.")
@@ -105,7 +106,7 @@ def plot_2dhist(hm2d, hName, drawDiag=True, clOpts=None):
     return [c, h, tex, lines]
 
 
-def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefix='', notes=None, autoZoomX=False, xMax=None, addOverflow=False, clOpts=None):
+def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefix='', notes=None, autoZoomX=False, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     name = prefix
     if hDefs[0]['den']:
         name += hDefs[0]['num']+'_over_'+hDefs[0]['den']
@@ -138,12 +139,12 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefi
             if hDef['num'] not in hm.get_varnames() or hDef['den'] not in hm.get_varnames():
                 print 'Error: ' + hDef['num'] + ' or ' + hDef['den'] + ' not found.'
                 continue
-            h = hm.get_ratio(hDef['num'], hDef['den'], addoverflow=addOverflow).Clone()
+            h = hm.get_ratio(hDef['num'], hDef['den'], addoverflow=addOverflow, rebin=rebin).Clone()
         else:
             if hDef['num'] not in hm.get_varnames():
                 print 'Error: ' + hDef['num'] + ' not found.'
                 continue
-            h = hm.get(hDef['num'], addoverflow=addOverflow).Clone()
+            h = hm.get(hDef['num'], addoverflow=addOverflow, rebin=rebin).Clone()
             # find out where the weight of the distributio is to place the legend and notes
             nBinsX = h.GetNbinsX()
             intL += h.Integral(0, nBinsX/3)
@@ -186,7 +187,7 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefi
     canvWidth = 600
     c = root.TCanvas(canvas_name, canvas_title, 100, 100, canvWidth, 600)
     c.cd()
-    if name[-3:] == '.pt' and not hDefs[0]['den']:
+    if (name[-3:] == '.pt' and not hDefs[0]['den']) or logY:
         c.SetLogy(True)
 
     set_root_style()
@@ -663,7 +664,7 @@ def extract_notes_from_name(name, xBase, yBase, etaTxt=True, qualTxt=True, ptTxt
     return notes
 
 # plot histogram
-def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', stacked=False, normToBinWidth=False, autoZoomX=False, xMax=None, addOverflow=False, clOpts=None):
+def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', stacked=False, normToBinWidth=False, autoZoomX=False, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     styles = hist_styles(stacked)
 
     h_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
@@ -677,10 +678,10 @@ def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='
         yBase = 0.13
     notes = extract_notes_from_name(hName, xBase, yBase)
 
-    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, '', notes, autoZoomX, xMax, addOverflow, clOpts)
+    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, '', notes, autoZoomX, xMax, logY, addOverflow, rebin, clOpts)
 
 # plot data and emulator histogram
-def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', normToBinWidth=False, autoZoomX=False, xMax=None, addOverflow=False, clOpts=None):
+def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', normToBinWidth=False, autoZoomX=False, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     styles = hist_styles(False)
 
     data_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
@@ -697,7 +698,7 @@ def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle=
         yBase = 0.13
     notes = extract_notes_from_name(hName, xBase, yBase)
 
-    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, 'dataEmulHisto_', notes, autoZoomX, xMax, addOverflow, clOpts)
+    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, 'dataEmulHisto_', notes, autoZoomX, xMax, logY, addOverflow, rebin, clOpts)
 
 # plot efficiency
 def plot_eff_standard(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', autoZoomX=False, xMax=None, addOverflow=False, rebin=1, clOpts=None):
@@ -1589,6 +1590,35 @@ def main():
 
             # charge plots
             objects.append(plot_eff_hm_comp(hm, hm2, 'l1_muon_qualMin12_ptmin22_dr0.5_matched_'+etaRange+'30.charge', etaRange+'30.charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, clOpts=opts))
+
+    if opts.control:
+        eta_range_0to2p4 = '_absEtaMin0_absEtaMax2.4'
+        eta_range_0to0p83 = '_absEtaMin0_absEtaMax0.83'
+        eta_range_0p83to1p24 = '_absEtaMin0.83_absEtaMax1.24'
+        eta_range_1p24to2p4 = '_absEtaMin1.24_absEtaMax2.4'
+        yTitle_probes = '# probe muons'
+        yTitle_l1 = '# L1 muons'
+        rebin_eta = 2
+        rebin_phi = 2
+        eta_ranges = [eta_range_0to2p4, eta_range_0to0p83, eta_range_0p83to1p24, eta_range_1p24to2p4]
+        qualMins = [4, 8, 12]
+        for eta_range in eta_ranges:
+            objects.append(plot_hists_standard(hm, 'probe'+eta_range+'_ptmin0.5.pt', xTitle='p_{T}^{reco} (GeV)', yTitle=yTitle_probes+' / GeV', normToBinWidth=True, logY=True, addOverflow=True, clOpts=opts))
+            objects.append(plot_hists_standard(hm, 'probe'+eta_range+'_ptmin0.5.p', xTitle='p^{reco} (GeV)', yTitle=yTitle_probes+' / GeV', normToBinWidth=True, logY=True, addOverflow=True, clOpts=opts))
+            objects.append(plot_hists_standard(hm, 'probe'+eta_range+'_ptmin0.5.phi', xTitle='#phi^{reco}', yTitle=yTitle_probes, rebin=rebin_phi, clOpts=opts))
+            objects.append(plot_hists_standard(hm, 'probe'+eta_range+'_ptmin0.5.charge', xTitle='#mu charge', yTitle=yTitle_probes, clOpts=opts))
+
+            for qualMin in qualMins:
+                objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range+'_qualMin{q}_ptmin0.5.pt'.format(q=qualMin), xTitle='p_{T}^{L1} (GeV)', yTitle=yTitle_l1+' / GeV', normToBinWidth=True, xMax=300, logY=True, clOpts=opts))
+                objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range+'_qualMin{q}_ptmin0.5.phi'.format(q=qualMin), xTitle='#phi^{L1}', yTitle=yTitle_l1, rebin=rebin_phi, clOpts=opts))
+                objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range+'_qualMin{q}_ptmin0.5.charge'.format(q=qualMin), xTitle='L1 #mu charge', yTitle=yTitle_l1, clOpts=opts))
+
+        objects.append(plot_hists_standard(hm, 'probe'+eta_range_0to2p4+'_ptmin0.5.eta', xTitle='#eta^{reco}', yTitle=yTitle_probes, rebin=rebin_eta, clOpts=opts))
+        objects.append(plot_hists_standard(hm, 'probe'+eta_range_0to2p4+'_ptmin0.5.vtx', xTitle='# vertex', yTitle=yTitle_probes, clOpts=opts))
+        objects.append(plot_hists_standard(hm, 'n_probes'+eta_range_0to2p4+'_ptmin0.5', xTitle='probe muon multiplicity', yTitle='# events', logY=True, clOpts=opts))
+        objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range_0to2p4+'_qualMin4_ptmin0.5.eta', xTitle='#eta^{L1}', yTitle=yTitle_l1, rebin=rebin_eta, clOpts=opts))
+        objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range_0to2p4+'_qualMin8_ptmin0.5.eta', xTitle='#eta^{L1}', yTitle=yTitle_l1, rebin=rebin_eta, clOpts=opts))
+        objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range_0to2p4+'_qualMin12_ptmin0.5.eta', xTitle='#eta^{L1}', yTitle=yTitle_l1, rebin=rebin_eta, clOpts=opts))
 
     # save canvases to root file
     if savePlots:
