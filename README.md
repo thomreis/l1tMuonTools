@@ -84,9 +84,8 @@ Workflow to produce these LUTs
   ```
   - Running on the lxbatch system to speed things up
   ```
-  python create_batch_job.py -l files_SingleMu_Pt1To1000_FlatRandomOneOverPt_bmtfetafix.txt -q 8nh -j 25 --split_by_file -s muonExtrapolation.py -p muonExtrapolation -w muon_extrapolation_histos_SingleMu_pt1To1000_i92p9_5etabits_posside_bmtf -o muon_extrapolation_histos --emul --eta-bits 5 --tf-type b --pos-side
-  cd muon_extrapolation_histos_SingleMu_pt1To1000_i92p9_5etabits_posside_bmtf/
-  source submit.sh
+  python create_batch_job.py -l files_SingleMu_Pt1To1000_FlatRandomOneOverPt_bmtfetafix.txt -q 8nh -j 25 --split_by_file -s muonExtrapolation.py -p muonExtrapolation -w muon_extrapolation_histos_SingleMu_pt1To1000_i92p9_5etabits_posside_bmtf --cmd-line-args " -o muon_extrapolation_histos --emul --eta-bits 5 --tf-type b --pos-side" --submit
+
   ```
   - The resulting histograms can be plotted
   ```
