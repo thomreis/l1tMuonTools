@@ -30,7 +30,7 @@ def plot_tprof_muons(hm, hName, xTitle='', yTitle='# muons', eta_ranges=[], thre
         for i, eta_range in enumerate(eta_ranges):
             eta_min = eta_range[0]
             eta_max = eta_range[1]
-            ugmt_dict = {'num':hName.replace('XXXX', '{etaMin}'.format(etaMin=eta_min)).replace('YYYY', '{etaMax}'.format(etaMax=eta_max)), 'den':None, 'drawopt':'', 'stacked':False, 'err':True}
+            ugmt_dict = {'hm':hm, 'num':hName.replace('XXXX', '{etaMin}'.format(etaMin=eta_min)).replace('YYYY', '{etaMax}'.format(etaMax=eta_max)), 'den':None, 'drawopt':'', 'stacked':False, 'err':True}
             # set legend text
             style = hist_style('etarange_{i}'.format(i=i), marker=True)
             style['legtext'] = '{etaMin} #leq |#eta| < {etaMax}'.format(etaMin=eta_min, etaMax=eta_max)
@@ -48,7 +48,7 @@ def plot_tprof_muons(hm, hName, xTitle='', yTitle='# muons', eta_ranges=[], thre
 
     prefix = 'mucomp_'
 
-    return plot_hists(hm, hDefs, xTitle, yTitle, threshold, normToBinWidth, normalise, xMax, prefix, notes, scaleFactor, False, logy, data=data, rebin=rebin)
+    return plot_hists(hDefs, xTitle, yTitle, threshold, normToBinWidth, normalise, xMax, prefix, notes, scaleFactor, False, logy, data=data, rebin=rebin)
 
 def main():
     opts = parse_options_plotRates(parser)

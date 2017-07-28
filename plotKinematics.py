@@ -21,13 +21,17 @@ def parse_options_plotRates(parser):
     sub_parser.add_argument("--qstack", dest="qstack", default=False, action='store_true', help="Plot a quality stack plot for muon kinematics.")
     sub_parser.add_argument("--2d", dest="twod", default=False, action='store_true', help="Plot 2D L1 muon1 vs. muon2 plots.")
     sub_parser.add_argument("--public", dest="public", default=False, action='store_true', help="Plot style for publication.")
+    # options to compare histograms from two files/runs
+    sub_parser.add_argument("--fname2", dest="fname2", default=None, help="Second file to take reference histograms from.")
+    sub_parser.add_argument("--leg-txt1", dest="legtxt1", default='hm1', help="Legend text for test histograms.")
+    sub_parser.add_argument("--leg-txt2", dest="legtxt2", default='hm2', help="Legend text for reference histograms.")
 
     opts, unknown = parser.parse_known_args()
     return opts
 
 
 def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, xMax=None, reg='', scaleFactor=1., data=False):
-    ugmt_dict = {'num':hName, 'den':den, 'drawopt':'', 'stacked':False, 'err':True}
+    ugmt_dict = {'hm':hm, 'num':hName, 'den':den, 'drawopt':'', 'stacked':False, 'err':True}
     ugmt_dict.update(hist_style('data', lw=2))
     hDefs = []
     if reg == '':
@@ -49,7 +53,7 @@ def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', thresh
 
     prefix = 'c_'
 
-    return plot_hists(hm, hDefs, xTitle, yTitle, threshold, normToBinWidth, False, xMax, prefix, notes, scaleFactor, False, logy, data)
+    return plot_hists(hDefs, xTitle, yTitle, threshold, normToBinWidth, False, xMax, prefix, notes, scaleFactor, False, logy, data)
 
 def plot_hists_qstack(hm, hName, den=None, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, xMax=None, reg='', scaleFactor=1., data=False):
     hDefs = []
@@ -61,7 +65,7 @@ def plot_hists_qstack(hm, hName, den=None, xTitle='', yTitle='# muons', threshol
         lw=2
     if reg == '':
         for q in reversed(range(4,16,4)):
-            ugmt_q_dict = {'num':hName.replace('XX', '{q}'.format(q=q)), 'den':den, 'drawopt':'hist', 'stacked':stacked, 'err':False}
+            ugmt_q_dict = {'hm':hm, 'num':hName.replace('XX', '{q}'.format(q=q)), 'den':den, 'drawopt':'hist', 'stacked':stacked, 'err':False}
             ugmt_q_dict.update(hist_style(stylePref+str(q), filled=stacked, lw=lw))
             hDefs.append(ugmt_q_dict)
 
@@ -81,13 +85,13 @@ def plot_hists_qstack(hm, hName, den=None, xTitle='', yTitle='# muons', threshol
 
     prefix = 'qualcomp_'
 
-    return plot_hists(hm, hDefs, xTitle, yTitle, threshold, normToBinWidth, False, xMax, prefix, notes, scaleFactor, False, logy, data=data)
+    return plot_hists(hDefs, xTitle, yTitle, threshold, normToBinWidth, False, xMax, prefix, notes, scaleFactor, False, logy, data=data)
 
 def plot_hists_muons(hm, hName, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, normalise=False, xMax=None, reg='', scaleFactor=1., data=False):
     hDefs = []
     if reg == '':
         for i in reversed(range(1, 4)):
-            ugmt_q_dict = {'num':hName.replace('muX', 'mu{i}'.format(i=i)), 'den':None, 'drawopt':'', 'stacked':False, 'err':True}
+            ugmt_q_dict = {'hm':hm, 'num':hName.replace('muX', 'mu{i}'.format(i=i)), 'den':None, 'drawopt':'', 'stacked':False, 'err':True}
             ugmt_q_dict.update(hist_style('mu_{i}'.format(i=i), marker=True))
             hDefs.append(ugmt_q_dict)
 
@@ -105,7 +109,43 @@ def plot_hists_muons(hm, hName, xTitle='', yTitle='# muons', threshold=False, st
 
     prefix = 'mucomp_'
 
-    return plot_hists(hm, hDefs, xTitle, yTitle, threshold, normToBinWidth, normalise, xMax, prefix, notes, scaleFactor, False, logy, data=data)
+    return plot_hists(hDefs, xTitle, yTitle, threshold, normToBinWidth, normalise, xMax, prefix, notes, scaleFactor, False, logy, data=data)
+
+def plot_hists_comp(hm1, hm2, hName, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, normalise=False, xMax=None, reg='', scaleFactor=1., data=False, legTxts=['hm1', 'hm2']):
+    #hm1_dict = {'hm':hm1, 'num':hName, 'denhm':hm2, 'den':hName}
+    hm1_dict = {'hm':hm1, 'num':hName, 'den':None, 'drawopt':'', 'stacked':stacked, 'err':True}
+    hm2_dict = {'hm':hm2, 'num':hName, 'den':None, 'drawopt':'', 'stacked':stacked, 'err':True}
+    hm1_dict.update(hist_style('mu_1', marker=True))
+    hm2_dict.update(hist_style('mu_2', marker=True))
+    hm1_dict['legtext'] = legTxts[0]
+    hm2_dict['legtext'] = legTxts[1]
+    hDefs = [hm1_dict, hm2_dict]
+
+    if hName[-2:] == 'pt':
+        logy = True
+    else:
+        logy = False
+
+    if normalise:
+        yTitle='A.U.'
+
+    xBase = 0.01
+    yBase = 0.78
+    notes = extract_notes_from_name(hName, xBase, yBase, qualTxt=True)
+
+    return plot_hists(hDefs, xTitle, yTitle, threshold, normToBinWidth, normalise, xMax, 'comp_', notes, scaleFactor, False, logy, data)
+
+def plot_hists_ratio(hm1, hm2, hName, xTitle='', yTitle='# muons', threshold=False, xMax=None, reg='', scaleFactor=1., data=False, legTxts=['hm1', 'hm2']):
+    hm_dict = {'hm':hm1, 'num':hName, 'denhm':hm2, 'den':hName, 'drawopt':'', 'stacked':False, 'err':True}
+    hm_dict.update(hist_style('mu_1', marker=True))
+    hm_dict['legtext'] = legTxts[0]+'/'+legTxts[1]
+    hDefs = [hm_dict]
+
+    xBase = 0.01
+    yBase = 0.78
+    notes = extract_notes_from_name(hName, xBase, yBase, qualTxt=True)
+
+    return plot_hists(hDefs, xTitle, yTitle, threshold, False, False, xMax, 'compratio_', notes, scaleFactor, False, False, data)
 
 def main():
     opts = parse_options_plotRates(parser)
@@ -118,6 +158,10 @@ def main():
     isData = True
 
     hm = HistManager(filename=opts.fname, subdir='all_runs')
+    if opts.fname2:
+        hm2 = HistManager(filename=opts.fname2, subdir='all_runs')
+        legTxt1 = opts.legtxt1
+        legTxt2 = opts.legtxt2
 
     L1Ana.init_l1_analysis()
     print ""
@@ -130,21 +174,27 @@ def main():
     if opts.mukin:
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin12.muXpt', xTitle='p_{T} (GeV/c)', yTitle='# muons/(GeV/c)', normToBinWidth=True, normalise=False, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin12.muXeta', xTitle='#eta', normalise=True, data=isData))
+        objects.append(plot_hists_muons(hm, 'l1_muon_qmin12.muXetaAtVtx', xTitle='#eta', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin12.muXphi', xTitle='#phi', normalise=True, data=isData))
+        objects.append(plot_hists_muons(hm, 'l1_muon_qmin12.muXphiAtVtx', xTitle='#phi', normalise=True, data=isData))
         #objects.append(plot_hists_muons(hm, 'l1_muon_qmin12.muXqual', xTitle='quality', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin12.muXcharge', xTitle='charge', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin12.muXtfMuonIdx', xTitle='TF muon index', normalise=True, data=isData))
 
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin8.muXpt', xTitle='p_{T} (GeV/c)', yTitle='# muons/(GeV/c)', normToBinWidth=True, normalise=False, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin8.muXeta', xTitle='#eta', normalise=True, data=isData))
+        objects.append(plot_hists_muons(hm, 'l1_muon_qmin8.muXetaAtVtx', xTitle='#eta', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin8.muXphi', xTitle='#phi', normalise=True, data=isData))
+        objects.append(plot_hists_muons(hm, 'l1_muon_qmin8.muXphiAtVtx', xTitle='#phi', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin8.muXqual', xTitle='quality', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin8.muXcharge', xTitle='charge', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin8.muXtfMuonIdx', xTitle='TF muon index', normalise=True, data=isData))
 
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin4.muXpt', xTitle='p_{T} (GeV/c)', yTitle='# muons/(GeV/c)', normToBinWidth=True, normalise=False, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin4.muXeta', xTitle='#eta', normalise=True, data=isData))
+        objects.append(plot_hists_muons(hm, 'l1_muon_qmin4.muXetaAtVtx', xTitle='#eta', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin4.muXphi', xTitle='#phi', normalise=True, data=isData))
+        objects.append(plot_hists_muons(hm, 'l1_muon_qmin4.muXphiAtVtx', xTitle='#phi', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin4.muXqual', xTitle='quality', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin4.muXcharge', xTitle='charge', normalise=True, data=isData))
         objects.append(plot_hists_muons(hm, 'l1_muon_qmin4.muXtfMuonIdx', xTitle='TF muon index', normalise=True, data=isData))
@@ -180,6 +230,26 @@ def main():
             objects.append(plot_2dhist(hm2d, histoprefix2d+'.qual', drawDiag=False, data=isData))
             objects.append(plot_2dhist(hm2d, histoprefix2d+'.charge', drawDiag=False, data=isData))
             objects.append(plot_2dhist(hm2d, histoprefix2d+'.tfMuonIdx', drawDiag=False, data=isData))
+
+    # comparison with plots from a second file
+    if opts.fname2:
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.pt', xTitle='p_{T} (GeV/c)', yTitle='# muons/(GeV/c)', normToBinWidth=True, data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.eta', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.etaAtVtx', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.phi', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.phiAtVtx', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
+
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.pt', xTitle='p_{T} (GeV/c)', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.eta', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.etaAtVtx', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.phi', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.phiAtVtx', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
 
     ##########################################################################
     # save plots to root file

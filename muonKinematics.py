@@ -40,22 +40,22 @@ def book_histograms():
     pt_bins += range(200, 300, 50)
     pt_bins.append(300)
 
-    vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['etaVtx', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['phiVtx', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['qual', 16, 0, 15], ['tfMuonIdx', 108, 0, 107],
-                 ['mu1pt', -1]+pt_bins, ['mu1eta', 100, -2.5, 2.5], ['mu1etaVtx', 100, -2.5, 2.5], ['mu1phi', 70, -3.5, 3.5], ['mu1phiVtx', 70, -3.5, 3.5], ['mu1charge', 3, -1, 2], ['mu1qual', 16, 0, 15], ['mu1tfMuonIdx', 108, 0, 107],
-                 ['mu2pt', -1]+pt_bins, ['mu2eta', 100, -2.5, 2.5], ['mu2etaVtx', 100, -2.5, 2.5], ['mu2phi', 70, -3.5, 3.5], ['mu2phiVtx', 70, -3.5, 3.5], ['mu2charge', 3, -1, 2], ['mu2qual', 16, 0, 15], ['mu2tfMuonIdx', 108, 0, 107],
-                 ['mu3pt', -1]+pt_bins, ['mu3eta', 100, -2.5, 2.5], ['mu3etaVtx', 100, -2.5, 2.5], ['mu3phi', 70, -3.5, 3.5], ['mu3phiVtx', 70, -3.5, 3.5], ['mu3charge', 3, -1, 2], ['mu3qual', 16, 0, 15], ['mu3tfMuonIdx', 108, 0, 107],
+    vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['etaAtVtx', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['phiAtVtx', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['qual', 16, 0, 15], ['tfMuonIdx', 108, 0, 107],
+                 ['mu1pt', -1]+pt_bins, ['mu1eta', 100, -2.5, 2.5], ['mu1etaAtVtx', 100, -2.5, 2.5], ['mu1phi', 70, -3.5, 3.5], ['mu1phiAtVtx', 70, -3.5, 3.5], ['mu1charge', 3, -1, 2], ['mu1qual', 16, 0, 15], ['mu1tfMuonIdx', 108, 0, 107],
+                 ['mu2pt', -1]+pt_bins, ['mu2eta', 100, -2.5, 2.5], ['mu2etaAtVtx', 100, -2.5, 2.5], ['mu2phi', 70, -3.5, 3.5], ['mu2phiAtVtx', 70, -3.5, 3.5], ['mu2charge', 3, -1, 2], ['mu2qual', 16, 0, 15], ['mu2tfMuonIdx', 108, 0, 107],
+                 ['mu3pt', -1]+pt_bins, ['mu3eta', 100, -2.5, 2.5], ['mu3etaAtVtx', 100, -2.5, 2.5], ['mu3phi', 70, -3.5, 3.5], ['mu3phiAtVtx', 70, -3.5, 3.5], ['mu3charge', 3, -1, 2], ['mu3qual', 16, 0, 15], ['mu3tfMuonIdx', 108, 0, 107],
                  ['n', 9, 0, 9], ['dpt', 600, 0, 300], ['dptoverpt', 50, 0, 1], ['dr', 600, 0, 6], ['deta', 480, 0, 4.8], ['dphi', 320, 0, 3.2]]
 
-    x_title_vars = {'pt':'p_{T}', 'eta':'#eta', 'etaVtx':'#eta_{Vtx}', 'phi':'#phi', 'phiVtx':'#phi_{Vtx}', 'charge':'charge', 'qual':'qual', 'tfMuonIdx':'TF muon index',
-                    'mu1pt':'p_{T}^{#mu1}', 'mu1eta':'#eta^{#mu1}', 'mu1etaVtx':'#eta_{Vtx}^{#mu1}', 'mu1phi':'#phi^{#mu1}', 'mu1phiVtx':'#phi_{Vtx}^{#mu1}', 'mu1charge':'charge^{#mu1}', 'mu1qual':'qual^{#mu1}', 'mu1tfMuonIdx':'TF muon index^{#mu1}',
-                    'mu2pt':'p_{T}^{#mu2}', 'mu2eta':'#eta^{#mu2}', 'mu2etaVtx':'#eta_{Vtx}^{#mu2}', 'mu2phi':'#phi^{#mu2}', 'mu2phiVtx':'#phi_{Vtx}^{#mu2}', 'mu2charge':'charge^{#mu2}', 'mu2qual':'qual^{#mu2}', 'mu2tfMuonIdx':'TF muon index^{#mu2}',
-                    'mu3pt':'p_{T}^{#mu3}', 'mu3eta':'#eta^{#mu3}', 'mu3etaVtx':'#eta_{Vtx}^{#mu3}', 'mu3phi':'#phi^{#mu3}', 'mu3phiVtx':'#phi_{Vtx}^{#mu3}', 'mu3charge':'charge^{#mu3}', 'mu3qual':'qual^{#mu3}', 'mu3tfMuonIdx':'TF muon index^{#mu3}',
+    x_title_vars = {'pt':'p_{T}', 'eta':'#eta', 'etaAtVtx':'#eta_{Vtx}', 'phi':'#phi', 'phiAtVtx':'#phi_{Vtx}', 'charge':'charge', 'qual':'qual', 'tfMuonIdx':'TF muon index',
+                    'mu1pt':'p_{T}^{#mu1}', 'mu1eta':'#eta^{#mu1}', 'mu1etaAtVtx':'#eta_{Vtx}^{#mu1}', 'mu1phi':'#phi^{#mu1}', 'mu1phiAtVtx':'#phi_{Vtx}^{#mu1}', 'mu1charge':'charge^{#mu1}', 'mu1qual':'qual^{#mu1}', 'mu1tfMuonIdx':'TF muon index^{#mu1}',
+                    'mu2pt':'p_{T}^{#mu2}', 'mu2eta':'#eta^{#mu2}', 'mu2etaAtVtx':'#eta_{Vtx}^{#mu2}', 'mu2phi':'#phi^{#mu2}', 'mu2phiAtVtx':'#phi_{Vtx}^{#mu2}', 'mu2charge':'charge^{#mu2}', 'mu2qual':'qual^{#mu2}', 'mu2tfMuonIdx':'TF muon index^{#mu2}',
+                    'mu3pt':'p_{T}^{#mu3}', 'mu3eta':'#eta^{#mu3}', 'mu3etaAtVtx':'#eta_{Vtx}^{#mu3}', 'mu3phi':'#phi^{#mu3}', 'mu3phiAtVtx':'#phi_{Vtx}^{#mu3}', 'mu3charge':'charge^{#mu3}', 'mu3qual':'qual^{#mu3}', 'mu3tfMuonIdx':'TF muon index^{#mu3}',
                     'n':'# muons', 'dpt':'p_{T}^{#mu1} - p_{T}^{#mu2}', 'dptoverpt':'(p_{T}^{#mu1} - p_{T}^{#mu2}) / p_{T}^{#mu1}', 'dr':'#Delta R (#mu1, #mu2)', 'deta':'|#Delta#eta (#mu1, #mu2)|', 'dphi':'#Delta#phi (#mu1, #mu2)'}
 
-    x_title_units = {'pt':'GeV/c', 'eta':None, 'etaVtx':None, 'phi':None, 'phiVtx':None, 'charge':None, 'qual':None, 'tfMuonIdx':None,
-                     'mu1pt':'GeV/c', 'mu1eta':None, 'mu1etaVtx':None, 'mu1phi':None, 'mu1phiVtx':None, 'mu1charge':None, 'mu1qual':None, 'mu1tfMuonIdx':None,
-                     'mu2pt':'GeV/c', 'mu2eta':None, 'mu2etaVtx':None, 'mu2phi':None, 'mu2phiVtx':None, 'mu2charge':None, 'mu2qual':None, 'mu2tfMuonIdx':None,
-                     'mu3pt':'GeV/c', 'mu3eta':None, 'mu3etaVtx':None, 'mu3phi':None, 'mu3phiVtx':None, 'mu3charge':None, 'mu3qual':None, 'mu3tfMuonIdx':None,
+    x_title_units = {'pt':'GeV/c', 'eta':None, 'etaAtVtx':None, 'phi':None, 'phiAtVtx':None, 'charge':None, 'qual':None, 'tfMuonIdx':None,
+                     'mu1pt':'GeV/c', 'mu1eta':None, 'mu1etaAtVtx':None, 'mu1phi':None, 'mu1phiAtVtx':None, 'mu1charge':None, 'mu1qual':None, 'mu1tfMuonIdx':None,
+                     'mu2pt':'GeV/c', 'mu2eta':None, 'mu2etaAtVtx':None, 'mu2phi':None, 'mu2phiAtVtx':None, 'mu2charge':None, 'mu2qual':None, 'mu2tfMuonIdx':None,
+                     'mu3pt':'GeV/c', 'mu3eta':None, 'mu3etaAtVtx':None, 'mu3phi':None, 'mu3phiAtVtx':None, 'mu3charge':None, 'mu3qual':None, 'mu3tfMuonIdx':None,
                      'n':None, 'dpt':'GeV/c', 'dptoverpt':None, 'dr':None, 'deta':None, 'dphi':None}
 
     x_vars_bins_2d = [['pt', 150, 0, 300]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 140, -3.5, 3.5], ['charge', 3, -1, 2], ['qual', 16, 0, 15], ['tfMuonIdx', 108, 0, 107]]
@@ -110,23 +110,39 @@ def analyse(evt, hm, hm2d):
         for idx in l1_muon_idcs:
             hm.fill(histoprefix+'.pt', l1Coll.muonEt[idx])
             hm.fill(histoprefix+'.eta', l1Coll.muonEta[idx])
+            hm.fill(histoprefix+'.etaAtVtx', l1Coll.muonEtaAtVtx[idx])
             hm.fill(histoprefix+'.phi', l1Coll.muonPhi[idx])
+            hm.fill(histoprefix+'.phiAtVtx', l1Coll.muonPhiAtVtx[idx])
             hm.fill(histoprefix+'.charge', l1Coll.muonChg[idx])
             hm.fill(histoprefix+'.qual', l1Coll.muonQual[idx])
             hm.fill(histoprefix+'.tfMuonIdx', l1Coll.muonTfMuonIdx[idx])
+
+        for idx in l1_muon_idcs_qmin:
+            hm.fill(histoprefixqmin+'.pt', l1Coll.muonEt[idx])
+            hm.fill(histoprefixqmin+'.eta', l1Coll.muonEta[idx])
+            hm.fill(histoprefixqmin+'.etaAtVtx', l1Coll.muonEtaAtVtx[idx])
+            hm.fill(histoprefixqmin+'.phi', l1Coll.muonPhi[idx])
+            hm.fill(histoprefixqmin+'.phiAtVtx', l1Coll.muonPhiAtVtx[idx])
+            hm.fill(histoprefixqmin+'.charge', l1Coll.muonChg[idx])
+            hm.fill(histoprefixqmin+'.qual', l1Coll.muonQual[idx])
+            hm.fill(histoprefixqmin+'.tfMuonIdx', l1Coll.muonTfMuonIdx[idx])
 
         for nMin in range(3):
             if nMu > nMin:
                 hm.fill(histoprefix+'.mu{nMu}pt'.format(nMu=nMin+1), l1Coll.muonEt[l1_muon_idcs[nMin]])
                 hm.fill(histoprefix+'.mu{nMu}eta'.format(nMu=nMin+1), l1Coll.muonEta[l1_muon_idcs[nMin]])
+                hm.fill(histoprefix+'.mu{nMu}etaAtVtx'.format(nMu=nMin+1), l1Coll.muonEtaAtVtx[l1_muon_idcs[nMin]])
                 hm.fill(histoprefix+'.mu{nMu}phi'.format(nMu=nMin+1), l1Coll.muonPhi[l1_muon_idcs[nMin]])
+                hm.fill(histoprefix+'.mu{nMu}phiAtVtx'.format(nMu=nMin+1), l1Coll.muonPhiAtVtx[l1_muon_idcs[nMin]])
                 hm.fill(histoprefix+'.mu{nMu}charge'.format(nMu=nMin+1), l1Coll.muonChg[l1_muon_idcs[nMin]])
                 hm.fill(histoprefix+'.mu{nMu}qual'.format(nMu=nMin+1), l1Coll.muonQual[l1_muon_idcs[nMin]])
                 hm.fill(histoprefix+'.mu{nMu}tfMuonIdx'.format(nMu=nMin+1), l1Coll.muonTfMuonIdx[l1_muon_idcs[nMin]])
             if nMuQmin > nMin:
                 hm.fill(histoprefixqmin+'.mu{nMu}pt'.format(nMu=nMin+1), l1Coll.muonEt[l1_muon_idcs_qmin[nMin]])
                 hm.fill(histoprefixqmin+'.mu{nMu}eta'.format(nMu=nMin+1), l1Coll.muonEta[l1_muon_idcs_qmin[nMin]])
+                hm.fill(histoprefixqmin+'.mu{nMu}etaAtVtx'.format(nMu=nMin+1), l1Coll.muonEtaAtVtx[l1_muon_idcs_qmin[nMin]])
                 hm.fill(histoprefixqmin+'.mu{nMu}phi'.format(nMu=nMin+1), l1Coll.muonPhi[l1_muon_idcs_qmin[nMin]])
+                hm.fill(histoprefixqmin+'.mu{nMu}phiAtVtx'.format(nMu=nMin+1), l1Coll.muonPhiAtVtx[l1_muon_idcs_qmin[nMin]])
                 hm.fill(histoprefixqmin+'.mu{nMu}charge'.format(nMu=nMin+1), l1Coll.muonChg[l1_muon_idcs_qmin[nMin]])
                 hm.fill(histoprefixqmin+'.mu{nMu}qual'.format(nMu=nMin+1), l1Coll.muonQual[l1_muon_idcs_qmin[nMin]])
                 hm.fill(histoprefixqmin+'.mu{nMu}tfMuonIdx'.format(nMu=nMin+1), l1Coll.muonTfMuonIdx[l1_muon_idcs_qmin[nMin]])

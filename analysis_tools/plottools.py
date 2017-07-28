@@ -128,7 +128,7 @@ def plot_2dhist(hm2d, hName, drawDiag=True, data=False, xMax=None):
     return [c, h, tex, lines]
 
 
-def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinWidth=False, normalise=False, xMax=None, canvasPrefix='', notes=None, scaleFactor=1., logx=False, logy=False, data=False, rebin=1):
+def plot_hists(hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinWidth=False, normalise=False, xMax=None, canvasPrefix='', notes=None, scaleFactor=1., logx=False, logy=False, data=False, rebin=1):
     den = hDefs[0]['den']
     if den:
         name = canvasPrefix+hDefs[0]['num']+'_over_'+den
@@ -161,15 +161,22 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
     hStack = root.THStack()
     # get all the histograms and set their plot style
     for hDef in hDefs:
+        hm = hDef['hm']
+        if 'den' in hDef:
+            if 'denhm' in hDef:
+                denhm = hDef['denhm']
+            else:
+                denhm = hm
         if threshold:
             h = hm.get_threshold_hist(hDef['num'], rebin=rebin).Clone()
             if den:
-                hDen = hm.get_threshold_hist(den, rebin=rebin)
+                hDen = denhm.get_threshold_hist(den, rebin=rebin)
                 h.Divide(h, hDen, 1, 1, "b")
         else:
             if den:
-                h = hm.get_ratio(hDef['num'], den, rebin=rebin).Clone()
+                h = denhm.get_ratio(hDef['num'], den, rebin=rebin).Clone()
             else:
+                print hDef['num']
                 h = hm.get(hDef['num'], rebin=rebin).Clone()
 
         if normalise:
