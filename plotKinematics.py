@@ -20,6 +20,7 @@ def parse_options_plotRates(parser):
     sub_parser.add_argument("--mukin", dest="mukin", default=False, action='store_true', help="Plot kinematics plots for the first three muons.")
     sub_parser.add_argument("--qstack", dest="qstack", default=False, action='store_true', help="Plot a quality stack plot for muon kinematics.")
     sub_parser.add_argument("--2d", dest="twod", default=False, action='store_true', help="Plot 2D L1 muon1 vs. muon2 plots.")
+    sub_parser.add_argument("--tf", dest="tf", default=False, action='store_true', help="Plot TF histograms.")
     sub_parser.add_argument("--public", dest="public", default=False, action='store_true', help="Plot style for publication.")
     # options to compare histograms from two files/runs
     sub_parser.add_argument("--fname2", dest="fname2", default=None, help="Second file to take reference histograms from.")
@@ -250,6 +251,37 @@ def main():
         objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
         objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
         objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
+
+        if opts.tf:
+            tfNames = ['bmtf', 'omtf', 'emtf']
+            for tfName in tfNames:
+                histNamePrefix = 'l1_'+tfName+'_muon'
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.hwPt', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.hwEta', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.hwPhi', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.hwSign', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.hwSignValid', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.hwQual', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.link', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.processor', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.tfType', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.hwHF', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.wh', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.trAdd', data=isData, legTxts=[legTxt1, legTxt2]))
+
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwPt', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwEta', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwPhi', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwSign', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwSignValid', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwQual', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.link', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.processor', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.tfType', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwHF', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.wh', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.trAdd', data=isData, legTxts=[legTxt1, legTxt2]))
+
 
     ##########################################################################
     # save plots to root file
