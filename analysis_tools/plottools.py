@@ -129,9 +129,13 @@ def plot_2dhist(hm2d, hName, drawDiag=True, data=False, xMax=None):
 
 
 def plot_hists(hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinWidth=False, normalise=False, xMax=None, canvasPrefix='', notes=None, scaleFactor=1., logx=False, logy=False, data=False, rebin=1):
-    den = hDefs[0]['den']
-    if den:
-        name = canvasPrefix+hDefs[0]['num']+'_over_'+den
+    den = False
+    if 'den' in hDefs[0]:
+        den = True
+        if 'op' in hDefs[0] and hDefs[0]['op'] == 'sub':
+            name = canvasPrefix+hDefs[0]['num']+'_minus_'+hDefs[0]['den']
+        else:
+            name = canvasPrefix+hDefs[0]['num']+'_over_'+hDefs[0]['den']
     else:
         name = canvasPrefix+hDefs[0]['num']
     if normToBinWidth and not threshold and not den:
@@ -169,14 +173,23 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinW
                 denhm = hm
         if threshold:
             h = hm.get_threshold_hist(hDef['num'], rebin=rebin).Clone()
-            if den:
-                hDen = denhm.get_threshold_hist(den, rebin=rebin)
-                h.Divide(h, hDen, 1, 1, "b")
+            if 'den' in hDef:
+                hDen = denhm.get_threshold_hist(hDef['den'], rebin=rebin)
+                if 'op' in hDef and hDef['op'] == 'sub':
+                    h.Add(hDen, -1)
+                else:
+                    h.Divide(h, hDen, 1, 1, "b")
         else:
-            if den:
-                h = denhm.get_ratio(hDef['num'], den, rebin=rebin).Clone()
-            else:
-                h = hm.get(hDef['num'], rebin=rebin).Clone()
+            h = hm.get(hDef['num'], rebin=rebin).Clone()
+            if 'den' in hDef:
+                hDen = denhm.get(hDef['den'], rebin=rebin).Clone()
+                if 'op' in hDef and hDef['op'] == 'sub':
+                    h.Add(hDen, -1)
+                    for b in range(0, h.GetNbinsX()+2):
+                        if h.GetBinContent(b) != 0:
+                            print 'Subtraction result not 0 in {hist}: {ratio}'.format(hist= hDef['num'], ratio=h.GetBinContent(b))
+                else:
+                    h.Divide(h, hDen, 1, 1, "b")
 
         if normalise:
             h.Scale(1/h.Integral())
@@ -274,7 +287,10 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinW
     if c.GetLogy():
         yMin = 0.5 * minBinValueNonZero
         yMax = 2. * maxBinValue
-    yAxis.SetRangeUser(yMin, yMax)
+    if 'op' not in hDefs[0] or ('op' in hDefs[0] and hDefs[0]['op'] != 'sub'):
+        yAxis.SetRangeUser(yMin, yMax)
+    if minBinValue == maxBinValue:
+        yAxis.SetRangeUser(minBinValue-1, maxBinValue+1)
     if xMax:
         xAxis.SetRangeUser(xAxis.GetBinLowEdge(1), xMax)
 

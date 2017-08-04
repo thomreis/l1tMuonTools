@@ -32,7 +32,9 @@ def parse_options_plotRates(parser):
 
 
 def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, xMax=None, reg='', scaleFactor=1., data=False):
-    ugmt_dict = {'hm':hm, 'num':hName, 'den':den, 'drawopt':'', 'stacked':False, 'err':True}
+    ugmt_dict = {'hm':hm, 'num':hName, 'drawopt':'', 'stacked':False, 'err':True}
+    if den:
+        ugmt_dict['den'] = den
     ugmt_dict.update(hist_style('data', lw=2))
     hDefs = []
     if reg == '':
@@ -66,7 +68,9 @@ def plot_hists_qstack(hm, hName, den=None, xTitle='', yTitle='# muons', threshol
         lw=2
     if reg == '':
         for q in reversed(range(4,16,4)):
-            ugmt_q_dict = {'hm':hm, 'num':hName.replace('XX', '{q}'.format(q=q)), 'den':den, 'drawopt':'hist', 'stacked':stacked, 'err':False}
+            ugmt_q_dict = {'hm':hm, 'num':hName.replace('XX', '{q}'.format(q=q)), 'drawopt':'hist', 'stacked':stacked, 'err':False}
+            if den:
+                ugmt_q_dict['den'] = den
             ugmt_q_dict.update(hist_style(stylePref+str(q), filled=stacked, lw=lw))
             hDefs.append(ugmt_q_dict)
 
@@ -92,7 +96,7 @@ def plot_hists_muons(hm, hName, xTitle='', yTitle='# muons', threshold=False, st
     hDefs = []
     if reg == '':
         for i in reversed(range(1, 4)):
-            ugmt_q_dict = {'hm':hm, 'num':hName.replace('muX', 'mu{i}'.format(i=i)), 'den':None, 'drawopt':'', 'stacked':False, 'err':True}
+            ugmt_q_dict = {'hm':hm, 'num':hName.replace('muX', 'mu{i}'.format(i=i)), 'drawopt':'', 'stacked':False, 'err':True}
             ugmt_q_dict.update(hist_style('mu_{i}'.format(i=i), marker=True))
             hDefs.append(ugmt_q_dict)
 
@@ -114,8 +118,8 @@ def plot_hists_muons(hm, hName, xTitle='', yTitle='# muons', threshold=False, st
 
 def plot_hists_comp(hm1, hm2, hName, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, normalise=False, xMax=None, reg='', scaleFactor=1., data=False, legTxts=['hm1', 'hm2']):
     #hm1_dict = {'hm':hm1, 'num':hName, 'denhm':hm2, 'den':hName}
-    hm1_dict = {'hm':hm1, 'num':hName, 'den':None, 'drawopt':'', 'stacked':stacked, 'err':True}
-    hm2_dict = {'hm':hm2, 'num':hName, 'den':None, 'drawopt':'', 'stacked':stacked, 'err':True}
+    hm1_dict = {'hm':hm1, 'num':hName, 'drawopt':'', 'stacked':stacked, 'err':True}
+    hm2_dict = {'hm':hm2, 'num':hName, 'drawopt':'', 'stacked':stacked, 'err':True}
     hm1_dict.update(hist_style('mu_1', marker=True))
     hm2_dict.update(hist_style('mu_2', marker=True))
     hm1_dict['legtext'] = legTxts[0]
@@ -136,7 +140,7 @@ def plot_hists_comp(hm1, hm2, hName, xTitle='', yTitle='# muons', threshold=Fals
 
     return plot_hists(hDefs, xTitle, yTitle, threshold, normToBinWidth, normalise, xMax, 'comp_', notes, scaleFactor, False, logy, data)
 
-def plot_hists_ratio(hm1, hm2, hName, xTitle='', yTitle='# muons', threshold=False, xMax=None, reg='', scaleFactor=1., data=False, legTxts=['hm1', 'hm2']):
+def plot_hists_ratio(hm1, hm2, hName, xTitle='', yTitle='Ratio between # muons', threshold=False, xMax=None, reg='', scaleFactor=1., data=False, legTxts=['hm1', 'hm2']):
     hm_dict = {'hm':hm1, 'num':hName, 'denhm':hm2, 'den':hName, 'drawopt':'', 'stacked':False, 'err':True}
     hm_dict.update(hist_style('mu_1', marker=True))
     hm_dict['legtext'] = legTxts[0]+'/'+legTxts[1]
@@ -147,6 +151,18 @@ def plot_hists_ratio(hm1, hm2, hName, xTitle='', yTitle='# muons', threshold=Fal
     notes = extract_notes_from_name(hName, xBase, yBase, qualTxt=True)
 
     return plot_hists(hDefs, xTitle, yTitle, threshold, False, False, xMax, 'compratio_', notes, scaleFactor, False, False, data)
+
+def plot_hists_diff(hm1, hm2, hName, xTitle='', yTitle='Difference between # muons', threshold=False, xMax=None, reg='', scaleFactor=1., data=False, legTxts=['hm1', 'hm2']):
+    hm_dict = {'hm':hm1, 'num':hName, 'denhm':hm2, 'den':hName, 'op':'sub', 'drawopt':'*hist', 'stacked':False, 'err':False}
+    hm_dict.update(hist_style('mu_1', marker=True))
+    hm_dict['legtext'] = legTxts[0]+' - '+legTxts[1]
+    hDefs = [hm_dict]
+
+    xBase = 0.01
+    yBase = 0.78
+    notes = extract_notes_from_name(hName, xBase, yBase, qualTxt=True)
+
+    return plot_hists(hDefs, xTitle, yTitle, threshold, False, False, xMax, 'compdiff_', notes, scaleFactor, False, False, data)
 
 def main():
     opts = parse_options_plotRates(parser)
@@ -243,14 +259,14 @@ def main():
         objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
         objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
 
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.pt', xTitle='p_{T} (GeV/c)', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.eta', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.etaAtVtx', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.phi', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.phiAtVtx', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_diff(hm, hm2, 'l1_muon_qmin0.pt', xTitle='p_{T} (GeV/c)', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_diff(hm, hm2, 'l1_muon_qmin0.eta', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_diff(hm, hm2, 'l1_muon_qmin0.etaAtVtx', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_diff(hm, hm2, 'l1_muon_qmin0.phi', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_diff(hm, hm2, 'l1_muon_qmin0.phiAtVtx', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_diff(hm, hm2, 'l1_muon_qmin0.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_diff(hm, hm2, 'l1_muon_qmin0.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_diff(hm, hm2, 'l1_muon_qmin0.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
 
         if opts.tf:
             tfNames = ['bmtf', 'omtf', 'emtf']
@@ -269,18 +285,18 @@ def main():
                 objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.wh', data=isData, legTxts=[legTxt1, legTxt2]))
                 objects.append(plot_hists_comp(hm, hm2, histNamePrefix+'.trAdd', data=isData, legTxts=[legTxt1, legTxt2]))
 
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwPt', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwEta', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwPhi', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwSign', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwSignValid', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwQual', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.link', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.processor', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.tfType', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.hwHF', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.wh', data=isData, legTxts=[legTxt1, legTxt2]))
-                objects.append(plot_hists_ratio(hm, hm2, histNamePrefix+'.trAdd', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.hwPt', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.hwEta', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.hwPhi', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.hwSign', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.hwSignValid', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.hwQual', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.link', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.processor', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.tfType', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.hwHF', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.wh', data=isData, legTxts=[legTxt1, legTxt2]))
+                objects.append(plot_hists_diff(hm, hm2, histNamePrefix+'.trAdd', data=isData, legTxts=[legTxt1, legTxt2]))
 
 
     ##########################################################################
