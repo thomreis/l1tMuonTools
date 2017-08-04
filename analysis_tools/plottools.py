@@ -176,7 +176,6 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinW
             if den:
                 h = denhm.get_ratio(hDef['num'], den, rebin=rebin).Clone()
             else:
-                print hDef['num']
                 h = hm.get(hDef['num'], rebin=rebin).Clone()
 
         if normalise:

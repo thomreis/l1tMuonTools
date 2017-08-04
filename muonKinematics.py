@@ -19,6 +19,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("-o", "--outname", dest="outname", default="./muon_kinematics_histos.root", type=str, help="A root file name where to save the histograms.")
     sub_parser.add_argument("-j", "--json", dest="json", type=str, default=None, help="A json file with good lumi sections per run.")
     sub_parser.add_argument("-r", "--runs", dest="runs", type=str, default=None, help="A string of runs to check.")
+    sub_parser.add_argument("--tf", dest="tf", type=str, default='', help="Histograms for track finders {b, o, e} for barrel, overlap, and endcap.")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -38,7 +39,9 @@ def book_histograms():
     pt_bins += range(80, 100, 10)
     pt_bins += range(100, 200, 25)
     pt_bins += range(200, 300, 50)
-    pt_bins.append(300)
+    pt_bins += range(300, 500, 100)
+    pt_bins += range(500, 1000, 250)
+    pt_bins.append(1000)
 
     vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['etaAtVtx', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['phiAtVtx', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['qual', 16, 0, 15], ['tfMuonIdx', 108, 0, 107],
                  ['mu1pt', -1]+pt_bins, ['mu1eta', 100, -2.5, 2.5], ['mu1etaAtVtx', 100, -2.5, 2.5], ['mu1phi', 70, -3.5, 3.5], ['mu1phiAtVtx', 70, -3.5, 3.5], ['mu1charge', 3, -1, 2], ['mu1qual', 16, 0, 15], ['mu1tfMuonIdx', 108, 0, 107],
@@ -72,7 +75,7 @@ def book_histograms():
     varnames2d = []
     binnings2d = {}
 
-    quals = [4, 8, 12]
+    quals = [0, 4, 8, 12]
 
     for qual in quals:
         for var_bin in vars_bins:
@@ -85,6 +88,25 @@ def book_histograms():
             varnames2d.append('2d_muon_qmin{q}.{var}'.format(q=qual, var=var_bin_2d[0]))
             binnings2d['2d_muon_qmin{q}.{var}'.format(q=qual, var=var_bin_2d[0])] = [var_bin_2d[1:]+[x_title_vars_2d[var_bin_2d[0]], x_title_units_2d[var_bin_2d[0]]], var_bin_2d[1:]+[y_title_vars_2d[var_bin_2d[0]], y_title_units_2d[var_bin_2d[0]]]]
 
+    if makeBmtfHists or makeOmtfHists or makeEmtfHists:
+        vars_bins_tf = [['hwPt', 512, 0, 512], ['hwEta', 512, -256, 256], ['hwPhi', 256, -127, 127], ['hwSign', 2, 0, 2], ['hwSignValid', 2, 0, 2], ['hwQual', 16, 0, 15], ['link', 36, 36, 72], ['processor', 12, 0, 12], ['tfType', 5, 0, 5], ['hwHF', 2, 0, 2], ['wh', 17, -8, 9], ['trAdd', 16, 0, 16], ['n', 36, 0, 36]]
+        x_title_vars_tf = {'hwPt':'hwPt', 'hwEta':'hwEta', 'hwPhi':'hwPhi', 'hwSign':'hwSign', 'hwSignValid':'hwSignValid', 'hwQual':'hwQual', 'link':'link', 'processor':'processor', 'tfType':'TF type', 'hwHF':'hwHF', 'wh':'wheel', 'trAdd':'track address', 'n':'# muons'}
+        x_title_units_tf = {'hwPt':None, 'hwEta':None, 'hwPhi':None, 'hwSign':None, 'hwSignValid':None, 'hwQual':None, 'link':None, 'processor':None, 'tfType':None, 'hwHF':None, 'wh':None, 'trAdd':None, 'n':None}
+        tfNames = []
+        if makeBmtfHists:
+            tfNames.append('bmtf')
+        if makeOmtfHists:
+            tfNames.append('omtf')
+        if makeEmtfHists:
+            tfNames.append('emtf')
+
+        for tfName in tfNames:
+            tfHistoName = 'l1_'+tfName+'_muon.'
+            for var_bin_tf in vars_bins_tf:
+                varnames.append(tfHistoName+var_bin_tf[0])
+                binnings[tfHistoName+var_bin_tf[0]] = var_bin_tf[1:]+[x_title_vars_tf[var_bin_tf[0]], x_title_units_tf[var_bin_tf[0]]]
+
+
     return HistManager(list(set(varnames)), binnings), HistManager2d(list(set(varnames2d)), binnings2d)
 
 def analyse(evt, hm, hm2d):
@@ -93,11 +115,11 @@ def analyse(evt, hm, hm2d):
     bx_min = 0
     bx_max = 0
 
-    quals = [4, 8, 12]
+    quals = [0, 4, 8, 12]
 
     for qual in quals:
-        l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0.5, qual_min=qual, qual_max=qual, bx_min=bx_min, bx_max=bx_max)
-        l1_muon_idcs_qmin = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0.5, qual_min=qual, bx_min=bx_min, bx_max=bx_max)
+        l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0., qual_min=qual, qual_max=qual, bx_min=bx_min, bx_max=bx_max)
+        l1_muon_idcs_qmin = MuonSelections.select_ugmt_muons(l1Coll, pt_min=0., qual_min=qual, bx_min=bx_min, bx_max=bx_max)
 
         histoprefix = 'l1_muon_q{q}'.format(q=qual)
         histoprefixqmin = 'l1_muon_qmin{q}'.format(q=qual)
@@ -163,6 +185,38 @@ def analyse(evt, hm, hm2d):
             hm2d.fill(histoprefix2d+'.qual', l1Coll.muonQual[l1_muon_idcs_qmin[0]], l1Coll.muonQual[l1_muon_idcs_qmin[1]])
             hm2d.fill(histoprefix2d+'.tfMuonIdx', l1Coll.muonTfMuonIdx[l1_muon_idcs_qmin[0]], l1Coll.muonTfMuonIdx[l1_muon_idcs_qmin[1]])
 
+    # TF histograms
+    if makeBmtfHists:
+        fill_tf_muon(hm, evt.upgradeBmtf, 'bmtf', bx_min, bx_max)
+
+    if makeOmtfHists:
+        fill_tf_muon(hm, evt.upgradeOmtf, 'omtf', bx_min, bx_max)
+
+    if makeEmtfHists:
+        fill_tf_muon(hm, evt.upgradeEmtf, 'emtf', bx_min, bx_max)
+
+
+def fill_tf_muon(hm, tfColl, tfName, bx_min, bx_max):
+    tf_muon_idcs = MuonSelections.select_tf_muons(tfColl, bx_min=bx_min, bx_max=bx_max)
+
+    tfhistoprefix = 'l1_'+tfName+'_muon'
+
+    nMu = len(tf_muon_idcs)
+    hm.fill(tfhistoprefix+'.n', nMu)
+    for idx in tf_muon_idcs:
+        hm.fill(tfhistoprefix+'.hwPt', tfColl.tfMuonHwPt[idx])
+        hm.fill(tfhistoprefix+'.hwEta', tfColl.tfMuonHwEta[idx])
+        hm.fill(tfhistoprefix+'.hwPhi', tfColl.tfMuonHwPhi[idx])
+        hm.fill(tfhistoprefix+'.hwSign', tfColl.tfMuonHwSign[idx])
+        hm.fill(tfhistoprefix+'.hwSignValid', tfColl.tfMuonHwSignValid[idx])
+        hm.fill(tfhistoprefix+'.hwQual', tfColl.tfMuonHwQual[idx])
+        hm.fill(tfhistoprefix+'.link', tfColl.tfMuonLink[idx])
+        hm.fill(tfhistoprefix+'.processor', tfColl.tfMuonProcessor[idx])
+        hm.fill(tfhistoprefix+'.tfType', tfColl.tfMuonTrackFinderType[idx])
+        hm.fill(tfhistoprefix+'.hwHF', tfColl.tfMuonHwHF[idx])
+        hm.fill(tfhistoprefix+'.wh', tfColl.tfMuonWh[idx])
+        hm.fill(tfhistoprefix+'.trAdd', tfColl.tfMuonTrAdd[idx])
+
 
 def save_histos(hm, hm2d, outfile):
     '''
@@ -180,6 +234,20 @@ def main():
     L1Ana.init_l1_analysis()
     opts = parse_options_upgradeMuonHistos(parser)
     print ""
+
+    # make histograms for TF muons?
+    global makeBmtfHists
+    if opts.tf.find('b') != -1:
+        print 'Make BMTF histograms'
+        makeBmtfHists = True
+    global makeOmtfHists
+    if opts.tf.find('o') != -1:
+        print 'Make OMTF histograms'
+        makeOmtfHists = True
+    global makeEmtfHists
+    if opts.tf.find('e') != -1:
+        print 'Make EMTF histograms'
+        makeEmtfHists = True
 
     # book the histograms
     L1Ana.log.info("Booking combined run histograms.")
@@ -248,5 +316,8 @@ def main():
 
 if __name__ == "__main__":
     saveHistos = True
+    makeBmtfHists = False
+    makeOmtfHists = False
+    makeEmtfHists = False
     main()
 

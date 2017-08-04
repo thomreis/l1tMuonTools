@@ -123,14 +123,14 @@ class MuonSelections(object):
         return indices
 
     @staticmethod
-    def select_tf_muons(tf, pt_min=0.5, qual_min=0, abs_eta_min=0, abs_eta_max=4, bx_min=-1e6, bx_max=1e6, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
+    def select_tf_muons(tf, pt_min=0., qual_min=0, abs_eta_min=0, abs_eta_max=4, bx_min=-1e6, bx_max=1e6, pos_eta=True, neg_eta=True, pos_charge=True, neg_charge=True, idcs=None):
         ptScale = 0.5
         etaScale = 0.010875
         indices = []
         if idcs is None:
             idcs = range(tf.nTfMuons)
         for i in idcs:
-            if tf.tfMuonHwPt[i] * ptScale < pt_min:
+            if (tf.tfMuonHwPt[i] - 1) * ptScale < pt_min:
                 continue
             if not pos_eta and tf.tfMuonHwEta[i] >= 0:
                 continue

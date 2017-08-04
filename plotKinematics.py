@@ -233,23 +233,23 @@ def main():
 
     # comparison with plots from a second file
     if opts.fname2:
-        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.pt', xTitle='p_{T} (GeV/c)', yTitle='# muons/(GeV/c)', normToBinWidth=True, data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.eta', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.etaAtVtx', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.phi', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.phiAtVtx', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin4.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.pt', xTitle='p_{T} (GeV/c)', yTitle='# muons/(GeV/c)', normToBinWidth=True, data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.eta', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.etaAtVtx', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.phi', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.phiAtVtx', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_comp(hm, hm2, 'l1_muon_qmin0.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
 
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.pt', xTitle='p_{T} (GeV/c)', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.eta', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.etaAtVtx', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.phi', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.phiAtVtx', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
-        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin4.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.pt', xTitle='p_{T} (GeV/c)', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.eta', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.etaAtVtx', xTitle='#eta', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.phi', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.phiAtVtx', xTitle='#phi', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.qual', xTitle='quality', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.charge', xTitle='charge', data=isData, legTxts=[legTxt1, legTxt2]))
+        objects.append(plot_hists_ratio(hm, hm2, 'l1_muon_qmin0.tfMuonIdx', xTitle='TF muon index', data=isData, legTxts=[legTxt1, legTxt2]))
 
     ##########################################################################
     # save plots to root file
