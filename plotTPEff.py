@@ -910,8 +910,8 @@ def plot_eff_hm_comp(hm1, hm2, hName, den, hNamePrefix='', xTitle='', yTitle='',
         if clOpts.emul:
             hNamePrefix = 'emu_'+hNamePrefix
             denPrefix = 'emu_'
-        legTxt1 = clOpts.legTxt1
-        legTxt2 = clOpts.legTxt2
+        legTxt1 = clOpts.legtxt1
+        legTxt2 = clOpts.legtxt2
     else:
         legTxt1 = ''
         legTxt2 = ''
