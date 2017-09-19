@@ -35,6 +35,7 @@ python plotTPEff.py -f ugmt_tandp_eff_histos.root plotTPEff --year 2016 --lumi="
 * `--control` produces control histograms for the probe and L1 muons.
 * `--public` produces publication style plots and output files in png and pdf format.
 * `--data-emul` produces efficiency comparison plots between data and emulator. To use this option the `muonTagAndProbe.py` script has to be run with and without the `--emul` option, and the two ROOT files have to be merged with `hadd`.
+* `--upgrade-legacy` produces efficiency comparison plots between upgrade and legacy. To use this option the `muonTagAndProbe.py` script has to be run with and without the `--legacy` option, and the two ROOT files have to be merged with `hadd`.
 * Efficiencies for one specific run can be plotted with the `--run` option.
 * Comparing efficiencies from different ugmt_tandp_eff_histos.root files can be done with the `--fname2` option that specifies the second input file. This can also be used to compare two runs with the `--run2` option.
 
