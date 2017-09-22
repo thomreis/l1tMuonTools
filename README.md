@@ -35,7 +35,7 @@ python plotTPEff.py -f ugmt_tandp_eff_histos.root plotTPEff --year 2016 --lumi="
 * `--qualcomp` produces efficiency plots for different minimal L1 muon qualities in one plot.
 * `--delta` produces plots with the difference between RECO probe muon and matched L1 muon.
 * `--control` produces control histograms for the probe and L1 muons.
-* `--public` produces publication style plots and output files in png and pdf format. The `--preliminary` option marks the plot as a preliminary result.
+* `--public` produces publication style plots and output files in png and pdf format. The `--preliminary` option marks the plot as a preliminary result. The `--mc` option marks the plot as simulation.
 * `--data-emul` produces efficiency comparison plots between data and emulator. To use this option the `muonTagAndProbe.py` script has to be run with and without the `--emul` option, and the two ROOT files have to be merged with `hadd`.
 * `--upgrade-legacy` produces efficiency comparison plots between upgrade and legacy. To use this option the `muonTagAndProbe.py` script has to be run with and without the `--legacy` option, and the two ROOT files have to be merged with `hadd`.
 * Efficiencies for one specific run can be plotted with the `--run` option.
@@ -69,7 +69,7 @@ python plotSimpleRates.py -f ugmt_rate_histos.root plotRates --bunches 2544 --ye
 * `--scale-to-bunches` linearly extrapolates the rates from the bunches given with `--bunches` to the new number of bunches.
 * `--print-rates` prints a table with rates.
 * `--qstack` produces stacked plots by L1 muon quality.
-* `--public` produces publication style plots and output files in png and pdf format. The `--preliminary` option marks the plot as a preliminary result.
+* `--public` produces publication style plots and output files in png and pdf format. The `--preliminary` option marks the plot as a preliminary result. The `--mc` option marks the plot as simulation.
 * `--legacy` draws plots with rates relative to the legacy rates. The histograms for the legacy rates must have been produced for this to work.
 * Comparing rates from different ugmt_rate_histos.root files can be done with the `--fname2` option that specifies the second input file.
 ```
