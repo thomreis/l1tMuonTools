@@ -22,6 +22,7 @@ def parse_options_plotEff(parser):
     sub_parser.add_argument("--legacy", dest="legacy", default=False, action='store_true', help="Use legacy plots.")
     # histograms to produce
     sub_parser.add_argument("--eff", dest="eff", default=False, action='store_true', help="Plot efficiencies.")
+    sub_parser.add_argument("--eff-tf", dest="efftf", default=False, action='store_true', help="Plot efficiencies for TF regions.")
     sub_parser.add_argument("--qualcomp", dest="qualcomp", default=False, action='store_true', help="Plot efficiencies for different qualities.")
     sub_parser.add_argument("--delta", dest="delta", default=False, action='store_true', help="Plot L1 - RECO difference plots.")
     sub_parser.add_argument("--2d", dest="twod", default=False, action='store_true', help="Plot 2D L1 vs. RECO plots.")
@@ -518,6 +519,10 @@ def hist_styles(stacked=False):
     styles['data_q12'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
     styles['data_q8'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
     styles['data_q4'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
+    styles['data_alleta'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlack, 'ms':root.kFullCircle, 'legtext':'0 < |#eta^{reco}| < 2.4'}
+    styles['data_bmtfeta'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'0 < |#eta^{reco}| < 0.83'}
+    styles['data_omtfeta'] = {'lc':root.kGreen+1, 'ls':root.kSolid, 'fc':None, 'mc':root.kGreen+1, 'ms':root.kOpenSquare, 'legtext':'0.83 < |#eta^{reco}| < 1.24'}
+    styles['data_emtfeta'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'1.24 < |#eta^{reco}| < 2.4'}
     styles['emul'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kFullCircle, 'legtext':'emul'}
     styles['emul_q12'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':None, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'emul Q #geq 12'}
     styles['emul_q8'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':None, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'emul Q #geq 8'}
@@ -879,6 +884,38 @@ def plot_eff_qual(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', autoZoom
 
     return plot_effs(hDefs, xTitle, yTitle, 'qual_', notes, autoZoomX, xMax, addOverflow, rebin, clOpts)
 
+# plot efficiencies for eta ranges on one plot
+def plot_eff_eta_ranges(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', autoZoomX=False, xMax=None, addOverflow=False, rebin=1, clOpts=None):
+    styles = hist_styles(False)
+
+    styleKey = 'data'
+    denPrefix = ''
+    if clOpts:
+        if clOpts.emul:
+            hNamePrefix = 'emu_'+hNamePrefix
+            denPrefix = 'emu_'
+            styleKey = 'emul'
+
+    all_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('absEtaMinXX', 'absEtaMin0').replace('absEtaMaxYY', 'absEtaMax2p4'), 'den':denPrefix+den.replace('absEtaMinXX', 'absEtaMin0').replace('absEtaMaxYY', 'absEtaMax2p4')}
+    all_dict.update(styles[styleKey+'_alleta'])
+    bmtfreg_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('absEtaMinXX', 'absEtaMin0').replace('absEtaMaxYY', 'absEtaMax0p83'), 'den':denPrefix+den.replace('absEtaMinXX', 'absEtaMin0').replace('absEtaMaxYY', 'absEtaMax0p83')}
+    bmtfreg_dict.update(styles[styleKey+'_bmtfeta'])
+    omtfreg_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('absEtaMinXX', 'absEtaMin0p83').replace('absEtaMaxYY', 'absEtaMax1p24'), 'den':denPrefix+den.replace('absEtaMinXX', 'absEtaMin0p83').replace('absEtaMaxYY', 'absEtaMax1p24')}
+    omtfreg_dict.update(styles[styleKey+'_omtfeta'])
+    emtfreg_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('absEtaMinXX', 'absEtaMin1p24').replace('absEtaMaxYY', 'absEtaMax2p4'), 'den':denPrefix+den.replace('absEtaMinXX', 'absEtaMin1p24').replace('absEtaMaxYY', 'absEtaMax2p4')}
+    emtfreg_dict.update(styles[styleKey+'_emtfeta'])
+    hDefs = []
+    hDefs.append(bmtfreg_dict)
+    hDefs.append(omtfreg_dict)
+    hDefs.append(emtfreg_dict)
+    hDefs.append(all_dict)
+
+    xBase = 0.5
+    yBase = 0.13
+    notes = extract_notes_from_name(hName, xBase, yBase)
+
+    return plot_effs(hDefs, xTitle, yTitle, 'efftf_', notes, autoZoomX, xMax, addOverflow, rebin, clOpts)
+
 # plot efficiency contribution from each TF and overall efficiency
 def plot_eff_tf(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', autoZoomX=False, xMax=None, addOverflow=False, rebin=1, clOpts=None):
     styles = hist_styles(False)
@@ -999,7 +1036,7 @@ def main():
     #tfEtaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5]
     tfEtaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
 
-    yTitle_eff = 'L1T muon efficiency'
+    yTitle_eff = 'L1 muon efficiency'
     yTitle_nMatch = '# best matched probes'
     xMax=100
     rebinPt = 1
@@ -1059,6 +1096,24 @@ def main():
 
             # charge plots
             objects.append(plot_eff_standard(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_'+etaRange+'33_charge', etaRange+'33_charge', 'best_', xTitle='charge_{reco}', yTitle=yTitle_eff, clOpts=opts))
+
+    # efficiency plots with the curves of all TF eta regions plus the full eta range
+    if opts.efftf:
+        # pt plots
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, addOverflow=True, rebin=rebinPt, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin7_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, addOverflow=True, rebin=rebinPt, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin7_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin15_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, addOverflow=True, rebin=rebinPt, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin15_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'probe_absEtaMinXX_absEtaMaxYY_ptmin0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True, clOpts=opts))
+        # phi plots
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin33_phi', 'probe_absEtaMinXX_absEtaMaxYY_ptmin33_phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin7_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin10_phi', 'probe_absEtaMinXX_absEtaMaxYY_ptmin10_phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin15_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin20_phi', 'probe_absEtaMinXX_absEtaMaxYY_ptmin20_phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
+        # run plots
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin33_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin33_run', 'best_', xTitle='run number', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin7_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin10_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin10_run', 'best_', xTitle='run number', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin15_dr0p5_matched_probe_absEtaMinXX_absEtaMaxYY_ptmin20_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin20_run', 'best_', xTitle='run number', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
 
     if opts.qualcomp:
         for etaRange in etaRanges:
@@ -1269,7 +1324,6 @@ def main():
             # quality 12
             objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_'+etaRange+'0p5_pt', etaRange+'0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, addOverflow=True, rebin=rebinPt, clOpts=opts))
             objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_'+etaRange+'0p5_pt', etaRange+'0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True, clOpts=opts))
-
             # quality 8
             objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin7_dr0p5_matched_'+etaRange+'0p5_pt', etaRange+'0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, xMax=xMax, addOverflow=True, rebin=rebinPt, clOpts=opts))
             objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin7_dr0p5_matched_'+etaRange+'0p5_pt', etaRange+'0p5_pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, addOverflow=True, clOpts=opts))
@@ -1286,7 +1340,6 @@ def main():
 
             # phi plots
             objects.append(plot_eff_tf(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_'+etaRange+'33_phi', etaRange+'33_phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
-
             objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin7_dr0p5_matched_'+etaRange+'10_phi', etaRange+'10_phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
             objects.append(plot_eff_tf(hm, 'l1_muon_qualMin8_ptmin15_dr0p5_matched_'+etaRange+'20_phi', etaRange+'20_phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
 
