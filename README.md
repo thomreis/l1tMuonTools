@@ -4,15 +4,16 @@ L1T muon tools for efficiency, rate and other studies from L1TNuples
 ## Efficiencies
 Numerator and denominator histograms for tag and probe efficiencies are calculated with the `muonTagAndProbe.py` script. L1 ntuples from a SingleMuon dataset (eventually a ZMu skim) are taken as the input.
 ```
-python muonTagAndProbe.py -l input_l1ntuple_file_list.txt muonTagAndProbe --json good_ls_json.txt --outname ugmt_tandp_eff_histos.root --era 2017pp --use-l1-extra-coord
+python muonTagAndProbe.py -l input_l1ntuple_file_list.txt muonTagAndProbe --json good_ls_json.txt --outname ugmt_tandp_eff_histos.root --era 2017pp --use-l1-extra-coord --use-inv-mass-cut
 ```
 With the `-l` option a text file with the paths to the input files can be used and with the `-f` option a single L1 ntuple input file can be specified.
 To run on emulated muons add the `--emul` option. With the `--run` option a list of runs to be analysed can be selected.
+The invariant mass window between the tag and the probe muon spans from 71 GeV to 111 GeV by default.
 
 ### Using the batch system:
-To run over many input files the task can be divided and sent to the lxbatch system.
+To run over many input files the task can be divided and sent to the lxbatch system. Setting `--njobs` such that each job runs on about 20 files works well in many cases.
 ```
-python create_batch_job.py -s muonTagAndProbe.py -p muonTagAndProbe -l input_l1ntuple_file_list.txt -w work_dir --cmd-line-args " --json good_ls_json.txt --outname ugmt_tandp_eff_histos.root --era 2017pp --emul" --njobs 10 --queue 8nh --split_by_file --submit
+python create_batch_job.py -s muonTagAndProbe.py -p muonTagAndProbe -l input_l1ntuple_file_list.txt -w work_dir --cmd-line-args " --json good_ls_json.txt --outname ugmt_tandp_eff_histos.root --era 2017pp --use-l1-extra-coord --use-inv-mass-cut --emul" --njobs 10 --queue 8nh --split_by_file --submit
 ```
 Once the jobs are finished combine them with `hadd`.
 ```
@@ -26,14 +27,15 @@ If the intersection of two LS json files is needed (For example of the processed
 ### Produce efficiency plots
 Once the ROOT file with the numerator and denominator histograms is generated the efficiency plots can be produced with the `plotTPEff.py` script.
 ```
-python plotTPEff.py -f ugmt_tandp_eff_histos.root plotTPEff --year 2016 --lumi="33.0 fb^{-1}" --eff --2d --qualcomp --delta --control
+python plotTPEff.py -f ugmt_tandp_eff_histos.root plotTPEff --year 2016 --lumi="33.0 fb^{-1}" --eff --eff-tf --2d --qualcomp --delta --control
 ```
 * `--eff` produces the efficiency plots. To run on emulated muons used the `--emul` option.
+* `--eff-tf` produces the efficiency plots with all TF on one plot. To run on emulated muons used the `--emul` option.
 * `--2d` produces 2D plots with RECO vs. L1 for several muon variables.
 * `--qualcomp` produces efficiency plots for different minimal L1 muon qualities in one plot.
 * `--delta` produces plots with the difference between RECO probe muon and matched L1 muon.
 * `--control` produces control histograms for the probe and L1 muons.
-* `--public` produces publication style plots and output files in png and pdf format.
+* `--public` produces publication style plots and output files in png and pdf format. The `--preliminary` option marks the plot as a preliminary result.
 * `--data-emul` produces efficiency comparison plots between data and emulator. To use this option the `muonTagAndProbe.py` script has to be run with and without the `--emul` option, and the two ROOT files have to be merged with `hadd`.
 * `--upgrade-legacy` produces efficiency comparison plots between upgrade and legacy. To use this option the `muonTagAndProbe.py` script has to be run with and without the `--legacy` option, and the two ROOT files have to be merged with `hadd`.
 * Efficiencies for one specific run can be plotted with the `--run` option.
@@ -61,11 +63,18 @@ python create_batch_job.py -s makeSimpleRateHistos.py -p makeRateHistos -l input
 ### Produce rate plots:
 To produce the rate plots with the correct rate in kHz the number of colliding bunches in CMS is needed as an input. This is the third number in the LHC filling scheme (e.g. fill 5966: 25ns_2556b_2544_2215_2332_144bpi_20inj has 2544 bunches colliding in CMS).
 ```
-python plotSimpleRates.py -f ugmt_rate_histos.root plotRates --bunches 2544
+python plotSimpleRates.py -f ugmt_rate_histos.root plotRates --bunches 2544 --year 2016 --lumi="33.0 fb^{-1}"
 ```
 * `--scale` defines an additional scale factor
 * `--scale-to-bunches` linearly extrapolates the rates from the bunches given with `--bunches` to the new number of bunches.
-* To compare histograms from different files or runs the `--fname2` option can be used.
+* `--print-rates` prints a table with rates.
+* `--qstack` produces stacked plots by L1 muon quality.
+* `--public` produces publication style plots and output files in png and pdf format. The `--preliminary` option marks the plot as a preliminary result.
+* `--legacy` draws plots with rates relative to the legacy rates. The histograms for the legacy rates must have been produced for this to work.
+* Comparing rates from different ugmt_rate_histos.root files can be done with the `--fname2` option that specifies the second input file.
+```
+python plotSimpleRates.py -f ugmt_rate_histos.root plotRates --fname2 ugmt_rate_histos2.root --leg-txt1 text1 --leg-txt2 text2 --bunches 2544
+```
 
 In order to get the rate for a MC sample the number of bunches corresponding to a desired instantaneous luminosity and PU needs to be calculated by the tool. Therefore, the options `--instlumi`, `--pu`, and `--xsect` need to be used, where the last one defines the total cross section in mb.
 
