@@ -54,7 +54,7 @@ def set_root_style():
     root.gStyle.SetLegendFont(font)
     root.gStyle.SetMarkerStyle(20)
     root.gStyle.SetOptStat(0)
-    root.gStyle.SetOptFit(0)
+    root.gStyle.SetOptFit(1)
     root.gStyle.SetOptTitle(0)
     root.gStyle.SetNumberContours(99)
     root.gPad.SetTopMargin(0.08)
@@ -107,7 +107,7 @@ def plot_2dhist(hm2d, hName, drawDiag=True, clOpts=None):
     return [c, h, tex, lines]
 
 
-def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefix='', notes=None, autoZoomX=False, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
+def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefix='', notes=None, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     name = prefix
     if hDefs[0]['den']:
         name += hDefs[0]['num']+'_over_'+hDefs[0]['den']
@@ -125,8 +125,8 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefi
     legend = setup_legend(xMin=0.5, yMin=legYmin, xMax=0.73, yMax=legYmin+0.05*len(hDefs))
     legEntries = []
 
-    if (xMax or autoZoomX) and addOverflow:
-        print 'No overflow bin if xMax or autoZoomX are set.'
+    if (xMin or xMax or autoZoomX) and addOverflow:
+        print 'No overflow bin if xMin/xMax or autoZoomX are set.'
         addOverflow = False
 
     intL = 0
@@ -213,7 +213,7 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefi
     yAxis.SetLabelFont(font)
     yAxis.SetLabelSize(fontSize)
     # customise axis ranges
-    if name[-7:] == '.dinvpt':
+    if name[-7:] == '_dinvpt':
         xAxis.SetRangeUser(-0.05, 0.05)
     # find the lowest and highest filled bin
     if autoZoomX:
@@ -230,8 +230,12 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefi
         xAxis.SetRange(minBin, maxBin)
         xAxis.SetLabelSize(0.03)
         xAxis.SetNdivisions(508)
-    if xMax:
+    if xMin and not xMax:
+        xAxis.SetRangeUser(xMin, xAxis.GetBinUpEdge(xAxis.GetNbins()))
+    elif xMax and not xMin:
         xAxis.SetRangeUser(xAxis.GetBinLowEdge(1), xMax)
+    elif xMin and xMax:
+        xAxis.SetRangeUser(xMin, xMax)
     yMax = yAxis.GetXmax()
     # set y axis
     if not c.GetLogy():
@@ -698,7 +702,7 @@ def extract_notes_from_name(name, xBase, yBase, etaTxt=True, qualTxt=True, ptTxt
     return notes
 
 # plot histogram
-def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', stacked=False, normToBinWidth=False, autoZoomX=False, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
+def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', stacked=False, normToBinWidth=False, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     styles = hist_styles(stacked)
 
     h_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
@@ -712,10 +716,10 @@ def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='
         yBase = 0.13
     notes = extract_notes_from_name(hName, xBase, yBase)
 
-    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, '', notes, autoZoomX, xMax, logY, addOverflow, rebin, clOpts)
+    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, '', notes, autoZoomX, xMin, xMax, logY, addOverflow, rebin, clOpts)
 
 # plot data and emulator histogram
-def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', normToBinWidth=False, autoZoomX=False, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
+def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', normToBinWidth=False, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     styles = hist_styles(False)
 
     data_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
@@ -732,7 +736,7 @@ def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle=
         yBase = 0.13
     notes = extract_notes_from_name(hName, xBase, yBase)
 
-    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, 'dataEmulHisto_', notes, autoZoomX, xMax, logY, addOverflow, rebin, clOpts)
+    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, 'dataEmulHisto_', notes, autoZoomX, xMin, xMax, logY, addOverflow, rebin, clOpts)
 
 # plot efficiency
 def plot_eff_standard(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', autoZoomX=False, xMax=None, addOverflow=False, rebin=1, clOpts=None):
@@ -994,6 +998,30 @@ def plot_eff_hm_comp(hm1, hm2, hName, den, hNamePrefix='', xTitle='', yTitle='',
 
     return plot_effs(hDefs, xTitle, yTitle, 'comp_', notes, autoZoomX, xMax, addOverflow, rebin, clOpts)
 
+def fitHisto(h):
+    gauss = root.TF1('gauss', 'gaus')
+    gauss.SetLineWidth(1)
+    gauss.SetLineColor(root.kRed)
+    peak = h.GetBinCenter(h.GetMaximumBin())
+    gauss.SetParameter(1, peak)
+    gauss.SetParameter(2, h.GetRMS())
+    factorFit1 = 1.
+    factorFit2 = 3.
+    # raw and fine fit
+    h.Fit(gauss, '', '', peak-factorFit1*h.GetRMS(), peak+factorFit1*h.GetRMS())
+    h.Fit(gauss, '', '', gauss.GetParameter(1)-factorFit2*gauss.GetParameter(2), gauss.GetParameter(1)+factorFit2*gauss.GetParameter(2))
+
+    # move the stats box
+    statsBoxCoord = [0.63, 0.69, 0.94, 0.80]
+    root.gPad.Update()
+    statsBox = h.GetListOfFunctions().FindObject('stats')
+    statsBox.SetX1NDC(statsBoxCoord[0])
+    statsBox.SetY1NDC(statsBoxCoord[1])
+    statsBox.SetX2NDC(statsBoxCoord[2])
+    statsBox.SetY2NDC(statsBoxCoord[3])
+    statsBox.SetLineColor(root.kRed)
+    statsBox.SetTextColor(root.kRed)
+
 def main():
     opts = parse_options_plotEff(parser)
     batchRun = opts.interactive
@@ -1144,12 +1172,20 @@ def main():
             for plotName in plotNames:
                 # inverse pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='1/p_{T}^{RECO} - 1/p_{T}^{L1}', clOpts=opts))
+                lastHs = objects[-1][1]
+                fitHisto(lastHs[0])
                 # pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dpt', hNamePrefix=prefix+'res_best_', xTitle='p_{T}^{RECO} - p_{T}^{L1}', clOpts=opts))
+                #lastHs = objects[-1][1]
+                #fitHisto(lastHs[0])
                 # eta resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{RECO} - #eta_{L1}', clOpts=opts))
+                lastHs = objects[-1][1]
+                fitHisto(lastHs[0])
                 # phi resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{RECO} - #phi_{L1}', clOpts=opts))
+                #lastHs = objects[-1][1]
+                #fitHisto(lastHs[0])
                 # charge matching
                 objects.append(plot_hists_data_emul(hm, plotName+'_dcharge', hNamePrefix=prefix+'res_best_', xTitle='charge^{RECO} - charge^{L1}', clOpts=opts))
 
