@@ -1512,6 +1512,7 @@ def main():
         eta_range_0to0p83 = '_absEtaMin0_absEtaMax0p83'
         eta_range_0p83to1p24 = '_absEtaMin0p83_absEtaMax1p24'
         eta_range_1p24to2p4 = '_absEtaMin1p24_absEtaMax2p4'
+        yTitle_tags = '# tag muons'
         yTitle_probes = '# probe muons'
         yTitle_l1 = '# L1 muons'
         rebin_eta = 2
@@ -1535,6 +1536,12 @@ def main():
         objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range_0to2p4+'_qualMin4_ptmin0p5_eta', xTitle='#eta^{L1}', yTitle=yTitle_l1, rebin=rebin_eta, clOpts=opts))
         objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range_0to2p4+'_qualMin8_ptmin0p5_eta', xTitle='#eta^{L1}', yTitle=yTitle_l1, rebin=rebin_eta, clOpts=opts))
         objects.append(plot_hists_standard(hm, 'l1_muon'+eta_range_0to2p4+'_qualMin12_ptmin0p5_eta', xTitle='#eta^{L1}', yTitle=yTitle_l1, rebin=rebin_eta, clOpts=opts))
+
+        # tag plots
+        objects.append(plot_hists_standard(hm, 'tag_pt', xTitle='tag p_{T}^{reco} (GeV)', yTitle=yTitle_tags+' / GeV', normToBinWidth=True, logY=True, addOverflow=True, clOpts=opts))
+        objects.append(plot_hists_standard(hm, 'tag_phi', xTitle='tag #phi^{reco}', yTitle=yTitle_tags, rebin=rebin_phi, clOpts=opts))
+        objects.append(plot_hists_standard(hm, 'tag_eta', xTitle='tag #eta^{reco}', yTitle=yTitle_tags, rebin=rebin_eta, clOpts=opts))
+        objects.append(plot_hists_standard(hm, 'tag_charge', xTitle='tag #mu charge', yTitle=yTitle_tags, clOpts=opts))
 
     # save canvases to root file
     if savePlots:
