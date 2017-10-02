@@ -191,7 +191,7 @@ def book_histograms(eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas
 
     return HistManager(list(set(varnames)), binnings), HistManager2d(list(set(varnames2d)), binnings2d)
 
-def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas, emul=False, pp_run=True, legacy=False):
+def analyse(evt, hms, hms2d, eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas, emul=False, pp_run=True, legacy=False):
     recoColl = evt.recoMuon
 
     # at least 2 reco muons for tag and probe
@@ -314,25 +314,16 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_p
                             eta_thr_probe_idcs = MuonSelections.select_reco_muons(recoColl, pt_min=probe_pt_mins[-1], idcs=eta_probe_idcs)
                             eta_thr_probe_idcs_dict[ptmins[0]] = eta_thr_probe_idcs
                             # fill the histograms with the probe kinematics
-                            hm.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str, len(eta_thr_probe_idcs))
-                            if perRunHistos:
-                                hm_run.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str, len(eta_thr_probe_idcs))
-                            for i in eta_thr_probe_idcs:
-                                hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_pt', recoColl.pt[i])
-                                hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_p', probeMomentumDict[i])
-                                hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_eta', recoColl.eta[i])
-                                hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_phi', recoColl.phi[i])
-                                hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_charge', recoColl.charge[i])
-                                hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_vtx', nVtx)
-                                hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_run', runnr)
-                                if perRunHistos:
-                                    hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_pt', recoColl.pt[i])
-                                    hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_p', probeMomentumDict[i])
-                                    hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_eta', recoColl.eta[i])
-                                    hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_phi', recoColl.phi[i])
-                                    hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_charge', recoColl.charge[i])
-                                    hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_vtx', nVtx)
-                                    hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_run', runnr)
+                            for hm in hms:
+                                hm.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str, len(eta_thr_probe_idcs))
+                                for i in eta_thr_probe_idcs:
+                                    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_pt', recoColl.pt[i])
+                                    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_p', probeMomentumDict[i])
+                                    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_eta', recoColl.eta[i])
+                                    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_phi', recoColl.phi[i])
+                                    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_charge', recoColl.charge[i])
+                                    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_vtx', nVtx)
+                                    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_run', runnr)
 
                         probe_ptmin_str = probe_ptmin_str_dict[ptmins[0]]
                         eta_thr_probe_idcs = eta_thr_probe_idcs_dict[ptmins[0]]
@@ -343,9 +334,8 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_p
                             q_thr_l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, qual_min=q, pt_min=pt_min, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
                             eta_q_thr_l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=pt_min, idcs=eta_q_l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
                             # fill the histograms with the l1 muon kinematics
-                            hm.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str, len(eta_thr_probe_idcs))
-                            if perRunHistos:
-                                hm_run.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str, len(eta_thr_probe_idcs))
+                            for hm in hms:
+                                hm.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str, len(eta_thr_probe_idcs))
                             for i in eta_q_thr_l1_muon_idcs:
                                 if tftype == -1 or tftype == get_tftype(l1Coll.muonTfMuonIdx[i]):
                                     if useVtxExtraCoord:
@@ -355,19 +345,13 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_p
                                         eta = l1Coll.muonEta[i]
                                         phi = l1Coll.muonPhi[i]
 
-                                    hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_pt', l1Coll.muonEt[i])
-                                    hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_eta', eta)
-                                    hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_phi', phi)
-                                    hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_charge', l1Coll.muonChg[i])
-                                    hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_vtx', nVtx)
-                                    hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_run', runnr)
-                                    if perRunHistos:
-                                        hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_pt', l1Coll.muonEt[i])
-                                        hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_eta', eta)
-                                        hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_phi', phi)
-                                        hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_charge', l1Coll.muonChg[i])
-                                        hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_vtx', nVtx)
-                                        hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_run', runnr)
+                                    for hm in hms:
+                                        hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_pt', l1Coll.muonEt[i])
+                                        hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_eta', eta)
+                                        hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_phi', phi)
+                                        hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_charge', l1Coll.muonChg[i])
+                                        hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_vtx', nVtx)
+                                        hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+'_run', runnr)
 
                             if len(q_thr_l1_muon_idcs) > 0:
                                 # for all matching methodes (dr, deta, dphi)
@@ -383,9 +367,8 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_p
                                     else:
                                         continue
 
-                                    hm.fill(namePrefix+'n_probe'+probe_ptmin_str+delta_str+'_matched_l1_muons'+eta_min_str+eta_max_str+qual_min_str+ptmin_str, len(matched_l1_muons))
-                                    if perRunHistos:
-                                        hm_run.fill(namePrefix+'n_probe'+probe_ptmin_str+delta_str+'_matched_l1_muons'+eta_min_str+eta_max_str+qual_min_str+ptmin_str, len(matched_l1_muons))
+                                    for hm in hms:
+                                        hm.fill(namePrefix+'n_probe'+probe_ptmin_str+delta_str+'_matched_l1_muons'+eta_min_str+eta_max_str+qual_min_str+ptmin_str, len(matched_l1_muons))
 
                                     # how many l1 matches did we find for each probe muon
                                     for probe_idx in invmass_probe_idcs:
@@ -400,58 +383,34 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_p
                                                     if tftype == -1 or tftype == get_tftype(l1Coll.muonTfMuonIdx[matched_l1_muons[i][0]]):
                                                         eta = etas[matched_l1_muons[i][0]]
                                                         phi = phis[matched_l1_muons[i][0]]
-                                                        hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_pt', l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                        hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_eta', eta)
-                                                        hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_phi', phi)
-                                                        hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_charge', l1Coll.muonChg[matched_l1_muons[i][0]])
-                                                        hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_vtx', nVtx)
-                                                        hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_run', runnr)
-                                                        hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_pt', recoColl.pt[probe_idx])
-                                                        hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_p', probeMomentumDict[probe_idx])
-                                                        hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_eta', recoColl.eta[probe_idx])
-                                                        hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_phi', recoColl.phi[probe_idx])
-                                                        hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_charge', recoColl.charge[probe_idx])
-                                                        hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_vtx', nVtx)
-                                                        hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_run', runnr)
-                                                        hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_dr', matched_l1_muons[i][2])
-                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dpt', recoColl.pt[probe_idx] - l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dinvpt', 1./recoColl.pt[probe_idx] - 1./l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_deta', probeEtas[probe_idx] - eta)
-                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dphi', probePhis[probe_idx] - phi)
-                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dcharge', recoColl.charge[probe_idx] - l1Coll.muonChg[matched_l1_muons[i][0]])
-                                                        hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_pt', recoColl.pt[probe_idx], l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                        hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_eta', probeEtas[probe_idx], eta)
-                                                        hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_phi', probePhis[probe_idx], phi)
-                                                        hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_charge', recoColl.charge[probe_idx], l1Coll.muonChg[matched_l1_muons[i][0]])
-
-                                                        if perRunHistos:
-                                                            hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_pt', l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                            hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_eta', eta)
-                                                            hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_phi', phi)
-                                                            hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_charge', l1Coll.muonChg[matched_l1_muons[i][0]])
-                                                            hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_vtx', nVtx)
-                                                            hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_run', runnr)
-                                                            hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_pt', recoColl.pt[probe_idx])
-                                                            hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_p', probeMomentumDict[probe_idx])
-                                                            hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_eta', recoColl.eta[probe_idx])
-                                                            hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_phi', recoColl.phi[probe_idx])
-                                                            hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_charge', recoColl.charge[probe_idx])
-                                                            hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_vtx', nVtx)
-                                                            hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_run', runnr)
-                                                            hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_dr', matched_l1_muons[i][2])
-                                                            hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dpt', recoColl.pt[probe_idx] - l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                            hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dinvpt', 1./recoColl.pt[probe_idx] - 1./l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                            hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_deta', probeEtas[probe_idx] - eta)
-                                                            hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dphi', probePhis[probe_idx] - phi)
-                                                            hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dcharge', recoColl.charge[probe_idx] - l1Coll.muonChg[matched_l1_muons[i][0]])
-                                                            hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_pt', recoColl.pt[probe_idx], l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                            hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_eta', probeEtas[probe_idx], eta)
-                                                            hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_phi', probePhis[probe_idx], phi)
-                                                            hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_charge', recoColl.charge[probe_idx], l1Coll.muonChg[matched_l1_muons[i][0]])
+                                                        for hm in hms:
+                                                            hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_pt', l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                            hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_eta', eta)
+                                                            hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_phi', phi)
+                                                            hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_charge', l1Coll.muonChg[matched_l1_muons[i][0]])
+                                                            hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_vtx', nVtx)
+                                                            hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_run', runnr)
+                                                            hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_pt', recoColl.pt[probe_idx])
+                                                            hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_p', probeMomentumDict[probe_idx])
+                                                            hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_eta', recoColl.eta[probe_idx])
+                                                            hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_phi', recoColl.phi[probe_idx])
+                                                            hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_charge', recoColl.charge[probe_idx])
+                                                            hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_vtx', nVtx)
+                                                            hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_run', runnr)
+                                                            hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_dr', matched_l1_muons[i][2])
+                                                            hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dpt', recoColl.pt[probe_idx] - l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                            hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dinvpt', 1./recoColl.pt[probe_idx] - 1./l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                            hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_deta', probeEtas[probe_idx] - eta)
+                                                            hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dphi', probePhis[probe_idx] - phi)
+                                                            hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_dcharge', recoColl.charge[probe_idx] - l1Coll.muonChg[matched_l1_muons[i][0]])
+                                                        for hm2d in hms2d:
+                                                            hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_pt', recoColl.pt[probe_idx], l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                            hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_eta', probeEtas[probe_idx], eta)
+                                                            hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_phi', probePhis[probe_idx], phi)
+                                                            hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_charge', recoColl.charge[probe_idx], l1Coll.muonChg[matched_l1_muons[i][0]])
                                                     histo_filled = True
-                                        hm.fill(namePrefix+'n_l1_muons'+qual_min_str+ptmin_str+delta_str+'_matched_to_a_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'', l1_muon_cntr)
-                                        if perRunHistos:
-                                            hm_run.fill(namePrefix+'n_l1_muons'+qual_min_str+ptmin_str+delta_str+'_matched_to_a_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'', l1_muon_cntr)
+                                        for hm in hms:
+                                            hm.fill(namePrefix+'n_l1_muons'+qual_min_str+ptmin_str+delta_str+'_matched_to_a_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'', l1_muon_cntr)
 
                     # for resolution plots by pT range
                     for j, probe_pt_min in enumerate(res_probe_ptmins):
@@ -467,25 +426,16 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_p
                         eta_thr_probe_idcs_dict[ptmins[0]] = eta_thr_probe_idcs
 
                         ## fill the histograms with the probe kinematics
-                        #hm.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str, len(eta_thr_probe_idcs))
-                        #if perRunHistos:
-                        #    hm_run.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str, len(eta_thr_probe_idcs))
-                        #for i in eta_thr_probe_idcs:
-                        #    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_pt', recoColl.pt[i])
-                        #    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_p', probeMomentumDict[i])
-                        #    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_eta', recoColl.eta[i])
-                        #    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_phi', recoColl.phi[i])
-                        #    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_charge', recoColl.charge[i])
-                        #    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_vtx', nVtx)
-                        #    hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_run', runnr)
-                        #    if perRunHistos:
-                        #        hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_pt', recoColl.pt[i])
-                        #        hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_p', probeMomentumDict[i])
-                        #        hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_eta', recoColl.eta[i])
-                        #        hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_phi', recoColl.phi[i])
-                        #        hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_charge', recoColl.charge[i])
-                        #        hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_vtx', nVtx)
-                        #        hm_run.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_run', runnr)
+                        #for hm in hms:
+                        #    hm.fill(namePrefix+'n_probes'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str, len(eta_thr_probe_idcs))
+                        #    for i in eta_thr_probe_idcs:
+                        #        hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_pt', recoColl.pt[i])
+                        #        hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_p', probeMomentumDict[i])
+                        #        hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_eta', recoColl.eta[i])
+                        #        hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_phi', recoColl.phi[i])
+                        #        hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_charge', recoColl.charge[i])
+                        #        hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_vtx', nVtx)
+                        #        hm.fill(namePrefix+'probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'_run', runnr)
 
                         q_l1_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, qual_min=q, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
 
@@ -502,9 +452,8 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_p
                                 else:
                                     continue
 
-                                #hm.fill(namePrefix+'n_probe'+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muons'+eta_min_str+eta_max_str+qual_min_str, len(matched_l1_muons))
-                                #if perRunHistos:
-                                #    hm_run.fill(namePrefix+'n_probe'+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muons'+eta_min_str+eta_max_str+qual_min_str, len(matched_l1_muons))
+                                #for hm in hms:
+                                #    hm.fill(namePrefix+'n_probe'+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muons'+eta_min_str+eta_max_str+qual_min_str, len(matched_l1_muons))
 
                                 # how many l1 matches did we find for each probe muon
                                 for probe_idx in invmass_probe_idcs:
@@ -519,22 +468,16 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, res_p
                                                 if tftype == -1 or tftype == get_tftype(l1Coll.muonTfMuonIdx[matched_l1_muons[i][0]]):
                                                     eta = etas[matched_l1_muons[i][0]]
                                                     phi = phis[matched_l1_muons[i][0]]
-                                                    hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dpt', recoColl.pt[probe_idx] - l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                    hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dinvpt', 1./recoColl.pt[probe_idx] - 1./l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                    hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_deta', probeEtas[probe_idx] - eta)
-                                                    hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dphi', probePhis[probe_idx] - phi)
-                                                    hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dcharge', recoColl.charge[probe_idx] - l1Coll.muonChg[matched_l1_muons[i][0]])
+                                                    for hm in hms:
+                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dpt', recoColl.pt[probe_idx] - l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dinvpt', 1./recoColl.pt[probe_idx] - 1./l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_deta', probeEtas[probe_idx] - eta)
+                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dphi', probePhis[probe_idx] - phi)
+                                                        hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dcharge', recoColl.charge[probe_idx] - l1Coll.muonChg[matched_l1_muons[i][0]])
 
-                                                    if perRunHistos:
-                                                        hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dpt', recoColl.pt[probe_idx] - l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                        hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dinvpt', 1./recoColl.pt[probe_idx] - 1./l1Coll.muonEt[matched_l1_muons[i][0]])
-                                                        hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_deta', probeEtas[probe_idx] - eta)
-                                                        hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dphi', probePhis[probe_idx] - phi)
-                                                        hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+delta_str+'_matched_l1_muon'+qual_min_str+'_dcharge', recoColl.charge[probe_idx] - l1Coll.muonChg[matched_l1_muons[i][0]])
                                                 histo_filled = True
-                                    #hm.fill(namePrefix+'n_l1_muons'+qual_min_str+delta_str+'_matched_to_a_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'', l1_muon_cntr)
-                                    #if perRunHistos:
-                                    #    hm_run.fill(namePrefix+'n_l1_muons'+qual_min_str+delta_str+'_matched_to_a_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'', l1_muon_cntr)
+                                    #for hm in hms:
+                                    #    hm.fill(namePrefix+'n_l1_muons'+qual_min_str+delta_str+'_matched_to_a_probe'+eta_min_str+eta_max_str+probe_ptmin_str+probe_ptmax_str+'', l1_muon_cntr)
 
 
 def save_histos(hm, hm2d, hm_runs, hm2d_runs, outfile):
@@ -747,9 +690,9 @@ def main():
 
             # now do the analysis for all pt cut combinations
             if perRunHistos:
-                analyse(event, hm, hm2d, hm_runs[runnr], hm2d_runs[runnr], eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas, emul=emul, pp_run=pp_run, legacy=legacy)
+                analyse(event, [hm, hm_runs[runnr]], [hm2d, hm2d_runs[runnr]], eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas, emul=emul, pp_run=pp_run, legacy=legacy)
             else:
-                analyse(event, hm, hm2d, None, None, eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas, emul=emul, pp_run=pp_run, legacy=legacy)
+                analyse(event, [hm], [hm2d], eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas, emul=emul, pp_run=pp_run, legacy=legacy)
             analysed_evt_ctr += 1
     except KeyboardInterrupt:
         L1Ana.log.info("Analysis interrupted after {n} events".format(n=i))
