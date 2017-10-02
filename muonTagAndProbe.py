@@ -61,10 +61,6 @@ def book_histograms(eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas
 
     p_bins = pt_bins
 
-    dr_str = '_dr'+str(match_deltas['dr']).replace('.', 'p')
-    dphi_str = '_dphi'+str(match_deltas['dphi']).replace('.', 'p')
-    deta_str = '_deta'+str(match_deltas['deta']).replace('.', 'p')
-
     vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['vtx', 60, 0, 60]]
     if era == '2016pp':
         vars_bins.append(['run', 13100, 271000, 284100])
