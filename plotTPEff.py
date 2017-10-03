@@ -213,8 +213,8 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefi
     yAxis.SetLabelFont(font)
     yAxis.SetLabelSize(fontSize)
     # customise axis ranges
-    if name[-7:] == '_dinvpt':
-        xAxis.SetRangeUser(-0.05, 0.05)
+    #if name[-7:] == '_dinvpt':
+    #    xAxis.SetRangeUser(-0.05, 0.05)
     # find the lowest and highest filled bin
     if autoZoomX:
         minBin = xAxis.GetNbins()
@@ -999,28 +999,29 @@ def plot_eff_hm_comp(hm1, hm2, hName, den, hNamePrefix='', xTitle='', yTitle='',
     return plot_effs(hDefs, xTitle, yTitle, 'comp_', notes, autoZoomX, xMax, addOverflow, rebin, clOpts)
 
 def fitHisto(h):
-    gauss = root.TF1('gauss', 'gaus')
-    gauss.SetLineWidth(1)
-    gauss.SetLineColor(root.kRed)
-    peak = h.GetBinCenter(h.GetMaximumBin())
-    gauss.SetParameter(1, peak)
-    gauss.SetParameter(2, h.GetRMS())
-    factorFit1 = 1.
-    factorFit2 = 3.
-    # raw and fine fit
-    h.Fit(gauss, '', '', peak-factorFit1*h.GetRMS(), peak+factorFit1*h.GetRMS())
-    h.Fit(gauss, '', '', gauss.GetParameter(1)-factorFit2*gauss.GetParameter(2), gauss.GetParameter(1)+factorFit2*gauss.GetParameter(2))
+    if h.Integral() > 0:
+        gauss = root.TF1('gauss', 'gaus')
+        gauss.SetLineWidth(1)
+        gauss.SetLineColor(root.kRed)
+        peak = h.GetBinCenter(h.GetMaximumBin())
+        gauss.SetParameter(1, peak)
+        gauss.SetParameter(2, h.GetRMS())
+        factorFit1 = 1.
+        factorFit2 = 3.
+        # raw and fine fit
+        h.Fit(gauss, '', '', peak-factorFit1*h.GetRMS(), peak+factorFit1*h.GetRMS())
+        h.Fit(gauss, '', '', gauss.GetParameter(1)-factorFit2*gauss.GetParameter(2), gauss.GetParameter(1)+factorFit2*gauss.GetParameter(2))
 
-    # move the stats box
-    statsBoxCoord = [0.63, 0.69, 0.94, 0.80]
-    root.gPad.Update()
-    statsBox = h.GetListOfFunctions().FindObject('stats')
-    statsBox.SetX1NDC(statsBoxCoord[0])
-    statsBox.SetY1NDC(statsBoxCoord[1])
-    statsBox.SetX2NDC(statsBoxCoord[2])
-    statsBox.SetY2NDC(statsBoxCoord[3])
-    statsBox.SetLineColor(root.kRed)
-    statsBox.SetTextColor(root.kRed)
+        # move the stats box
+        statsBoxCoord = [0.63, 0.69, 0.94, 0.80]
+        root.gPad.Update()
+        statsBox = h.GetListOfFunctions().FindObject('stats')
+        statsBox.SetX1NDC(statsBoxCoord[0])
+        statsBox.SetY1NDC(statsBoxCoord[1])
+        statsBox.SetX2NDC(statsBoxCoord[2])
+        statsBox.SetY2NDC(statsBoxCoord[3])
+        statsBox.SetLineColor(root.kRed)
+        statsBox.SetTextColor(root.kRed)
 
 def main():
     opts = parse_options_plotEff(parser)
@@ -1063,6 +1064,8 @@ def main():
     etaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
     #tfEtaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5]
     tfEtaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
+
+    res_probe_ptmins = [0.5, 20, 30, 40, 50, 60, 100, 150]
 
     yTitle_eff = 'L1 muon efficiency'
     yTitle_nMatch = '# best matched probes'
@@ -1163,7 +1166,7 @@ def main():
         # delta phi plots
         objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dphi0p5_matched_'+etaRange+'0p5_dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch, clOpts=opts))
 
-        # reco - L1 plots
+        # L1 - reco plots
         for etaRange in tfEtaRanges:
             plotNames = [etaRange+'0p5_dr0p5_matched_l1_muon_qualMin12_ptmin0p5',
                          etaRange+'0p5_dr0p5_matched_l1_muon_qualMin12_ptmin25',
@@ -1171,23 +1174,37 @@ def main():
 
             for plotName in plotNames:
                 # inverse pt resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='1/p_{T}^{RECO} - 1/p_{T}^{L1}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
                 lastHs = objects[-1][1]
                 fitHisto(lastHs[0])
                 # pt resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_dpt', hNamePrefix=prefix+'res_best_', xTitle='p_{T}^{RECO} - p_{T}^{L1}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dpt', hNamePrefix=prefix+'res_best_', xTitle='p_{T}^{L1} - p_{T}^{RECO}', clOpts=opts))
                 #lastHs = objects[-1][1]
                 #fitHisto(lastHs[0])
                 # eta resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{RECO} - #eta_{L1}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
                 lastHs = objects[-1][1]
                 fitHisto(lastHs[0])
                 # phi resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{RECO} - #phi_{L1}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{L1} - #phi_{RECO}', clOpts=opts))
                 #lastHs = objects[-1][1]
                 #fitHisto(lastHs[0])
                 # charge matching
-                objects.append(plot_hists_data_emul(hm, plotName+'_dcharge', hNamePrefix=prefix+'res_best_', xTitle='charge^{RECO} - charge^{L1}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dcharge', hNamePrefix=prefix+'res_best_', xTitle='charge^{L1} - charge^{RECO}', clOpts=opts))
+
+            # for resolution plots by pT range
+            for j, probe_pt_min in enumerate(res_probe_ptmins):
+                probe_ptmin_str = str(probe_pt_min).replace('.', 'p')
+                if j < len(res_probe_ptmins)-1:
+                    probe_ptmax_str = '_ptmax'+str(res_probe_ptmins[j+1]).replace('.', 'p')
+                else:
+                    probe_ptmax_str = '_ptmax'
+                plotName = etaRange+probe_ptmin_str+probe_ptmax_str+'_dr0p5_matched_l1_muon_qualMin12'
+
+                # inverse pt resolution
+                objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
+                lastHs = objects[-1][1]
+                fitHisto(lastHs[0])
 
     # 2d reco vs. L1 plots
     if opts.twod:
