@@ -689,6 +689,16 @@ def extract_notes_from_name(name, xBase, yBase, etaTxt=True, qualTxt=True, ptTxt
                                 notes.append([xBase, yBase, 'Offline p_{T} > '+ptmin_strs[0].replace('p', '.')+' GeV', True])
                         else:
                             notes.append([xBase, yBase, 'p_{T}^{reco} > '+ptmin_strs[0].replace('p', '.')+' GeV', True])
+                    ptmaxPos = substr.find('ptmax')
+                    ptmax_strs = re.findall(r'\d+\p?\d*', substr[ptmaxPos+5:ptmaxPos+9])
+                    if len(ptmax_strs) > 0:
+                        if ptmax_strs[0][-1] == 'p':
+                            ptmax_strs[0] = ptmax_strs[0][0:-1]
+                        if public:
+                            if ptmax_strs[0][0] != '0':
+                                notes.append([xBase, yBase-0.05, 'Offline p_{T} < '+ptmax_strs[0].replace('p', '.')+' GeV', True])
+                        else:
+                            notes.append([xBase, yBase-0.05, 'p_{T}^{reco} < '+ptmax_strs[0].replace('p', '.')+' GeV', True])
                 if substr.find('l1_muon') != -1:
                     ptminPos = substr.find('ptmin')
                     ptmin_strs = re.findall(r'\d+\p?\d*', substr[ptminPos+5:ptminPos+9])
@@ -999,7 +1009,7 @@ def plot_eff_hm_comp(hm1, hm2, hName, den, hNamePrefix='', xTitle='', yTitle='',
     return plot_effs(hDefs, xTitle, yTitle, 'comp_', notes, autoZoomX, xMax, addOverflow, rebin, clOpts)
 
 def fitHisto(h):
-    if h.Integral() > 0:
+    if h.GetEntries() > 10: # need some entries at least
         gauss = root.TF1('gauss', 'gaus')
         gauss.SetLineWidth(1)
         gauss.SetLineColor(root.kRed)
@@ -1022,6 +1032,48 @@ def fitHisto(h):
         statsBox.SetY2NDC(statsBoxCoord[3])
         statsBox.SetLineColor(root.kRed)
         statsBox.SetTextColor(root.kRed)
+        return gauss
+
+def plot_res(graph, name, xTitle='', yTitle='', clOpts=None):
+    # create canvas and draw on it
+    canvas_name = 'c_'+name
+    canvas_title = canvas_name
+    canvWidth = 600
+    c = root.TCanvas(canvas_name, canvas_title, 100, 100, canvWidth, 600)
+    c.cd()
+    set_root_style()
+
+    graph.SetMarkerStyle(20)
+    graph.SetMarkerColor(root.kRed)
+    graph.SetLineColor(root.kRed)
+
+    # axis
+    xAxis = graph.GetXaxis()
+    yAxis = graph.GetYaxis()
+    xAxis.SetTitle(xTitle)
+    xAxis.SetTitleFont(font)
+    xAxis.SetLabelFont(font)
+    xAxis.SetLabelSize(fontSize)
+    xAxis.SetNoExponent()
+    yAxis.SetTitleOffset(1.5)
+    yAxis.SetTitleFont(font)
+    yAxis.SetTitle(yTitle)
+    yAxis.SetLabelFont(font)
+    yAxis.SetLabelSize(fontSize)
+    yAxis.SetNoExponent()
+
+    graph.Draw('ap')
+
+    xBase = 0.5
+    yBase = 0.13
+    notes = extract_notes_from_name(canvas_name, xBase, yBase)
+    tex = add_text(notes=notes)
+    tex = add_cms_header_text(tex, clOpts)
+
+    c.Modified()
+    c.Update()
+
+    return [c, tex]
 
 def main():
     opts = parse_options_plotEff(parser)
@@ -1166,6 +1218,7 @@ def main():
         # delta phi plots
         objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dphi0p5_matched_'+etaRange+'0p5_dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch, clOpts=opts))
 
+        resGraphs = []
         # L1 - reco plots
         for etaRange in tfEtaRanges:
             plotNames = [etaRange+'0p5_dr0p5_matched_l1_muon_qualMin12_ptmin0p5',
@@ -1175,36 +1228,71 @@ def main():
             for plotName in plotNames:
                 # inverse pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
-                lastHs = objects[-1][1]
-                fitHisto(lastHs[0])
+                if len(objects[-1]) > 1:
+                    lastHs = objects[-1][1]
+                    fitHisto(lastHs[0])
                 # pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dpt', hNamePrefix=prefix+'res_best_', xTitle='p_{T}^{L1} - p_{T}^{RECO}', clOpts=opts))
-                #lastHs = objects[-1][1]
-                #fitHisto(lastHs[0])
+                #if len(objects[-1]) > 1:
+                #    lastHs = objects[-1][1]
+                #    fitHisto(lastHs[0])
                 # eta resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
-                lastHs = objects[-1][1]
-                fitHisto(lastHs[0])
+                if len(objects[-1]) > 1:
+                    lastHs = objects[-1][1]
+                    fitHisto(lastHs[0])
                 # phi resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{L1} - #phi_{RECO}', clOpts=opts))
-                #lastHs = objects[-1][1]
-                #fitHisto(lastHs[0])
+                #if len(objects[-1]) > 1:
+                #    lastHs = objects[-1][1]
+                #    fitHisto(lastHs[0])
                 # charge matching
                 objects.append(plot_hists_data_emul(hm, plotName+'_dcharge', hNamePrefix=prefix+'res_best_', xTitle='charge^{L1} - charge^{RECO}', clOpts=opts))
 
+            resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
+            resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
+            resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
+            resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
             # for resolution plots by pT range
             for j, probe_pt_min in enumerate(res_probe_ptmins):
                 probe_ptmin_str = str(probe_pt_min).replace('.', 'p')
                 if j < len(res_probe_ptmins)-1:
-                    probe_ptmax_str = '_ptmax'+str(res_probe_ptmins[j+1]).replace('.', 'p')
+                    probe_pt_max = res_probe_ptmins[j+1]
+                    probe_ptmax_str = '_ptmax'+str(probe_pt_max).replace('.', 'p')
                 else:
+                    probe_pt_max = 2*res_probe_ptmins[-1]
                     probe_ptmax_str = '_ptmax'
+
                 plotName = etaRange+probe_ptmin_str+probe_ptmax_str+'_dr0p5_matched_l1_muon_qualMin12'
 
                 # inverse pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
-                lastHs = objects[-1][1]
-                fitHisto(lastHs[0])
+                if len(objects[-1]) > 1:
+                    lastHs = objects[-1][1]
+                    fit = fitHisto(lastHs[0])
+                    resGraphs[-1].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(1))
+                    resGraphs[-1].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(1))
+                    resGraphs[-2].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(2))
+                    resGraphs[-2].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(2))
+                else:
+                    resGraphs[-1].RemovePoint(j)
+                    resGraphs[-2].RemovePoint(j)
+                # eta resolution
+                objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
+                if len(objects[-1]) > 1:
+                    lastHs = objects[-1][1]
+                    fit = fitHisto(lastHs[0])
+                    resGraphs[-3].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(1))
+                    resGraphs[-3].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(1))
+                    resGraphs[-4].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(2))
+                    resGraphs[-4].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(2))
+                else:
+                    resGraphs[-3].RemovePoint(j)
+                    resGraphs[-4].RemovePoint(j)
+            objects.append(plot_res(resGraphs[-1], 'res_'+etaRange+'_dinvpt_mean', xTitle='p_{T}^{RECO}', yTitle='<(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}>', clOpts=opts))
+            objects.append(plot_res(resGraphs[-2], 'res_'+etaRange+'_dinvpt_sigma', xTitle='p_{T}^{RECO}', yTitle='#sigma((p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1})', clOpts=opts))
+            objects.append(plot_res(resGraphs[-3], 'res_'+etaRange+'_deta_mean', xTitle='p_{T}^{RECO}', yTitle='<#eta_{L1} - #eta_{RECO}>', clOpts=opts))
+            objects.append(plot_res(resGraphs[-4], 'res_'+etaRange+'_deta_sigma', xTitle='p_{T}^{RECO}', yTitle='#sigma(#eta_{L1} - #eta_{RECO})', clOpts=opts))
 
     # 2d reco vs. L1 plots
     if opts.twod:
