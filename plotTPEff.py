@@ -1008,19 +1008,21 @@ def plot_eff_hm_comp(hm1, hm2, hName, den, hNamePrefix='', xTitle='', yTitle='',
 
     return plot_effs(hDefs, xTitle, yTitle, 'comp_', notes, autoZoomX, xMax, addOverflow, rebin, clOpts)
 
-def fitHisto(h):
+def fitHisto(h, fitfunc):
     if h.GetEntries() > 10: # need some entries at least
-        gauss = root.TF1('gauss', 'gaus')
-        gauss.SetLineWidth(1)
-        gauss.SetLineColor(root.kRed)
+        f = root.TF1('f', fitfunc)
+        f.SetLineWidth(1)
+        f.SetLineColor(root.kBlue)
         peak = h.GetBinCenter(h.GetMaximumBin())
-        gauss.SetParameter(1, peak)
-        gauss.SetParameter(2, h.GetRMS())
+        f.SetParameter(1, peak)
+        f.SetParameter(2, h.GetRMS())
+        f.SetParameter(3, -1.)
+        f.SetParameter(4, 5000.)
         factorFit1 = 1.
-        factorFit2 = 3.
+        factorFit2 = 4
         # raw and fine fit
-        h.Fit(gauss, '', '', peak-factorFit1*h.GetRMS(), peak+factorFit1*h.GetRMS())
-        h.Fit(gauss, '', '', gauss.GetParameter(1)-factorFit2*gauss.GetParameter(2), gauss.GetParameter(1)+factorFit2*gauss.GetParameter(2))
+        h.Fit(f, '', '', peak-factorFit1*h.GetRMS(), peak+factorFit1*h.GetRMS())
+        h.Fit(f, '', '', f.GetParameter(1)-factorFit2*f.GetParameter(2), f.GetParameter(1)+factorFit2*f.GetParameter(2))
 
         # move the stats box
         statsBoxCoord = [0.63, 0.69, 0.94, 0.80]
@@ -1030,9 +1032,9 @@ def fitHisto(h):
         statsBox.SetY1NDC(statsBoxCoord[1])
         statsBox.SetX2NDC(statsBoxCoord[2])
         statsBox.SetY2NDC(statsBoxCoord[3])
-        statsBox.SetLineColor(root.kRed)
-        statsBox.SetTextColor(root.kRed)
-        return gauss
+        statsBox.SetLineColor(root.kBlue)
+        statsBox.SetTextColor(root.kBlue)
+        return f
 
 def plot_res(graph, name, xTitle='', yTitle='', clOpts=None):
     # create canvas and draw on it
@@ -1043,7 +1045,7 @@ def plot_res(graph, name, xTitle='', yTitle='', clOpts=None):
     c.cd()
     set_root_style()
 
-    graph.SetMarkerStyle(20)
+    graph.SetMarkerStyle(root.kFullTriangleUp)
     graph.SetMarkerColor(root.kRed)
     graph.SetLineColor(root.kRed)
 
@@ -1221,26 +1223,24 @@ def main():
         resGraphs = []
         # L1 - reco plots
         for etaRange in tfEtaRanges:
-            plotNames = [etaRange+'0p5_dr0p5_matched_l1_muon_qualMin12_ptmin0p5',
-                         etaRange+'0p5_dr0p5_matched_l1_muon_qualMin12_ptmin25',
-                         etaRange+'33_dr0p5_matched_l1_muon_qualMin12_ptmin25']
+            plotNames = [etaRange+'0p5_dr0p5_matched_l1_muon_qualMin12_ptmin0p5']
 
             for plotName in plotNames:
                 # inverse pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
-                    fitHisto(lastHs[0])
+                    fitHisto(lastHs[0], 'gaus')
                 # pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dpt', hNamePrefix=prefix+'res_best_', xTitle='p_{T}^{L1} - p_{T}^{RECO}', clOpts=opts))
-                #if len(objects[-1]) > 1:
-                #    lastHs = objects[-1][1]
-                #    fitHisto(lastHs[0])
+                if len(objects[-1]) > 1:
+                    lastHs = objects[-1][1]
+                    fitHisto(lastHs[0], 'crystalball')
                 # eta resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
-                    fitHisto(lastHs[0])
+                    fitHisto(lastHs[0], 'gaus')
                 # phi resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{L1} - #phi_{RECO}', clOpts=opts))
                 #if len(objects[-1]) > 1:
@@ -1269,7 +1269,8 @@ def main():
                 objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
-                    fit = fitHisto(lastHs[0])
+                    #fit = fitHisto(lastHs[0], 'crystalball')
+                    fit = fitHisto(lastHs[0], 'gaus')
                     resGraphs[-1].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(1))
                     resGraphs[-1].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(1))
                     resGraphs[-2].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(2))
@@ -1281,7 +1282,7 @@ def main():
                 objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
-                    fit = fitHisto(lastHs[0])
+                    fit = fitHisto(lastHs[0], 'gaus')
                     resGraphs[-3].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(1))
                     resGraphs[-3].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(1))
                     resGraphs[-4].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(2))
