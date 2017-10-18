@@ -107,7 +107,7 @@ def plot_2dhist(hm2d, hName, drawDiag=True, clOpts=None):
     return [c, h, tex, lines]
 
 
-def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefix='', notes=None, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
+def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, normToNEntries=0, prefix='', notes=None, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     name = prefix
     if hDefs[0]['den']:
         name += hDefs[0]['num']+'_over_'+hDefs[0]['den']
@@ -122,7 +122,7 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefi
         name += '_normToBinWidth'
 
     # setup legend according to how many histograms are in the plot
-    legend = setup_legend(xMin=0.5, yMin=legYmin, xMax=0.73, yMax=legYmin+0.05*len(hDefs))
+    legend = setup_legend(xMin=0.6, yMin=legYmin, xMax=0.83, yMax=legYmin+0.05*len(hDefs))
     legEntries = []
 
     if (xMin or xMax or autoZoomX) and addOverflow:
@@ -154,6 +154,13 @@ def plot_hists(hDefs, xTitle=None, yTitle='# muons', normToBinWidth=False, prefi
                 for bin in range(1, h.GetNbinsX()+1):
                    h.SetBinContent(bin, h.GetBinContent(bin) / h.GetBinWidth(bin))
                    h.SetBinError(bin, h.GetBinError(bin) / h.GetBinWidth(bin))
+            if normToNEntries > 0.:
+                integral = h.Integral()
+                if integral > 0.:
+                    scalefactor = normToNEntries / integral
+                else:
+                    scalefactor = 1.
+                h.Scale(scalefactor)
 
         h.SetLineColor(hDef['lc'])
         h.SetLineStyle(hDef['ls'])
@@ -712,7 +719,7 @@ def extract_notes_from_name(name, xBase, yBase, etaTxt=True, qualTxt=True, ptTxt
     return notes
 
 # plot histogram
-def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', stacked=False, normToBinWidth=False, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
+def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', stacked=False, normToBinWidth=False, normToNEntries=0, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     styles = hist_styles(stacked)
 
     h_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
@@ -726,10 +733,10 @@ def plot_hists_standard(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='
         yBase = 0.13
     notes = extract_notes_from_name(hName, xBase, yBase)
 
-    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, '', notes, autoZoomX, xMin, xMax, logY, addOverflow, rebin, clOpts)
+    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, normToNEntries, '', notes, autoZoomX, xMin, xMax, logY, addOverflow, rebin, clOpts)
 
 # plot data and emulator histogram
-def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', normToBinWidth=False, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
+def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle='', normToBinWidth=False, normToNEntries=0, autoZoomX=False, xMin=None, xMax=None, logY=False, addOverflow=False, rebin=1, clOpts=None):
     styles = hist_styles(False)
 
     data_dict = {'hm':hm, 'num':hNamePrefix+hName, 'den':den}
@@ -746,7 +753,7 @@ def plot_hists_data_emul(hm, hName, den=None, hNamePrefix='', xTitle='', yTitle=
         yBase = 0.13
     notes = extract_notes_from_name(hName, xBase, yBase)
 
-    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, 'dataEmulHisto_', notes, autoZoomX, xMin, xMax, logY, addOverflow, rebin, clOpts)
+    return plot_hists(hDefs, xTitle, yTitle, normToBinWidth, normToNEntries, 'dataEmulHisto_', notes, autoZoomX, xMin, xMax, logY, addOverflow, rebin, clOpts)
 
 # plot efficiency
 def plot_eff_standard(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', autoZoomX=False, xMax=None, addOverflow=False, rebin=1, clOpts=None):
@@ -1009,8 +1016,8 @@ def plot_eff_hm_comp(hm1, hm2, hName, den, hNamePrefix='', xTitle='', yTitle='',
     return plot_effs(hDefs, xTitle, yTitle, 'comp_', notes, autoZoomX, xMax, addOverflow, rebin, clOpts)
 
 def fitHisto(h, fitfunc):
+    f = root.TF1('f', fitfunc)
     if h.GetEntries() > 10: # need some entries at least
-        f = root.TF1('f', fitfunc)
         f.SetLineWidth(1)
         f.SetLineColor(root.kBlue)
         peak = h.GetBinCenter(h.GetMaximumBin())
@@ -1034,7 +1041,7 @@ def fitHisto(h, fitfunc):
         statsBox.SetY2NDC(statsBoxCoord[3])
         statsBox.SetLineColor(root.kBlue)
         statsBox.SetTextColor(root.kBlue)
-        return f
+    return f
 
 def plot_res(graph, name, xTitle='', yTitle='', clOpts=None):
     # create canvas and draw on it
@@ -1212,13 +1219,13 @@ def main():
     if opts.delta:
         etaRange = reco_0to2p4
         # delta R plots
-        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_'+etaRange+'0p5_dr', hNamePrefix='best_', xTitle='#DeltaR', yTitle=yTitle_nMatch, clOpts=opts))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dr0p5_matched_'+etaRange+'0p5_dr', hNamePrefix='best_', normToNEntries=100, xTitle='#DeltaR', yTitle=yTitle_nMatch, clOpts=opts))
 
         # delta eta plots
-        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin25_deta0p5_matched_'+etaRange+'0p5_deta', hNamePrefix='best_', xTitle='#Delta#eta', yTitle=yTitle_nMatch, clOpts=opts))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin25_deta0p5_matched_'+etaRange+'0p5_deta', hNamePrefix='best_', normToNEntries=100, xTitle='#Delta#eta', yTitle=yTitle_nMatch, clOpts=opts))
 
         # delta phi plots
-        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dphi0p5_matched_'+etaRange+'0p5_dphi', hNamePrefix='best_', xTitle='#Delta#phi', yTitle=yTitle_nMatch, clOpts=opts))
+        objects.append(plot_hists_data_emul(hm, 'l1_muon_qualMin12_ptmin25_dphi0p5_matched_'+etaRange+'0p5_dphi', hNamePrefix='best_', normToNEntries=100, xTitle='#Delta#phi', yTitle=yTitle_nMatch, clOpts=opts))
 
         resGraphs = []
         # L1 - reco plots
@@ -1227,27 +1234,27 @@ def main():
 
             for plotName in plotNames:
                 # inverse pt resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
                     fitHisto(lastHs[0], 'gaus')
                 # pt resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_dpt', hNamePrefix=prefix+'res_best_', xTitle='p_{T}^{L1} - p_{T}^{RECO}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dpt', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='p_{T}^{L1} - p_{T}^{RECO}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
                     fitHisto(lastHs[0], 'crystalball')
                 # eta resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
                     fitHisto(lastHs[0], 'gaus')
                 # phi resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_dphi', hNamePrefix=prefix+'res_best_', xTitle='#phi_{L1} - #phi_{RECO}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dphi', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='#phi_{L1} - #phi_{RECO}', clOpts=opts))
                 #if len(objects[-1]) > 1:
                 #    lastHs = objects[-1][1]
                 #    fitHisto(lastHs[0])
                 # charge matching
-                objects.append(plot_hists_data_emul(hm, plotName+'_dcharge', hNamePrefix=prefix+'res_best_', xTitle='charge^{L1} - charge^{RECO}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dcharge', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='charge^{L1} - charge^{RECO}', clOpts=opts))
 
             resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
             resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
@@ -1266,7 +1273,7 @@ def main():
                 plotName = etaRange+probe_ptmin_str+probe_ptmax_str+'_dr0p5_matched_l1_muon_qualMin12'
 
                 # inverse pt resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
                     #fit = fitHisto(lastHs[0], 'crystalball')
@@ -1279,7 +1286,7 @@ def main():
                     resGraphs[-1].RemovePoint(j)
                     resGraphs[-2].RemovePoint(j)
                 # eta resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
+                objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
                 if len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
                     fit = fitHisto(lastHs[0], 'gaus')
