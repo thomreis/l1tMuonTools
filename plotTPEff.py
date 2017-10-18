@@ -25,6 +25,7 @@ def parse_options_plotEff(parser):
     sub_parser.add_argument("--eff-tf", dest="efftf", default=False, action='store_true', help="Plot efficiencies for TF regions.")
     sub_parser.add_argument("--qualcomp", dest="qualcomp", default=False, action='store_true', help="Plot efficiencies for different qualities.")
     sub_parser.add_argument("--delta", dest="delta", default=False, action='store_true', help="Plot L1 - RECO difference plots.")
+    sub_parser.add_argument("--fit-delta", dest="fitdelta", default=False, action='store_true', help="Fit L1 - RECO difference plots.")
     sub_parser.add_argument("--2d", dest="twod", default=False, action='store_true', help="Plot 2D L1 vs. RECO plots.")
     sub_parser.add_argument("--data-emul", dest="dataemul", default=False, action='store_true', help="Plot data and emulator efficiencies.")
     sub_parser.add_argument("--upgrade-legacy", dest="upgradelegacy", default=False, action='store_true', help="Plot upgrade and legacy efficiencies.")
@@ -1235,72 +1236,73 @@ def main():
             for plotName in plotNames:
                 # inverse pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
-                if len(objects[-1]) > 1:
+                if opts.fitdelta and len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
                     fitHisto(lastHs[0], 'gaus')
                 # pt resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dpt', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='p_{T}^{L1} - p_{T}^{RECO}', clOpts=opts))
-                if len(objects[-1]) > 1:
+                if opts.fitdelta and len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
                     fitHisto(lastHs[0], 'crystalball')
                 # eta resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
-                if len(objects[-1]) > 1:
+                if opts.fitdelta and len(objects[-1]) > 1:
                     lastHs = objects[-1][1]
                     fitHisto(lastHs[0], 'gaus')
                 # phi resolution
                 objects.append(plot_hists_data_emul(hm, plotName+'_dphi', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='#phi_{L1} - #phi_{RECO}', clOpts=opts))
-                #if len(objects[-1]) > 1:
+                #if opts.fitdelta and len(objects[-1]) > 1:
                 #    lastHs = objects[-1][1]
                 #    fitHisto(lastHs[0])
                 # charge matching
                 objects.append(plot_hists_data_emul(hm, plotName+'_dcharge', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='charge^{L1} - charge^{RECO}', clOpts=opts))
 
-            resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
-            resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
-            resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
-            resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
-            # for resolution plots by pT range
-            for j, probe_pt_min in enumerate(res_probe_ptmins):
-                probe_ptmin_str = str(probe_pt_min).replace('.', 'p')
-                if j < len(res_probe_ptmins)-1:
-                    probe_pt_max = res_probe_ptmins[j+1]
-                    probe_ptmax_str = '_ptmax'+str(probe_pt_max).replace('.', 'p')
-                else:
-                    probe_pt_max = 2*res_probe_ptmins[-1]
-                    probe_ptmax_str = '_ptmax'
+            if opts.fitdelta:
+                resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
+                resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
+                resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
+                resGraphs.append(root.TGraphErrors(len(res_probe_ptmins)))
+                # for resolution plots by pT range
+                for j, probe_pt_min in enumerate(res_probe_ptmins):
+                    probe_ptmin_str = str(probe_pt_min).replace('.', 'p')
+                    if j < len(res_probe_ptmins)-1:
+                        probe_pt_max = res_probe_ptmins[j+1]
+                        probe_ptmax_str = '_ptmax'+str(probe_pt_max).replace('.', 'p')
+                    else:
+                        probe_pt_max = 2*res_probe_ptmins[-1]
+                        probe_ptmax_str = '_ptmax'
 
-                plotName = etaRange+probe_ptmin_str+probe_ptmax_str+'_dr0p5_matched_l1_muon_qualMin12'
+                    plotName = etaRange+probe_ptmin_str+probe_ptmax_str+'_dr0p5_matched_l1_muon_qualMin12'
 
-                # inverse pt resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
-                if len(objects[-1]) > 1:
-                    lastHs = objects[-1][1]
-                    #fit = fitHisto(lastHs[0], 'crystalball')
-                    fit = fitHisto(lastHs[0], 'gaus')
-                    resGraphs[-1].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(1))
-                    resGraphs[-1].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(1))
-                    resGraphs[-2].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(2))
-                    resGraphs[-2].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(2))
-                else:
-                    resGraphs[-1].RemovePoint(j)
-                    resGraphs[-2].RemovePoint(j)
-                # eta resolution
-                objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
-                if len(objects[-1]) > 1:
-                    lastHs = objects[-1][1]
-                    fit = fitHisto(lastHs[0], 'gaus')
-                    resGraphs[-3].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(1))
-                    resGraphs[-3].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(1))
-                    resGraphs[-4].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(2))
-                    resGraphs[-4].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(2))
-                else:
-                    resGraphs[-3].RemovePoint(j)
-                    resGraphs[-4].RemovePoint(j)
-            objects.append(plot_res(resGraphs[-1], 'res_'+etaRange+'_dinvpt_mean', xTitle='p_{T}^{RECO}', yTitle='<(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}>', clOpts=opts))
-            objects.append(plot_res(resGraphs[-2], 'res_'+etaRange+'_dinvpt_sigma', xTitle='p_{T}^{RECO}', yTitle='#sigma((p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1})', clOpts=opts))
-            objects.append(plot_res(resGraphs[-3], 'res_'+etaRange+'_deta_mean', xTitle='p_{T}^{RECO}', yTitle='<#eta_{L1} - #eta_{RECO}>', clOpts=opts))
-            objects.append(plot_res(resGraphs[-4], 'res_'+etaRange+'_deta_sigma', xTitle='p_{T}^{RECO}', yTitle='#sigma(#eta_{L1} - #eta_{RECO})', clOpts=opts))
+                    # inverse pt resolution
+                    objects.append(plot_hists_data_emul(hm, plotName+'_dinvpt', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}', clOpts=opts))
+                    if len(objects[-1]) > 1:
+                        lastHs = objects[-1][1]
+                        #fit = fitHisto(lastHs[0], 'crystalball')
+                        fit = fitHisto(lastHs[0], 'gaus')
+                        resGraphs[-1].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(1))
+                        resGraphs[-1].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(1))
+                        resGraphs[-2].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(2))
+                        resGraphs[-2].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(2))
+                    else:
+                        resGraphs[-1].RemovePoint(j)
+                        resGraphs[-2].RemovePoint(j)
+                    # eta resolution
+                    objects.append(plot_hists_data_emul(hm, plotName+'_deta', hNamePrefix=prefix+'res_best_', normToNEntries=100, xTitle='#eta_{L1} - #eta_{RECO}', clOpts=opts))
+                    if len(objects[-1]) > 1:
+                        lastHs = objects[-1][1]
+                        fit = fitHisto(lastHs[0], 'gaus')
+                        resGraphs[-3].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(1))
+                        resGraphs[-3].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(1))
+                        resGraphs[-4].SetPoint(j, (probe_pt_max+probe_pt_min)/2., fit.GetParameter(2))
+                        resGraphs[-4].SetPointError(j, (probe_pt_max-probe_pt_min)/2., fit.GetParError(2))
+                    else:
+                        resGraphs[-3].RemovePoint(j)
+                        resGraphs[-4].RemovePoint(j)
+                objects.append(plot_res(resGraphs[-1], 'res_'+etaRange+'_dinvpt_mean', xTitle='p_{T}^{RECO}', yTitle='<(p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1}>', clOpts=opts))
+                objects.append(plot_res(resGraphs[-2], 'res_'+etaRange+'_dinvpt_sigma', xTitle='p_{T}^{RECO}', yTitle='#sigma((p_{T}^{RECO} - p_{T}^{L1}) / p_{T}^{L1})', clOpts=opts))
+                objects.append(plot_res(resGraphs[-3], 'res_'+etaRange+'_deta_mean', xTitle='p_{T}^{RECO}', yTitle='<#eta_{L1} - #eta_{RECO}>', clOpts=opts))
+                objects.append(plot_res(resGraphs[-4], 'res_'+etaRange+'_deta_sigma', xTitle='p_{T}^{RECO}', yTitle='#sigma(#eta_{L1} - #eta_{RECO})', clOpts=opts))
 
     # 2d reco vs. L1 plots
     if opts.twod:

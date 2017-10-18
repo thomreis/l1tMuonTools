@@ -27,13 +27,14 @@ If the intersection of two LS json files is needed (For example of the processed
 ### Produce efficiency plots
 Once the ROOT file with the numerator and denominator histograms is generated the efficiency plots can be produced with the `plotTPEff.py` script.
 ```
-python plotTPEff.py -f ugmt_tandp_eff_histos.root plotTPEff --year 2016 --lumi="33.0 fb^{-1}" --eff --eff-tf --2d --qualcomp --delta --control
+python plotTPEff.py -f ugmt_tandp_eff_histos.root plotTPEff --year 2016 --lumi="33.0 fb^{-1}" --eff --eff-tf --2d --qualcomp --delta --fit-delta --control
 ```
 * `--eff` produces the efficiency plots. To run on emulated muons used the `--emul` option.
 * `--eff-tf` produces the efficiency plots with all TF on one plot. To run on emulated muons used the `--emul` option.
 * `--2d` produces 2D plots with RECO vs. L1 for several muon variables.
 * `--qualcomp` produces efficiency plots for different minimal L1 muon qualities in one plot.
 * `--delta` produces plots with the difference between RECO probe muon and matched L1 muon.
+* `--fit-delta` tries to fit the difference between RECO probe muon and matched L1 muon histograms separately and as a function of RECO pT.
 * `--control` produces control histograms for the probe and L1 muons.
 * `--public` produces publication style plots and output files in png and pdf format. The `--preliminary` option marks the plot as a preliminary result. The `--mc` option marks the plot as simulation.
 * `--data-emul` produces efficiency comparison plots between data and emulator. To use this option the `muonTagAndProbe.py` script has to be run with and without the `--emul` option, and the two ROOT files have to be merged with `hadd`.
