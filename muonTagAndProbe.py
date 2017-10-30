@@ -241,6 +241,9 @@ def analyse(evt, hms, hms2d, eta_ranges, qual_ptmins_dict, res_probe_ptmins, mat
 
     probeMomentumDict = {}
 
+    # minimal dR between the tag and the probe
+    tpMinDr = 0.5
+
     # eta and phi variables to use depending on selected options
     zeros = [0.] * 50 # list with zeros for deta and dphi matching with the Matcher.match_dr function
     # match selected l1 muons to selected probes
@@ -257,6 +260,7 @@ def analyse(evt, hms, hms2d, eta_ranges, qual_ptmins_dict, res_probe_ptmins, mat
     elif recoExtraStation == 2:
         probeEtas = recoColl.etaSt2
         probePhis = recoColl.phiSt2
+        tpMinDr = 0.2
     else:
         probeEtas = recoColl.eta
         probePhis = recoColl.phi
@@ -272,7 +276,7 @@ def analyse(evt, hms, hms2d, eta_ranges, qual_ptmins_dict, res_probe_ptmins, mat
         # remove the current tag from the list of probes
         probe_idcs = [idx for idx in all_probe_idcs if idx != tag_idx]
         # remove probes that are too close to the tag
-        probe_idcs = [idx for idx in probe_idcs if Matcher.delta_r(recoColl.phi[idx], recoColl.eta[idx], recoColl.phi[tag_idx], recoColl.eta[tag_idx]) > 0.5]
+        probe_idcs = [idx for idx in probe_idcs if Matcher.delta_r(recoColl.phi[idx], recoColl.eta[idx], recoColl.phi[tag_idx], recoColl.eta[tag_idx]) > tpMinDr]
         # select tag-probe pairs with invariant mass in selected window
         if useInvMassCut:
             tagLV = root.TLorentzVector()
@@ -634,6 +638,8 @@ def main():
     else:
         qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
     match_deltas = {'dr':0.5, 'deta':0.5, 'dphi':0.5} # max deltas for matching
+    if recoExtraStation == 2:
+        match_deltas = {'dr':0.1, 'deta':0.1, 'dphi':0.025} # max deltas for matching with the reco muon at the 2nd muon station
 
     # book the histograms
     L1Ana.log.info("Booking combined run histograms.")
