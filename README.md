@@ -9,6 +9,7 @@ python muonTagAndProbe.py -l input_l1ntuple_file_list.txt muonTagAndProbe --json
 With the `-l` option a text file with the paths to the input files can be used and with the `-f` option a single L1 ntuple input file can be specified.
 To run on emulated muons add the `--emul` option. With the `--run` option a list of runs to be analysed can be selected.
 The invariant mass window between the tag and the probe muon spans from 71 GeV to 111 GeV by default.
+Instead of the L1 coordinates at the vertex with `--use-l1-extra-coord`, the RECO muon coordinates at the 1st or 2nd muon station can be used with the `--use-reco-extra-station={1, 2}` option. For case 2 the matching windows will be tightened as well.
 
 ### Using the batch system:
 To run over many input files the task can be divided and sent to the lxbatch system. Setting `--njobs` such that each job runs on about 20 files works well in many cases.
