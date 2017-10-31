@@ -250,6 +250,7 @@ def analyse(evt, hms, hms2d, eta_ranges, qual_ptmins_dict, res_probe_ptmins, mat
     if useVtxExtraCoord:
         etas = l1Coll.muonEtaAtVtx
         phis = l1Coll.muonPhiAtVtx
+        tpMinDr = 0.4
     else:
         etas = l1Coll.muonEta
         phis = l1Coll.muonPhi
@@ -637,7 +638,9 @@ def main():
         qual_ptmins_dict = {5:ptmins_list_q12, 3:ptmins_list_q8, 2:ptmins_list_q4}
     else:
         qual_ptmins_dict = {12:ptmins_list_q12, 8:ptmins_list_q8, 4:ptmins_list_q4}
-    match_deltas = {'dr':0.5, 'deta':0.5, 'dphi':0.5} # max deltas for matching
+    match_deltas = {'dr':0.3, 'deta':0.15, 'dphi':0.25} # max deltas for matching
+    if useVtxExtraCoord:
+        match_deltas = {'dr':0.2, 'deta':0.15, 'dphi':0.15} # max deltas for matching with the L1 muon at the vertex
     if recoExtraStation == 2:
         match_deltas = {'dr':0.1, 'deta':0.1, 'dphi':0.025} # max deltas for matching with the reco muon at the 2nd muon station
 
