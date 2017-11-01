@@ -197,8 +197,8 @@ class MuonSelections(object):
                 eta = reco.etaSt1[i]
                 phi = reco.phiSt1[i]
             elif extrapolated == 2:
-                eta = reco.etaSt1[i]
-                phi = reco.phiSt1[i]
+                eta = reco.etaSt2[i]
+                phi = reco.phiSt2[i]
             if math.fabs(eta) < abs_eta_min or math.fabs(eta) > abs_eta_max:
                 continue
             if not pos_eta and eta >= 0:
