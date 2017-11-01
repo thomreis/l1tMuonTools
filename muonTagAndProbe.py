@@ -49,7 +49,7 @@ def get_tftype(tf_muon_index):
 def book_histograms(eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas, emul=False, legacy=False):
     # define pt binning
     pt_bins = range(0, 30, 1)
-    pt_bins = range(30, 50, 2)
+    pt_bins += range(30, 50, 2)
     pt_bins += range(50, 80, 5)
     pt_bins += range(80, 100, 10)
     pt_bins += range(100, 200, 25)
