@@ -33,7 +33,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
     sub_parser.add_argument("--era", dest="era", type=str, default='2017pp', help="Era to select run numbers for plots.")
     sub_parser.add_argument("--pt-ranges", dest="ptranges", type=str, default='standard', help="A set of pT cuts to make plots for ['standard', 'extended'].")
-    sub_parser.add_argument("--eta-ranges", dest="etaranges", type=str, default='standard', help="A set of eta ranges to make plots for ['minimal', 'standard', 'extended'].")
+    sub_parser.add_argument("--eta-ranges", dest="etaranges", type=str, default='standard', help="A set of eta ranges to make plots for ['minimal', 'standard', 'extended', 'endcap'].")
 
     opts, unknown = parser.parse_known_args()
     return opts
@@ -631,6 +631,8 @@ def main():
         eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4]]
     elif opts.etaranges == 'extended':
         eta_ranges = [[0, 2.4], [0, 0.83], [0.83, 1.24], [1.24, 2.4], [1.24, 1.55], [1.55, 1.85], [1.85, 2.4]]
+    elif opts.etaranges == 'endcap':
+        eta_ranges = [[1.24, 2.4], [1.24, 1.55], [1.55, 1.85], [1.55, 2.4], [1.85, 2.4]]
     else:
         eta_ranges = [[0, 2.4]]
 
