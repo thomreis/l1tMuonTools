@@ -1116,7 +1116,9 @@ def main():
     reco_0p8to0p85 = 'probe_absEtaMin0p8_absEtaMax0p85_ptmin'
     reco_1p24to1p7 = 'probe_absEtaMin1p24_absEtaMax1p7_ptmin'
     reco_1p2to1p55 = 'probe_absEtaMin1p2_absEtaMax1p55_ptmin'
+    reco_1p24to1p55 = 'probe_absEtaMin1p24_absEtaMax1p55_ptmin'
     reco_1p55to1p85 = 'probe_absEtaMin1p55_absEtaMax1p85_ptmin'
+    reco_1p55to2p4 = 'probe_absEtaMin1p55_absEtaMax2p4_ptmin'
     reco_1p7to1p85 = 'probe_absEtaMin1p7_absEtaMax1p85_ptmin'
     reco_1p85to2p5 = 'probe_absEtaMin1p85_absEtaMax2p5_ptmin'
     reco_1p85to2p4 = 'probe_absEtaMin1p85_absEtaMax2p4_ptmin'
@@ -1124,9 +1126,11 @@ def main():
     #etaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5, reco_1p24to1p7, reco_1p7to1p85, reco_1p85to2p5]
     #etaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5, reco_1p2to1p55, reco_1p55to1p85, reco_1p85to2p5]
     #etaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4, reco_1p2to1p55, reco_1p55to1p85, reco_1p85to2p4]
+    #etaRanges = [reco_1p24to2p4, reco_1p24to1p55, reco_1p55to1p85, reco_1p55to2p4, reco_1p85to2p4]
     etaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
     #tfEtaRanges = [reco_0to2p5, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p5]
     tfEtaRanges = [reco_0to2p4, reco_0to0p83, reco_0p83to1p24, reco_1p24to2p4]
+    #tfEtaRanges = etaRanges
 
     #drStr = 'dr0p5_'
     #detaStr = 'deta0p5_'
@@ -1221,9 +1225,13 @@ def main():
         objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin7_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin10_phi', 'probe_absEtaMinXX_absEtaMaxYY_ptmin10_phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
         objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin15_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin20_phi', 'probe_absEtaMinXX_absEtaMaxYY_ptmin20_phi', 'best_', xTitle='#phi^{reco}', yTitle=yTitle_eff, rebin=rebinPhi, clOpts=opts))
         # run plots
-        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin12_ptmin25_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin33_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin33_run', 'best_', xTitle='run number', yTitle=yTitle_eff, rebin=rebinPhi, autoZoomX=True, clOpts=opts))
-        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin7_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin10_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin10_run', 'best_', xTitle='run number', yTitle=yTitle_eff, rebin=rebinPhi, autoZoomX=True, clOpts=opts))
-        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin15_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin20_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin20_run', 'best_', xTitle='run number', yTitle=yTitle_eff, rebin=rebinPhi, autoZoomX=True, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin12_ptmin25_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin33_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin33_run', 'best_', xTitle='run number', yTitle=yTitle_eff, autoZoomX=True, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin7_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin10_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin10_run', 'best_', xTitle='run number', yTitle=yTitle_eff, autoZoomX=True, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin15_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin20_run', 'probe_absEtaMinXX_absEtaMaxYY_ptmin20_run', 'best_', xTitle='run number', yTitle=yTitle_eff, autoZoomX=True, clOpts=opts))
+        # vtx plots
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin12_ptmin25_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin33_vtx', 'probe_absEtaMinXX_absEtaMaxYY_ptmin33_vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin7_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin10_vtx', 'probe_absEtaMinXX_absEtaMaxYY_ptmin10_vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, clOpts=opts))
+        objects.append(plot_eff_eta_ranges(hm, 'l1_muon_qualMin8_ptmin15_'+drStr+'matched_probe_absEtaMinXX_absEtaMaxYY_ptmin20_vtx', 'probe_absEtaMinXX_absEtaMaxYY_ptmin20_vtx', 'best_', xTitle='PU', yTitle=yTitle_eff, clOpts=opts))
 
     if opts.qualcomp:
         for etaRange in etaRanges:
