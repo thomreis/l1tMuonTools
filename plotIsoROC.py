@@ -211,6 +211,8 @@ def main():
         iso_type = 4
     elif opts.isomethod == 'outovertot2x2':
         iso_type = 5
+    elif opts.isomethod == 'mipptadjust2':
+        iso_type = 7
     else:
         iso_type = 0
 
@@ -246,9 +248,13 @@ def main():
                 ref_iso = 1.
                 #iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31.]
                 iso_wps = [0., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31., 99/100.]
+            elif iso_type == 7:
+                ref_iso = 2.
+                iso_wps = [2., 1., 0.5, 0.1]
             else:
                 ref_iso = 0.
-                iso_wps = [1., 2., 3., 4., 5., 6., 7., 8., 9.]
+                #iso_wps = [1., 2., 3., 4., 5., 6., 7., 8., 9.]
+                iso_wps = [0., 1., 2., 4., 6., 8., 10., 15.]
             iso_wps.sort()
             hNamesRef = {'num':eff_l1_str.format(qmin=qualMin, thr=threshold, iso=ref_iso)+'_matched_'+eff_probe_str,
                          'den':'emu_'+eff_probe_str}
@@ -258,16 +264,18 @@ def main():
             print '==================='
             print 'L1 threshold: {thr} GeV, probe threshold: {pthr} GeV, quality >= {qmin}'.format(thr=threshold, pthr=probeThreshold, qmin=qualMin)
             print '-------------------'
-            print ' iso   rel. rate   rel. eff'
+            print ' iso            rate           eff                 rel. rate   rel. eff'
             print '-------------------'
             for iso_wp in iso_wps:
                 iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
                 #print_rates(hmRate, rate_str+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
                 hNames = {'num':eff_l1_str.format(qmin=qualMin, thr=threshold, iso=iso_wp)+'_matched_'+eff_probe_str, 'den':'emu_'+eff_probe_str}
                 #print_efficiencies(hmEff, hNames)
+                rate = get_rate(hmRate, rate_str+iso_wp_str+'_pt', threshold=threshold, scaleFactor=convFactorToHz / 1000.)
+                eff = get_eff(hmEff, hNames)
                 relRate = get_relative_rate(hmRate, rate_str+iso_wp_str+'_pt', referenceRate[0], threshold=threshold, scaleFactor=convFactorToHz / 1000.)
                 relEff = get_relative_eff(hmEff, hNames, referenceEff[0])
-                print '{iso:.3f}    {rate:.4f}     {eff:.4f}'.format(iso=iso_wp, rate=relRate, eff=relEff)
+                print '{iso:.3f}    {rate:7.1f} +/-{rateerr:4.1f}   {eff:.4f} -{efferrlow:.4f} +{efferrhigh:.4f}   {relrate:.4f}     {releff:.4f}'.format(iso=iso_wp, rate=rate[0], rateerr=rate[1], eff=eff[0], efferrlow=eff[1], efferrhigh=eff[2], relrate=relRate, releff=relEff)
                 points.append((relRate, relEff))
             thresholdAndPointss.append((threshold, points))
             print '==================='

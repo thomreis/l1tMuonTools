@@ -29,7 +29,7 @@ def parse_options_upgradeMuonHistos(parser):
     sub_parser.add_argument("--emul", dest="emul", default=False, action="store_true", help="Make emulator plots.")
     sub_parser.add_argument("--prefix", dest="prefix", type=str, default='', help="A prefix for the histogram names.")
     sub_parser.add_argument("--tftype", dest="tftype", type=str, default='', help="Fill L1 muons from one TF.")
-    sub_parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot, 'inner2x2', 'outovertot2x2']")
+    sub_parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot, 'inner2x2', 'outovertot2x2', 'mipptadjust']")
     sub_parser.add_argument("--nvtx-min", dest="nvtxmin", type=int, default=None, help="Minimum number of vertices.")
     sub_parser.add_argument("--nvtx-max", dest="nvtxmax", type=int, default=None, help="Maximum number of vertices.")
 
@@ -250,7 +250,16 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
             else:
                 iso_min=0.
                 iso_max=iso_wp
-            l1_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(l1Coll, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
+            if iso_type == 6:
+                l1_iso_muon_idcs = l1_muon_idcs 
+                l1_iso_muon_idcs_corr = MuonSelections.select_iso_ugmt_muons(l1Coll, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
+            elif iso_type == 7:
+                iso_min=iso_wp
+                iso_max=1.
+                l1_iso_muon_idcs = l1_muon_idcs 
+                l1_iso_muon_idcs_corr = MuonSelections.select_iso_ugmt_muons(l1Coll, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
+            else:
+                l1_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(l1Coll, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=l1_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
 
             # for all defined eta ranges
             for eta_range in eta_ranges:
@@ -312,8 +321,8 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
                             for pt_min in ptmins[1]:
                                 ptmin_str = '_ptmin'+str(pt_min)
 
-                                q_thr_l1_iso_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, qual_min=q, pt_min=pt_min, idcs=l1_iso_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
-                                eta_q_thr_l1_iso_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=pt_min, idcs=eta_q_l1_iso_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
+                                q_thr_l1_iso_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, qual_min=q, pt_min=pt_min, idcs=l1_iso_muon_idcs, corr_idcs=l1_iso_muon_idcs_corr, pt_corr=ptCorrVal, useVtxExtraCoord=useVtxExtraCoord)
+                                eta_q_thr_l1_iso_muon_idcs = MuonSelections.select_ugmt_muons(l1Coll, pt_min=pt_min, idcs=eta_q_l1_iso_muon_idcs, corr_idcs=l1_iso_muon_idcs_corr, pt_corr=ptCorrVal, useVtxExtraCoord=useVtxExtraCoord)
                                 # fill the histograms with the l1 muon kinematics
                                 for i in eta_q_thr_l1_iso_muon_idcs:
                                     if tftype == -1 or tftype == get_tftype(l1Coll.muonTfMuonIdx[i]):
@@ -324,8 +333,12 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
                                             eta = l1Coll.muonEta[i]
                                             phi = l1Coll.muonPhi[i]
 
+                                        ptCorr = 1.
+                                        if (iso_type == 6 or iso_type == 7) and i in l1_iso_muon_idcs_corr:
+                                            ptCorr = ptCorrVal
+
                                         hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.pass', 1)
-                                        hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.pt', l1Coll.muonEt[i])
+                                        hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.pt', l1Coll.muonEt[i] * ptCorr)
                                         hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.eta', eta)
                                         hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.phi', phi)
                                         hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.charge', l1Coll.muonChg[i])
@@ -333,7 +346,7 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
                                         hm.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.run', runnr)
                                         if perRunHistos:
                                             hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.pass', 1)
-                                            hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.pt', l1Coll.muonEt[i])
+                                            hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.pt', l1Coll.muonEt[i] * ptCorr)
                                             hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.eta', eta)
                                             hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.phi', phi)
                                             hm_run.fill(namePrefix+'l1_muon'+eta_min_str+eta_max_str+qual_min_str+ptmin_str+iso_wp_str+'.charge', l1Coll.muonChg[i])
@@ -373,7 +386,7 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
                                                             eta = l1Coll.muonEta[matched_l1_muons[i][0]]
                                                             phi = l1Coll.muonPhi[matched_l1_muons[i][0]]
                                                         #hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pass', 1)
-                                                        #hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pt', l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                        #hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pt', l1Coll.muonEt[matched_l1_muons[i][0]] * ptCorr)
                                                         #hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.eta', eta)
                                                         #hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.phi', phi)
                                                         #hm.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.charge', l1Coll.muonChg[matched_l1_muons[i][0]])
@@ -388,18 +401,18 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
                                                         hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.vtx', nVtx)
                                                         hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.run', runnr)
                                                         hm.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.dr', matched_l1_muons[i][2])
-                                                        #hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.dpt', recoColl.pt[probe_idx] - l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                        #hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.dpt', recoColl.pt[probe_idx] - (l1Coll.muonEt[matched_l1_muons[i][0]] * ptCorr))
                                                         #hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.dinvpt', 1./recoColl.pt[probe_idx] - 1./l1Coll.muonEt[matched_l1_muons[i][0]])
                                                         #hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.deta', recoColl.eta[probe_idx] - eta)
                                                         #hm.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.dphi', recoColl.phi[probe_idx] - phi)
-                                                        #hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pt', recoColl.pt[probe_idx], l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                        #hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pt', recoColl.pt[probe_idx], l1Coll.muonEt[matched_l1_muons[i][0]] * ptCorr)
                                                         #hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.eta', recoColl.eta[probe_idx], eta)
                                                         #hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.phi', recoColl.phi[probe_idx], phi)
                                                         #hm2d.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.charge', recoColl.charge[probe_idx], l1Coll.muonChg[matched_l1_muons[i][0]])
 
                                                         if perRunHistos:
                                                             #hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pass', 1)
-                                                            #hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pt', l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                            #hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pt', l1Coll.muonEt[matched_l1_muons[i][0]] * ptCorr)
                                                             #hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.eta', eta)
                                                             #hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.phi', phi)
                                                             #hm_run.fill(namePrefix+'best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.charge', l1Coll.muonChg[matched_l1_muons[i][0]])
@@ -414,11 +427,11 @@ def analyse(evt, hm, hm2d, hm_run, hm2d_run, eta_ranges, qual_ptmins_dict, match
                                                             hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.vtx', nVtx)
                                                             hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.run', runnr)
                                                             hm_run.fill(namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+dr_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'.dr', matched_l1_muons[i][2])
-                                                            #hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.dpt', recoColl.pt[probe_idx] - l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                            #hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.dpt', recoColl.pt[probe_idx] - (l1Coll.muonEt[matched_l1_muons[i][0]] * ptCorr))
                                                             #hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.dinvpt', 1./recoColl.pt[probe_idx] - 1./l1Coll.muonEt[matched_l1_muons[i][0]])
                                                             #hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.deta', recoColl.eta[probe_idx] - eta)
                                                             #hm_run.fill(namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.dphi', recoColl.phi[probe_idx] - phi)
-                                                            #hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pt', recoColl.pt[probe_idx], l1Coll.muonEt[matched_l1_muons[i][0]])
+                                                            #hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.pt', recoColl.pt[probe_idx], l1Coll.muonEt[matched_l1_muons[i][0]] + ptCorr)
                                                             #hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.eta', recoColl.eta[probe_idx], eta)
                                                             #hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.phi', recoColl.phi[probe_idx], phi)
                                                             #hm2d_run.fill(namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+dr_str+'_matched_l1_muon'+qual_min_str+ptmin_str+iso_wp_str+'.charge', recoColl.charge[probe_idx], l1Coll.muonChg[matched_l1_muons[i][0]])
@@ -508,6 +521,10 @@ def main():
         iso_type = 4
     elif opts.isomethod == 'outovertot2x2':
         iso_type = 5
+    elif opts.isomethod == 'mipptadjust':
+        iso_type = 6
+    elif opts.isomethod == 'mipptadjust2':
+        iso_type = 7
     else:
         iso_type = 0
 
@@ -566,8 +583,11 @@ def main():
         iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31., 99/100.]
     elif iso_type == 5: # outer cone over total cone 2x2
         iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31., 99/100.]
+    elif iso_type == 7: # MIP pt adjust 2
+        iso_wps = [2., 1., 0.5, 0.3, 0.1]
     else: # inner cone
-        iso_wps = [0., 1., 2., 3., 4., 5., 6., 7., 8., 9.]
+        #iso_wps = [0., 1., 2., 3., 4., 5., 6., 7., 8., 9.]
+        iso_wps = [0., 1., 2., 4., 6., 8., 10., 15.]
 
     # book the histograms
     L1Ana.log.info("Booking combined run histograms.")
@@ -666,6 +686,7 @@ if __name__ == "__main__":
     isoEtaMax = 3.
     prefix = ''
     tftype = -1
+    ptCorrVal = 0.9
     saveHistos = True
     best_only = False
     perRunHistos = False

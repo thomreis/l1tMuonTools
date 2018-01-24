@@ -12,7 +12,7 @@ def parse_options_and_init_log(loglevel=logging.INFO):
     parser = argparse.ArgumentParser(description="L1 Analysis Framework macro", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-f", "--fname", dest="fname", default="", type=str, help="A root file containing L1Ntuples.")
     parser.add_argument("-l", "--flist", dest="flist", default="", type=str, help="A txt file containing list of L1Ntuple files, one file per line.")
-    parser.add_argument("-q" ,"--queue", dest="queue", default="1nh", help="Queue to submit the jobs to.")
+    parser.add_argument("-q" ,"--queue", dest="queue", default="8nh", help="Queue to submit the jobs to.")
     parser.add_argument("-j", "--njobs", dest="njobs", default=1, type=int, help="Number of jobs to submit")
     parser.add_argument("-n", "--nevents", dest="nevents", default=-1, type=int, help="Number of events to run, -1 for all [default: %default]")
     parser.add_argument("-w", "--workdir", dest="workdir", default='job', type=str, help="Work directory to create scripts and store output in [default: %default]")

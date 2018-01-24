@@ -25,7 +25,7 @@ def parse_options_upgradeRateHistos(parser):
     sub_parser.add_argument("-e", "--emul", dest="emul", action='store_true', help="Use emulated collections instead of unpacked ones.")
     sub_parser.add_argument("--use-extra-coord", dest="extraCoord", default=False, action="store_true", help="Use L1 extrapolated eta and phi coordinates.")
     sub_parser.add_argument("--eta-restricted", dest="etarestricted", type=float, default=3., help="Upper eta value for isolation.")
-    sub_parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot', 'inner2x2', 'outovertot2x2']")
+    sub_parser.add_argument("--iso-method", dest="isomethod", type=str, default='abs', help="Isolation method. ['abs', 'rel', 'inner', 'outovertot', 'inner2x2', 'outovertot2x2', 'mipptadjust']")
     sub_parser.add_argument("--nvtx-min", dest="nvtxmin", type=int, default=None, help="Minimum number of vertices.")
     sub_parser.add_argument("--nvtx-max", dest="nvtxmax", type=int, default=None, help="Maximum number of vertices.")
 
@@ -255,13 +255,17 @@ def get_highest_pt(candColl, idcs, gmt=False, tf=False):
     return ptList.pop()
 
 
-def get_highest_pt_idx(candColl, idcs, gmt=False, tf=False):
+def get_highest_pt_idx(candColl, idcs, corr_idcs=None, pt_corr=1., gmt=False, tf=False):
     highestPt = 0.
     highestPtIdx = -1
     for i in idcs:
         if not gmt:
             if not tf:
-                pt = candColl.muonEt[i]
+                ptCorrection = 1.
+                if corr_idcs:
+                    if i in corr_idcs:
+                        ptCorrection = pt_corr
+                pt = candColl.muonEt[i] * ptCorrection
             else:
                 pt = candColl.tfMuonHwPt[i] * ptScale
         else:
@@ -306,7 +310,16 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, iso_wps, emul):
         else:
             iso_min=0.
             iso_max=iso_wp
-        ugmt_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(ugmtColl, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=ugmt_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
+        if iso_type == 6:
+            ugmt_iso_muon_idcs = ugmt_muon_idcs 
+            ugmt_iso_muon_idcs_corr = MuonSelections.select_iso_ugmt_muons(ugmtColl, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=ugmt_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
+        elif iso_type == 7:
+            iso_min=iso_wp
+            iso_max=1.
+            ugmt_iso_muon_idcs = ugmt_muon_idcs 
+            ugmt_iso_muon_idcs_corr = MuonSelections.select_iso_ugmt_muons(ugmtColl, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=ugmt_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
+        else:
+            ugmt_iso_muon_idcs = MuonSelections.select_iso_ugmt_muons(ugmtColl, l1CaloTowerColl, iso_min=iso_min, iso_max=iso_max, iso_eta_max=isoEtaMax, idcs=ugmt_muon_idcs, useVtxExtraCoord=useVtxExtraCoord, iso_type=iso_type)
 
         for eta_range in eta_ranges:
             eta_min = eta_range[0]
@@ -321,7 +334,7 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, iso_wps, emul):
                 thr_str = '_ptmin'+str(threshold)
 
                 eta_thr_gmt_muon_idcs = MuonSelections.select_gmt_muons(evt.gmt, pt_min=threshold, idcs=eta_gmt_muon_idcs)
-                eta_thr_ugmt_iso_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, pt_min=threshold, idcs=eta_ugmt_iso_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
+                eta_thr_ugmt_iso_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, pt_min=threshold, idcs=eta_ugmt_iso_muon_idcs, corr_idcs=ugmt_iso_muon_idcs_corr, pt_corr=ptCorrVal, useVtxExtraCoord=useVtxExtraCoord)
 
                 #for i in eta_thr_gmt_muon_idcs:
                 #    hm.fill('gmt_muon'+eta_min_str+eta_max_str+thr_str+iso_wp_str+'_qual', evt.gmt.Qual[i])
@@ -339,7 +352,7 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, iso_wps, emul):
                     qMin_str = '_qmin'+str(qMin)
 
                     eta_thr_q_gmt_muon_idcs = MuonSelections.select_gmt_muons(evt.gmt, qual_min=qMin, idcs=eta_thr_gmt_muon_idcs)
-                    eta_thr_q_ugmt_iso_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, qual_min=qMin, idcs=eta_thr_ugmt_iso_muon_idcs, useVtxExtraCoord=useVtxExtraCoord)
+                    eta_thr_q_ugmt_iso_muon_idcs = MuonSelections.select_ugmt_muons(ugmtColl, qual_min=qMin, idcs=eta_thr_ugmt_iso_muon_idcs, corr_idcs=ugmt_iso_muon_idcs_corr, pt_corr=ptCorrVal, useVtxExtraCoord=useVtxExtraCoord)
 
                     bmtfUgmtCtr = 0
                     omtfUgmtCtr = 0
@@ -403,26 +416,37 @@ def analyse(evt, hm, eta_ranges, thresholds, qualities, iso_wps, emul):
                 #    hm.fill('gmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', evt.gmt.Pt[i])
                 #    hm.fill('gmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', evt.gmt.Pt[i])
                 for i in eta_q_ugmt_iso_muon_idcs:
-                    hm.fill('ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', ugmtColl.muonEt[i])
-                    #hm.fill('ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', ugmtColl.muonEt[i])
+                    ptCorr = 1.
+                    if (iso_type == 6 or iso_type == 7) and i in ugmt_iso_muon_idcs_corr:
+                        ptCorr = ptCorrVal
+
+                    hm.fill('ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', ugmtColl.muonEt[i] * ptCorr)
+                    #hm.fill('ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', ugmtColl.muonEt[i] * ptCorr)
                     #tftype = MuonSelections.getTfTypeFromTfMuonIdx(ugmtColl.muonTfMuonIdx[i])
                     #if tftype is 0:
-                    #    hm.fill('bmtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', ugmtColl.muonEt[i])
-                    #    hm.fill('bmtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', ugmtColl.muonEt[i])
+                    #    hm.fill('bmtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', ugmtColl.muonEt[i] * ptCorr)
+                    #    hm.fill('bmtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', ugmtColl.muonEt[i] * ptCorr)
                     #elif tftype is 1:
-                    #    hm.fill('omtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', ugmtColl.muonEt[i])
-                    #    hm.fill('omtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', ugmtColl.muonEt[i])
+                    #    hm.fill('omtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', ugmtColl.muonEt[i] * ptCorr)
+                    #    hm.fill('omtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', ugmtColl.muonEt[i] * ptCorr)
                     #elif tftype is 2:
-                    #    hm.fill('emtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', ugmtColl.muonEt[i])
-                    #    hm.fill('emtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', ugmtColl.muonEt[i])
+                    #    hm.fill('emtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', ugmtColl.muonEt[i] * ptCorr)
+                    #    hm.fill('emtf_ugmt_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', ugmtColl.muonEt[i] * ptCorr)
 
                 #If len(eta_q_gmt_muon_idcs):
                 #    highestPt = get_highest_pt(evt.gmt, eta_q_gmt_muon_idcs, gmt=True)
                 #    hm.fill('gmt_highest_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', highestPt)
                 #    hm.fill('gmt_highest_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', highestPt)
                 if len(eta_q_ugmt_iso_muon_idcs):
-                    highestPtIdx = get_highest_pt_idx(ugmtColl, eta_q_ugmt_iso_muon_idcs)
-                    highestPt = ugmtColl.muonEt[highestPtIdx]
+                    if (iso_type == 6 or iso_type == 7):
+                        highestPtIdx = get_highest_pt_idx(ugmtColl, eta_q_ugmt_iso_muon_idcs, corr_idcs=ugmt_iso_muon_idcs_corr, pt_corr=ptCorrVal)
+                        if highestPtIdx in ugmt_iso_muon_idcs_corr:
+                            highestPt = ugmtColl.muonEt[highestPtIdx] * ptCorrVal
+                        else:
+                            highestPt = ugmtColl.muonEt[highestPtIdx]
+                    else:
+                        highestPtIdx = get_highest_pt_idx(ugmtColl, eta_q_ugmt_iso_muon_idcs)
+                        highestPt = ugmtColl.muonEt[highestPtIdx]
                     hm.fill('ugmt_highest_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_pt', highestPt)
                     #hm.fill('ugmt_highest_muon'+eta_min_str+eta_max_str+qMin_str+iso_wp_str+'_varBin_pt', highestPt)
                     #tftype = MuonSelections.getTfTypeFromTfMuonIdx(ugmtColl.muonTfMuonIdx[highestPtIdx])
@@ -537,6 +561,10 @@ def main():
         iso_type = 4
     elif opts.isomethod == 'outovertot2x2':
         iso_type = 5
+    elif opts.isomethod == 'mipptadjust':
+        iso_type = 6
+    elif opts.isomethod == 'mipptadjust2':
+        iso_type = 7
     else:
         iso_type = 0
 
@@ -557,8 +585,11 @@ def main():
         iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31., 99/100.]
     elif iso_type == 5: # outer cone over total cone 2x2
         iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 30/31., 99/100.]
+    elif iso_type == 7: # MIP pt adjust 2
+        iso_wps = [2., 1., 0.5, 0.3, 0.1]
     else: # inner cone
-        iso_wps = [0., 1., 2., 3., 4., 5., 6., 7., 8., 9.]
+        #iso_wps = [0., 1., 2., 3., 4., 5., 6., 7., 8., 9.]
+        iso_wps = [0., 1., 2., 4., 6., 8., 10., 15.]
 
     eta_ranges = [[0, 2.5]]
     thresholds = [0]
@@ -631,6 +662,7 @@ if __name__ == "__main__":
     useVtxExtraCoord = False
     iso_type = 0
     isoEtaMax = 3.
+    ptCorrVal = 0.9
     saveHistos = True
     main()
 

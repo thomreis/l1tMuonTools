@@ -5,6 +5,7 @@ opts, parser = parse_options_and_init_log()
 
 from L1Analysis import L1Ana, L1Ntuple
 from analysis_tools.plotting import HistManager, HistManager2d
+from analysis_tools.plottools import define_styles, hist_style
 from analysis_tools.selections import MuonSelections, Matcher
 import ROOT as root
 import re
@@ -85,16 +86,25 @@ def extract_notes_from_name(name, xBase, yBase, etaTxt=True, qualTxt=True, ptTxt
             notes.append([xBase, yBase+0.1, qual_note_str, True])
     # extract pt range
     if ptTxt:
-        ptminPos = name.find('ptmin')
-        l1_ptmin_strs = re.findall(r'\d+\.?\d*', name[ptminPos+5:ptminPos+9])
-        if len(l1_ptmin_strs) > 0:
-            if l1_ptmin_strs[0][-1] == '.':
-                l1_ptmin_strs[0] = l1_ptmin_strs[0][0:-1]
-            notes.append([xBase, yBase+0.05, 'p_{T}^{L1} #geq '+l1_ptmin_strs[0]+' GeV', True])
+        ptminPos = name.find('l1ptmin')
+        if ptminPos >= 0:
+            l1_ptmin_strs = re.findall(r'\d+\.?\d*', name[ptminPos+5:ptminPos+9])
+            if len(l1_ptmin_strs) > 0:
+                if l1_ptmin_strs[0][-1] == '.':
+                    l1_ptmin_strs[0] = l1_ptmin_strs[0][0:-1]
+                notes.append([xBase, yBase+0.05, 'p_{T}^{L1} #geq '+l1_ptmin_strs[0]+' GeV', True])
     return notes
 
-def plot_2dhist(hm2d, hName, drawDiag=True, data=False, scaleFactor=1.):
+def plot_2dhist(hm2d, hName, drawDiag=True, data=False, xMin=None, xMax=None, yMin=None, yMax=None, scaleFactor=1.):
     canvas_name = hName
+    if xMin:
+        canvas_name += '_xMin{min}'.format(min=xMin)
+    if xMax:
+        canvas_name += '_xMax{max}'.format(max=xMax)
+    if yMin:
+        canvas_name += '_yMin{min}'.format(min=yMin)
+    if yMax:
+        canvas_name += '_yMax{max}'.format(max=yMax)
 
     # create canvas and draw on it
     canvas_title = canvas_name
@@ -110,22 +120,37 @@ def plot_2dhist(hm2d, hName, drawDiag=True, data=False, scaleFactor=1.):
     if scaleFactor != 1.:
         h.Scale(scaleFactor)
 
-    h.GetXaxis().SetTitleFont(font)
-    h.GetXaxis().SetLabelFont(font)
-    h.GetXaxis().SetLabelSize(fontSize)
-    h.GetXaxis().SetNoExponent()
-    h.GetYaxis().SetTitleOffset(1.5)
-    h.GetYaxis().SetTitleFont(font)
-    h.GetYaxis().SetLabelFont(font)
-    h.GetYaxis().SetLabelSize(fontSize)
-    h.GetZaxis().SetTitleFont(font)
-    h.GetZaxis().SetLabelFont(font)
-    h.GetZaxis().SetLabelSize(fontSize)
+    xAxis = h.GetXaxis()
+    yAxis = h.GetYaxis()
+    zAxis = h.GetZaxis()
+    xAxis.SetTitleFont(font)
+    xAxis.SetLabelFont(font)
+    xAxis.SetLabelSize(fontSize)
+    xAxis.SetNoExponent()
+    if xMin and not xMax:
+        xAxis.SetRangeUser(xMin, xAxis.GetBinUpEdge(xAxis.GetNbins()))
+    elif xMax and not xMin:
+        xAxis.SetRangeUser(xAxis.GetBinLowEdge(1), xMax)
+    elif xMin and xMax:
+        xAxis.SetRangeUser(xMin, xMax)
+    yAxis.SetTitleOffset(1.5)
+    yAxis.SetTitleFont(font)
+    yAxis.SetLabelFont(font)
+    yAxis.SetLabelSize(fontSize)
+    if yMin and not yMax:
+        yAxis.SetRangeUser(yMin, yAxis.GetBinUpEdge(yAxis.GetNbins()))
+    elif yMax and not yMin:
+        yAxis.SetRangeUser(yAxis.GetBinLowEdge(1), yMax)
+    elif yMin and yMax:
+        yAxis.SetRangeUser(yMin, yMax)
+    zAxis.SetTitleFont(font)
+    zAxis.SetLabelFont(font)
+    zAxis.SetLabelSize(fontSize)
     h.Draw('colz')
 
     xBase = 0.56
     yBase = 0.13
-    notes = extract_notes_from_name(hName, xBase, yBase, etaTxt=False, qualTxt=False, ptTxt=False)
+    notes = extract_notes_from_name(hName, xBase, yBase, etaTxt=False, qualTxt=False, ptTxt=True)
 
     if data:
         notes.append([0.53, 0.93, 'CMS internal, 13 TeV', False])
@@ -141,7 +166,7 @@ def plot_2dhist(hm2d, hName, drawDiag=True, data=False, scaleFactor=1.):
     return [c, h, tex, lines]
 
 
-def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinWidth=False, normalise=False, xMax=None, canvasPrefix='', notes=None, scaleFactor=1., logx=False, logy=False, data=False):
+def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normToBinWidth=False, normalise=False, xMin=None, xMax=None, canvasPrefix='', notes=None, scaleFactor=1., logx=False, logy=False, data=False):
     den = hDefs[0]['den']
     if den:
         name = canvasPrefix+hDefs[0]['num']+'_over_'+den
@@ -149,6 +174,8 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
         name = canvasPrefix+hDefs[0]['num']
     if normToBinWidth and not threshold and not den:
         name += '_normToBinWidth'
+    if xMin:
+        name += '_xMin{min}'.format(min=xMin)
     if xMax:
         name += '_xMax{max}'.format(max=xMax)
 
@@ -279,8 +306,12 @@ def plot_hists(hm, hDefs, xTitle=None, yTitle='# muons', threshold=False, normTo
         yMin = 0.5 * minBinValueNonZero
         yMax = 2. * maxBinValue
     yAxis.SetRangeUser(yMin, yMax)
-    if xMax:
+    if xMin and not xMax:
+        xAxis.SetRangeUser(xMin, xAxis.GetBinUpEdge(xAxis.GetNbins()))
+    elif xMax and not xMin:
         xAxis.SetRangeUser(xAxis.GetBinLowEdge(1), xMax)
+    elif xMin and xMax:
+        xAxis.SetRangeUser(xMin, xMax)
 
     # draw
     hs[0].Draw(hDefs[0]['drawopt'])
@@ -351,52 +382,20 @@ def draw_tf_eta_regions(hName='', xMin=0., yMin=0., xMax=1., yMax=1., twoD=False
     return lines
     
 
-def define_styles():
-    styles = {}
-    styles['gmt'] = {'lc':root.kCyan, 'ls':root.kSolid, 'fc':root.kCyan, 'mc':root.kCyan, 'ms':root.kOpenCircle, 'legtext':'GMT'}
-    styles['ugmt'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kBlack, 'mc':root.kBlack, 'ms':root.kOpenCircle, 'legtext':'uGMT'}
-    styles['data'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kBlack, 'mc':root.kBlack, 'ms':root.kFullCircle, 'legtext':'data'}
-    styles['data_q12'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
-    styles['data_q8'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
-    styles['data_q4'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kYellow, 'mc':root.kYellow, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
-    styles['data_qmin12'] = {'lc':root.kViolet, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'data Q #geq 12'}
-    styles['data_qmin8'] = {'lc':root.kCyan+3, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'data Q #geq 8'}
-    styles['data_qmin4'] = {'lc':root.kOrange-2, 'ls':root.kSolid, 'fc':root.kYellow, 'mc':root.kYellow, 'ms':root.kFullSquare, 'legtext':'data Q #geq 4'}
-    styles['emul'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kBlue, 'mc':root.kBlue, 'ms':root.kFullCircle, 'legtext':'emul'}
-    styles['emul_q12'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kViolet, 'mc':root.kViolet, 'ms':root.kOpenTriangleUp, 'legtext':'emul Q #geq 12'}
-    styles['emul_q8'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kCyan+3, 'mc':root.kCyan+3, 'ms':root.kOpenCircle, 'legtext':'emul Q #geq 8'}
-    styles['emul_q4'] = {'lc':root.kBlack, 'ls':root.kSolid, 'fc':root.kYellow, 'mc':root.kYellow, 'ms':root.kFullSquare, 'legtext':'emul Q #geq 4'}
-    styles['mu_1'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':root.kRed, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'1^{st} muon'}
-    styles['mu_2'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':root.kBlue, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'2^{nd} muon'}
-    styles['mu_3'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':root.kGreen, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'3^{rd} muon'}
-    return styles
-
-def hist_style(key, filled=False, marker=False, lw=1):
-    style = styles[key]
-    if not filled:
-        style['fc'] = None
-    if not marker:
-        style['mc'] = None
-        style['ms'] = None
-    style['lw'] = lw
-
-    return style
-
-def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, xMax=None, reg='', scaleFactor=1., data=False):
+def plot_hist_standard(hm, hName, den=None, xTitle='', yTitle='# muons', threshold=False, stacked=False, normToBinWidth=False, xMin=None, xMax=None, reg='', scaleFactor=1., data=False):
     ugmt_dict = {'num':hName, 'den':den, 'drawopt':'', 'stacked':False, 'err':True}
     ugmt_dict.update(hist_style('data', lw=2))
     hDefs = []
     if reg == '':
         hDefs.append(ugmt_dict)
 
-    if (hName[-3:] == 'iet' or hName.find('.n') != -1) and not den:
+    logy = False
+    if hName[-4:] == '.iet' and not den:
         logy = True
-    else:
-        logy = False
 
     xBase = 0.17
     yBase = 0.56
-    notes = extract_notes_from_name(hName, xBase, yBase, etaTxt=False, qualTxt=False, ptTxt=False)
+    notes = extract_notes_from_name(hName, xBase, yBase, etaTxt=False, qualTxt=False, ptTxt=True)
     if den:
         den_eta_number_strs = re.findall(r'[\d\.\d]+', den[den.find('EtaMin')+6:den.find('EtaMax')+12])
         if len(den_eta_number_strs) > 1 and eta_number_strs != den_eta_number_strs:
@@ -405,7 +404,36 @@ def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', thresh
 
     prefix = 'c_'
 
-    return plot_hists(hm, hDefs, xTitle, yTitle, threshold, normToBinWidth, False, xMax, prefix, notes, scaleFactor, False, logy, data)
+    return plot_hists(hm, hDefs, xTitle, yTitle, threshold, normToBinWidth, False, xMin, xMax, prefix, notes, scaleFactor, False, logy, data)
+
+def plot_hists_standard(hm, hNames, den=None, xTitle='', yTitle='# muons', legtexts=None, threshold=False, stacked=False, normToBinWidth=False, xMin=None, xMax=None, reg='', scaleFactor=1., data=False):
+    dicts = []
+    hDefs = []
+    for i, hName in enumerate(hNames):
+        dicts.append({'num':hName, 'den':den, 'drawopt':'', 'stacked':False, 'err':True})
+        if legtexts:
+            dicts[-1].update(hist_style('generic_{i}'.format(i=i), legtext=legtexts[i], lw=2))
+        else:
+            dicts[-1].update(hist_style('generic_{i}'.format(i=i), lw=2))
+        if reg == '':
+            hDefs.append(dicts[-1])
+
+    logy = False
+    #if (hName[-3:] == 'iet' or hName.find('.n') != -1) and not den:
+    #    logy = True
+
+    xBase = 0.17
+    yBase = 0.56
+    notes = extract_notes_from_name(hName, xBase, yBase, etaTxt=False, qualTxt=False, ptTxt=True)
+    if den:
+        den_eta_number_strs = re.findall(r'[\d\.\d]+', den[den.find('EtaMin')+6:den.find('EtaMax')+12])
+        if len(den_eta_number_strs) > 1 and eta_number_strs != den_eta_number_strs:
+            den_note_str = den_eta_number_strs[0]+' < |#eta^{GMT}| < '+den_eta_number_strs[1]
+            notes.append([xBase, yBase-0.05, den_note_str, True])
+
+    prefix = 'c_'
+
+    return plot_hists(hm, hDefs, xTitle, yTitle, threshold, normToBinWidth, False, xMin, xMax, prefix, notes, scaleFactor, False, logy, data)
 
 def main():
     opts = parse_options_plotRates(parser)
@@ -416,6 +444,10 @@ def main():
     global styles
     styles = define_styles()
 
+    #l1PtMins = [0]
+    l1PtMins = [0, 5, 12, 20]
+    #l1PtMins = [0, 5, 12, 20, 25]
+
     namePrefix = ''
     if opts.emul:
         namePrefix += 'emu_'
@@ -424,7 +456,8 @@ def main():
 
     hm = HistManager(filename=opts.fname, subdir='all_runs')
 
-    nEvents = hm.get(namePrefix+'l1_caloTower.n').Integral()
+    nEvents = hm.get(namePrefix+'l1_caloTower.n').GetEntries()
+    print 'Found {n} processed events.'.format(n=nEvents)
 
     L1Ana.init_l1_analysis()
     print ""
@@ -435,15 +468,64 @@ def main():
     ##########################################################################
     # L1 calo towers variables
     if opts.towers:
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.n', data=isData))
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.iet', xTitle='iE_{T}', yTitle='# towers', data=isData))
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.ieta', xTitle='i#eta', data=isData))
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.iphi', xTitle='i#phi', data=isData))
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.iqual', xTitle='i qual', data=isData))
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.total_cone_iet', xTitle='iE_{T}^{total}', data=isData))
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.inner_cone_iet', xTitle='iE_{T}^{in}', data=isData))
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.outer_cone_iet', xTitle='iE_{T}^{out}', data=isData))
-        objects.append(plot_hists_standard(hm, namePrefix+'l1_caloTower.outer_over_total_cone_iet', xTitle='iE_{T}^{out} / iE_{T}^{total}', data=isData))
+        objects.append(plot_hist_standard(hm, namePrefix+'l1_caloTower.n', data=isData))
+        objects.append(plot_hist_standard(hm, namePrefix+'l1_caloTower.iet', xTitle='iE_{T}', yTitle='# towers', data=isData))
+        objects.append(plot_hist_standard(hm, namePrefix+'l1_caloTower.ieta', xTitle='i#eta', data=isData))
+        objects.append(plot_hist_standard(hm, namePrefix+'l1_caloTower.iphi', xTitle='i#phi', data=isData))
+        objects.append(plot_hist_standard(hm, namePrefix+'l1_caloTower.iqual', xTitle='i qual', data=isData))
+        for l1PtMin in l1PtMins:
+            ptMinStr = '_l1ptmin{ptmin}'.format(ptmin=l1PtMin)
+
+            hPrefix = namePrefix+'l1_caloTower'+ptMinStr
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_1x1_iet', hPrefix+'.area_11x11-1x1_iet', hPrefix+'.area_11x11_iet'], xTitle='iE_{T}', legtexts=['1x1', '11x11-1x1', '11x11'], data=isData, xMax=50))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_1x3_iet', hPrefix+'.area_11x11-1x3_iet', hPrefix+'.area_11x11_iet'], xTitle='iE_{T}', legtexts=['1x3', '11x11-1x3', '11x11'], data=isData, xMax=50))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_1x5_iet', hPrefix+'.area_11x11-1x5_iet', hPrefix+'.area_11x11_iet'], xTitle='iE_{T}', legtexts=['1x5', '11x11-1x5', '11x11'], data=isData, xMax=50))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_3x3_iet', hPrefix+'.area_11x11-3x3_iet', hPrefix+'.area_11x11_iet'], xTitle='iE_{T}', legtexts=['3x3', '11x11-3x3', '11x11'], data=isData, xMax=50))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_1xm2to0_iet', hPrefix+'.area_1x0top2_iet'], xTitle='iE_{T}', legtexts=['1x-2to0', '1x0to+2'], data=isData, xMax=25))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_3xm3to0_iet', hPrefix+'.area_3x0top3_iet'], xTitle='iE_{T}', legtexts=['3x-3to0', '3x0to+3'], data=isData, xMax=50))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_3xm7to0_iet', hPrefix+'.area_3x0top7_iet'], xTitle='iE_{T}', legtexts=['3x-7to0', '3x0to+7'], data=isData, xMax=50))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_1xm2to0_iet_minus_area_1x0top2_iet',
+                                                    hPrefix+'.area_1xm2to0_iet_minus_area_1x0top2_iet_mu_chg_pos',
+                                                    hPrefix+'.area_1xm2to0_iet_minus_area_1x0top2_iet_mu_chg_neg'], xTitle='iE_{T}',
+                                               legtexts=['1x-2to0 - 1x0to+2', '#mu^{+} 1x-2to0 - 1x0to+2', '#mu^{-} 1x-2to0 - 1x0to+2'], data=isData, xMin=-15, xMax=15))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_3xm3to0_iet_minus_area_3x0top3_iet',
+                                                    hPrefix+'.area_3xm3to0_iet_minus_area_3x0top3_iet_mu_chg_pos',
+                                                    hPrefix+'.area_3xm3to0_iet_minus_area_3x0top3_iet_mu_chg_neg'], xTitle='iE_{T}',
+                                               legtexts=['3x-3to0 - 3x0to+3', '#mu^{+} 3x-3to0 - 3x0to+3', '#mu^{-} 3x-3to0 - 3x0to+3'], data=isData, xMin=-15, xMax=15))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_3xm7to0_iet_minus_area_3x0top7_iet',
+                                                    hPrefix+'.area_3xm7to0_iet_minus_area_3x0top7_iet_mu_chg_pos',
+                                                    hPrefix+'.area_3xm7to0_iet_minus_area_3x0top7_iet_mu_chg_neg'], xTitle='iE_{T}',
+                                               legtexts=['3x-7to0 - 3x0to+7', '#mu^{+} 3x-7to0 - 3x0to+7', '#mu^{-} 3x-7to0 - 3x0to+7'], data=isData, xMin=-15, xMax=15))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_3xm3to0_iet_over_area_3x0top3_iet',
+                                                    hPrefix+'.area_3xm3to0_iet_over_area_3x0top3_iet_mu_chg_pos',
+                                                    hPrefix+'.area_3xm3to0_iet_over_area_3x0top3_iet_mu_chg_neg'],
+                                               legtexts=['3x-3to0 / 3x0to+3', '#mu^{+} 3x-3to0 / 3x0to+3', '#mu^{-} 3x-3to0 / 3x0to+3'], data=isData))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_3xm3to0_iet_minus_area_3x0top3_iet_over_area_3xm3to0_iet_plus_area_3x0top3_iet',
+                                                    hPrefix+'.area_3xm3to0_iet_minus_area_3x0top3_iet_over_area_3xm3to0_iet_plus_area_3x0top3_iet_mu_chg_pos',
+                                                    hPrefix+'.area_3xm3to0_iet_minus_area_3x0top3_iet_over_area_3xm3to0_iet_plus_area_3x0top3_iet_mu_chg_neg'],
+                                               legtexts=['(3x-3to0 - 3x0to+3)/(3x-3to0 + 3x0to+3)', '#mu^{+} (3x-3to0 - 3x0to+3)/(3x-3to0 + 3x0to+3)', '#mu^{-} (3x-3to0 - 3x0to+3)/(3x-3to0 + 3x0to+3)'], data=isData))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.area_3xm7to0_iet_minus_area_3x0top7_iet_over_area_3xm7to0_iet_plus_area_3x0top7_iet',
+                                                    hPrefix+'.area_3xm7to0_iet_minus_area_3x0top7_iet_over_area_3xm7to0_iet_plus_area_3x0top7_iet_mu_chg_pos',
+                                                    hPrefix+'.area_3xm7to0_iet_minus_area_3x0top7_iet_over_area_3xm7to0_iet_plus_area_3x0top7_iet_mu_chg_neg'],
+                                               legtexts=['(3x-7to0 - 3x0to+7)/(3x-7to0 + 3x0to+7)', '#mu^{+} (3x-7to0 - 3x0to+7)/(3x-7to0 + 3x0to+7)', '#mu^{-} (3x-7to0 - 3x0to+7)/(3x-7to0 + 3x0to+7)'], data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.area_3xm3to0_iet_minus_area_3x0top3_iet_over_area_3xm3to0_iet_plus_area_3x0top3_iet_times_mu_chg', xTitle='#mu charge * (3x-3to0 - 3x0to+3)/(3x-3to0 + 3x0to+3)', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.area_3xm7to0_iet_minus_area_3x0top7_iet_over_area_3xm7to0_iet_plus_area_3x0top7_iet_times_mu_chg', xTitle='#mu charge * (3x-7to0 - 3x0to+7)/(3x-7to0 + 3x0to+7)', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.area_11x11-1x1_over_area_11x11_iet', xTitle='iE_{T}^{11x11-1x1} / iE_{T}^{11x11}', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.area_11x11-1x3_over_area_11x11_iet', xTitle='iE_{T}^{11x11-1x3} / iE_{T}^{11x11}', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.area_11x11-1x5_over_area_11x11_iet', xTitle='iE_{T}^{11x11-1x5} / iE_{T}^{11x11}', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.area_11x11-3x3_over_area_11x11_iet', xTitle='iE_{T}^{11x11-3x3} / iE_{T}^{11x11}', data=isData))
+
+            objects.append(plot_hists_standard(hm, [hPrefix+'.twobytwo_area_1x1_iet', hPrefix+'.twobytwo_area_5x5-1x1_iet', hPrefix+'.twobytwo_area_5x5_iet'], xTitle='iE_{T}^{2x2}', legtexts=['1x1', '5x5-1x1', '5x5'], data=isData, xMax=50))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.twobytwo_area_1xm1to0_iet', hPrefix+'.twobytwo_area_1x0top1_iet'], xTitle='2x2 area iE_{T}', legtexts=['1x-1to0', '1x0to+1'], data=isData, xMax=50))
+            objects.append(plot_hists_standard(hm, [hPrefix+'.twobytwo_area_1xm1to0_iet_minus_twobytwo_area_1x0top1_iet',
+                                                    hPrefix+'.twobytwo_area_1xm1to0_iet_minus_twobytwo_area_1x0top1_iet_mu_chg_pos',
+                                                    hPrefix+'.twobytwo_area_1xm1to0_iet_minus_twobytwo_area_1x0top1_iet_mu_chg_neg'], xTitle='2x2 area iE_{T}',
+                                               legtexts=['1x-1to0 - 1x0to+1', '#mu^{+} 1x-1to0 - 1x0to+1', '#mu^{-} 1x-1to0 - 1x0to+1'], data=isData, xMin=-15, xMax=15))
+            objects.append(plot_hist_standard(hm, hPrefix+'.twobytwo_area_5x5-1x1_over_twobytwo_area_5x5_iet', xTitle='2x2 area iE_{T}^{5x5-1x1} / iE_{T}^{5x5}', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.twobytwo_area_5x5_iet_over_mu_ipt', xTitle='2x2 area iE_{T}^{5x5} / ip_{T}^{#mu}', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.twobytwo_area_5x5-1x1_iet_over_mu_ipt', xTitle='2x2 area iE_{T}^{5x5-1x1} / ip_{T}^{#mu}', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.twobytwo_area_5x5_5bit_iet_over_mu_ipt', xTitle='5 bit (iE_{T}^{max}=31) 2x2 area iE_{T}^{5x5} / ip_{T}^{#mu}', data=isData))
+            objects.append(plot_hist_standard(hm, hPrefix+'.twobytwo_area_5x5-1x1_5bit_iet_over_mu_ipt', xTitle='5 bit (iE_{T}^{max}=31) 2x2 area iE_{T}^{5x5-1x1} / ip_{T}^{#mu}', data=isData))
 
     # 2d plots
     if opts.twod:
@@ -452,8 +534,33 @@ def main():
         histoprefix2d = namePrefix+'2d_caloTower'
         objects.append(plot_2dhist(hm2d, histoprefix2d+'.ieta_iphi', drawDiag=False, data=isData))
         objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ieta_iet_iphi', drawDiag=False, data=isData, scaleFactor=1/nEvents))
-        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_iet_iphirel', drawDiag=False, data=isData, scaleFactor=1/nEvents))
-        objects.append(plot_2dhist(hm2d, histoprefix2d+'.iet_ietarel_red_iet_iphirel_red', drawDiag=False, data=isData, scaleFactor=1/nEvents))
+        for l1PtMin in l1PtMins:
+            ptMinStr = '_l1ptmin{ptmin}'.format(ptmin=l1PtMin)
+            nMuEvents = hm.get(namePrefix+'l1_caloTower'+ptMinStr+'.n_mu').Integral(2, hm.get(namePrefix+'l1_caloTower'+ptMinStr+'.n_mu').GetNbinsX())
+            print 'Found {nmu} L1 muons passing {cut} GeV cut in this event.'.format(nmu=nMuEvents, cut=l1PtMin)
+
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.iet_ietarel_iet_iphirel', drawDiag=False, data=isData, scaleFactor=1/nMuEvents))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.iet_ietarel_red_iet_iphirel_red', drawDiag=False, data=isData, scaleFactor=1/nMuEvents))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.area_11x11_iet_area_1x1_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.area_11x11_iet_area_1x3_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.area_11x11_iet_area_1x5_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.area_11x11_iet_area_3x3_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.area_11x11-1x1_iet_area_1x1_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.area_11x11-1x3_iet_area_1x3_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.area_11x11-1x5_iet_area_1x5_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+            objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.area_11x11-3x3_iet_area_3x3_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+
+            if l1PtMin == 0:
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_area_1x1_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_area_1x3_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_area_1x5_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_area_3x3_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_area_1xm2to0_iet_minus_area_1x0top2_iet', drawDiag=False, data=isData, xMax=50, yMin=-15, yMax=15))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_area_1xm2to0_iet_minus_area_1x0top2_iet_mu_chg_pos', drawDiag=False, data=isData, xMax=50, yMin=-15, yMax=15))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_area_1xm2to0_iet_minus_area_1x0top2_iet_mu_chg_neg', drawDiag=False, data=isData, xMax=50, yMin=-15, yMax=15))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_twobytwo_area_1x1_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_twobytwo_area_5x5_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
+                objects.append(plot_2dhist(hm2d, histoprefix2d+ptMinStr+'.mu_pt_twobytwo_area_5x5-1x1_iet', drawDiag=False, data=isData, xMax=50, yMax=50))
 
     ##########################################################################
     # save plots to root file

@@ -808,7 +808,9 @@ def plot_eff_iso(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=Fals
 
     #iso_plot_wps = [15, 20, 25, 28, 30, 31] # absolute
     #iso_plot_wps = [0., 1., 3., 5., 7., 9.] # inner
-    iso_plot_wps = [1/1., 1/2., 4/5., 9/10., 30/31., 99/100.] # ratio
+    #iso_plot_wps = [0., 1., 2., 4., 6., 10.] # inner
+    iso_plot_wps = [2., 1., 0.5, 0.3, 0.1] # MIP pt adjust 2
+    #iso_plot_wps = [1/1., 1/2., 4/5., 9/10., 30/31., 99/100.] # ratio
     #iso_plot_wps = [0., 1/2., 2/3., 1., 3., 62.] # relative
     iso_plot_wps.sort()
 
@@ -819,6 +821,48 @@ def plot_eff_iso(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=Fals
         iso_dict.update(styles[styleKey+'_iso{i}'.format(i=i)])
         iso_dict['legtext'] = iso_dict['legtext'].format(iso=iso_plot_wp)
         hDefs.append(iso_dict)
+
+    xBase = 0.5
+    yBase = 0.13
+    notes = extract_notes_from_name(hName, xBase, yBase)
+
+    return plot_effs(hDefs, xTitle, yTitle, 'iso_', notes, autoZoomX, xMax, addOverflow, rebin)
+
+# plot efficiencies for different iso cuts
+def plot_eff_iso_threnv(hm, hName, den, hNamePrefix='', xTitle='', yTitle='', emul=False, autoZoomX=False, xMax=None, addOverflow=False, rebin=1):
+    styles = hist_styles(False)
+
+    styleKey = 'data'
+    denPrefix = ''
+    if emul:
+        hNamePrefix = 'emu_'+hNamePrefix
+        denPrefix = 'emu_'
+        styleKey = 'emul'
+
+    #iso_plot_wps = [15, 20, 25, 28, 30, 31] # absolute
+    #iso_plot_wps = [0., 1., 3., 5., 7., 9.] # inner
+    #iso_plot_wps = [0., 1., 2., 4., 6., 10.] # inner
+    iso_plot_wps = [2., 1., 0.5, 0.3, 0.1] # MIP pt adjust 2
+    #iso_plot_wps = [1/1., 1/2., 4/5., 9/10., 30/31., 99/100.] # ratio
+    #iso_plot_wps = [0., 1/2., 2/3., 1., 3., 62.] # relative
+    iso_plot_wps.sort()
+
+    hDefs = []
+
+    for i, iso_plot_wp in enumerate(iso_plot_wps):
+        iso_dict = {'hm':hm, 'num':hNamePrefix+hName.replace('isoMaxXX_', 'isoMax{iso:.3f}_'.format(iso=iso_plot_wp)), 'den':denPrefix+den}
+        iso_dict.update(styles[styleKey+'_iso{i}'.format(i=i)])
+        iso_dict['legtext'] = iso_dict['legtext'].format(iso=iso_plot_wp)
+        hDefs.append(iso_dict)
+
+    iso_dict = {'hm':hm, 'num':'emu_best_l1_muon_qualMin12_ptmin20_isoMax2.000_dr0.5_matched_probe_absEtaMin0_absEtaMax2.4_ptmin0.5.pt', 'den':'emu_probe_absEtaMin0_absEtaMax2.4_ptmin0.5.pt'}
+    iso_dict.update(styles[styleKey+'_q12'])
+    iso_dict['legtext'] = 'p_{T}^{L1} #geq 20 GeV'
+    hDefs.append(iso_dict)
+    iso_dict = {'hm':hm, 'num':'emu_best_l1_muon_qualMin12_ptmin24_isoMax2.000_dr0.5_matched_probe_absEtaMin0_absEtaMax2.4_ptmin0.5.pt', 'den':'emu_probe_absEtaMin0_absEtaMax2.4_ptmin0.5.pt'}
+    iso_dict.update(styles[styleKey+'_q8'])
+    iso_dict['legtext'] = 'p_{T}^{L1} #geq 24 GeV'
+    hDefs.append(iso_dict)
 
     xBase = 0.5
     yBase = 0.13
@@ -1025,7 +1069,8 @@ def main():
         for etaRange in etaRanges:
             objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'30.pass', etaRange+'30.pass', 'best_', xTitle='L1 accept', yTitle=yTitle_eff, emul=emul))
             ## pt plots
-            objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            #objects.append(plot_eff_iso(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
+            objects.append(plot_eff_iso_threnv(hm, 'l1_muon_qualMin12_ptmin22_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
             objects.append(plot_eff_iso(hm, 'l1_muon_qualMin8_ptmin12_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
             objects.append(plot_eff_iso(hm, 'l1_muon_qualMin4_ptmin5_isoMaxXX_dr0.5_matched_'+etaRange+'0.5.pt', etaRange+'0.5.pt', 'best_', xTitle='p_{T}^{reco} (GeV/c)', yTitle=yTitle_eff, emul=emul, xMax=xMax, rebin=rebinPt))
 

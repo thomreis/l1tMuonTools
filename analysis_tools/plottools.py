@@ -379,17 +379,35 @@ def define_styles():
     styles['mu_1'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':root.kRed, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'1^{st} muon'}
     styles['mu_2'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':root.kBlue, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'2^{nd} muon'}
     styles['mu_3'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':root.kGreen, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'3^{rd} muon'}
+    styles['generic_0'] = {'lc':root.kRed, 'ls':root.kSolid, 'fc':root.kRed, 'mc':root.kRed, 'ms':root.kOpenTriangleUp, 'legtext':'1'}
+    styles['generic_1'] = {'lc':root.kBlue, 'ls':root.kSolid, 'fc':root.kBlue, 'mc':root.kBlue, 'ms':root.kOpenCircle, 'legtext':'2'}
+    styles['generic_2'] = {'lc':root.kGreen, 'ls':root.kSolid, 'fc':root.kGreen, 'mc':root.kGreen, 'ms':root.kFullSquare, 'legtext':'3'}
     return styles
 
-def hist_style(key, filled=False, marker=False, lw=1):
+def hist_style(key, filled=False, marker=False, lc=None, ls=None, fc=None, mc=None, ms=None, legtext=None, lw=1):
     styles = define_styles()
     style = styles[key]
+    # override defaults
+    if lc:
+        style['lc'] = lc
+    if ls:
+        style['ls'] = ls
+    if fc:
+        style['fc'] = fc
+    if mc:
+        style['mc'] = mc
+    if ms:
+        style['ms'] = ms
+    if legtext:
+        style['legtext'] = legtext
+    style['lw'] = lw
+
+    # switch off filling and markers
     if not filled:
         style['fc'] = None
     if not marker:
         style['mc'] = None
         style['ms'] = None
-    style['lw'] = lw
 
     return style
 

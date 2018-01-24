@@ -361,9 +361,9 @@ def plot_hists_standard(hm, hName, den=None, xTitle='', yTitle='# muons', thresh
     hDefs = []
     if reg == '':
         hDefs.append(ugmt_dict)
-        hDefs.append(bmtf_dict)
-        hDefs.append(omtf_dict)
-        hDefs.append(emtf_dict)
+        #hDefs.append(bmtf_dict)
+        #hDefs.append(omtf_dict)
+        #hDefs.append(emtf_dict)
     elif reg == 'b':
         hDefs.append(bmtf_dict)
         prefix += 'bmtf_'
@@ -562,11 +562,14 @@ def main():
     #objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin4_pt', xTitle='p_{T} (GeV/c)', yTitle='kHz', threshold=True, scaleFactor=convFactorToHz / 1000., data=thisIsData))
 
     #iso_wps = [0., 1/1., 1/2., 1/3., 2/3.]
-    iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100.]
+    #iso_wps = [0., 1., 3., 5., 7., 9.] # inner
+    iso_wps = [0., 1., 2., 4., 6., 10.] # inner
+    #iso_wps = [0., 1/1., 1/2., 1/3., 2/3., 3/4., 4/5., 5/6., 6/7., 7/8., 8/9., 9/10., 19/20., 29/30., 99/100.]
     for iso_wp in iso_wps:
         iso_wp_str = '_isoMax{iso:.3f}'.format(iso=iso_wp)
+        objects.append(plot_hists_standard(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12'+iso_wp_str+'_pt', xTitle='p_{T} (GeV/c)', yTitle='Integrated # events', threshold=True, stacked=True, data=thisIsData))
         print 'Rates'
-        print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12'+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
+#        print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin12'+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
         #print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin12'+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
         #print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.5_qmin4'+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
         #print_rates(hm, 'highest_muon_absEtaMin0_absEtaMax2.1_qmin4'+iso_wp_str+'_pt', scaleFactor=convFactorToHz / 1000.)
