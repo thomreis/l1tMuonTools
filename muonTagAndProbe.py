@@ -61,6 +61,14 @@ def book_histograms(eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas
 
     p_bins = pt_bins
 
+    pt_bins_l1 = range(0, 30, 1)
+    pt_bins_l1 += range(30, 50, 2)
+    pt_bins_l1 += range(50, 80, 5)
+    pt_bins_l1 += range(80, 100, 10)
+    pt_bins_l1 += range(100, 200, 25)
+    pt_bins_l1 += range(200, 300, 50)
+    pt_bins_l1.append(300)
+
     vars_bins = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5], ['charge', 3, -1, 2], ['vtx', 100, 0, 100]]
     if era == '2016pp':
         vars_bins.append(['run', 13100, 271000, 284100])
@@ -82,12 +90,8 @@ def book_histograms(eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas
     res_vars_bins = [['dpt', 100, -50, 50], ['dinvpt', 200, -2., 2.], ['deta', 100, -0.1, 0.1], ['dphi', 100, -0.2, 0.2], ['dcharge', 5, -2., 3]]
     res_x_title_vars = {'dpt':'p_{T}^{L1} - p_{T}^{reco}', 'dinvpt':'(p_{T}^{reco} - p_{T}^{L1}) / p_{T}^{L1}', 'deta':'#eta_{L1} - #eta_{reco}', 'dphi':'#phi_{L1} - #phi_{reco}', 'dcharge':'charge^{L1} - charge^{reco}'}
     res_x_title_units = {'dpt':'GeV', 'dinvpt':'GeV', 'deta':None, 'dphi':None, 'dcharge':None}
-    #x_vars_bins_2d = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5]]
-    #y_vars_bins_2d = [['pt', -1]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5]]
-    #x_vars_bins_2d = [['pt', 150, 0, 300]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5]]
-    #y_vars_bins_2d = [['pt', 150, 0, 300]+pt_bins, ['eta', 100, -2.5, 2.5], ['phi', 70, -3.5, 3.5]]
-    x_vars_bins_2d = [['pt', 150, 0, 300]+pt_bins, ['eta', 200, -2.5, 2.5], ['phi', 280, -3.5, 3.5], ['charge', 3, -1, 2]]
-    y_vars_bins_2d = [['pt', 150, 0, 300]+pt_bins, ['eta', 200, -2.5, 2.5], ['phi', 280, -3.5, 3.5], ['charge', 3, -1, 2]]
+    x_vars_bins_2d = [['pt', -1]+pt_bins, ['eta', 200, -2.5, 2.5], ['phi', 256, -3.2, 3.2], ['charge', 3, -1, 2]]
+    y_vars_bins_2d = [['pt', -1]+pt_bins_l1, ['eta', 200, -2.5, 2.5], ['phi', 256, -3.2, 3.2], ['charge', 3, -1, 2]]
     x_title_vars_2d = {'pt':'p_{T}^{reco}', 'eta':'#eta_{reco}', 'phi':'#phi_{reco}', 'charge':'charge_{reco}'}
     y_title_vars_2d = {'pt':'p_{T}^{L1}', 'eta':'#eta_{L1}', 'phi':'#phi_{L1}', 'charge':'charge_{L1}'}
     x_title_units_2d = {'pt':'GeV/c', 'eta':None, 'phi':None, 'charge':None}
@@ -171,8 +175,8 @@ def book_histograms(eta_ranges, qual_ptmins_dict, res_probe_ptmins, match_deltas
                             for res_var_bin in res_vars_bins:
                                 binnings[namePrefix+'res_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_'+res_var_bin[0]] = res_var_bin[1:]+[res_x_title_vars[res_var_bin[0]], res_x_title_units[res_var_bin[0]]]
 
-                            for var_bin_2d in x_vars_bins_2d:
-                                binnings2d[namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_'+var_bin_2d[0]] = [var_bin_2d[1:]+[x_title_vars_2d[var_bin_2d[0]], x_title_units_2d[var_bin_2d[0]]], var_bin_2d[1:]+[y_title_vars_2d[var_bin_2d[0]], y_title_units_2d[var_bin_2d[0]]]]
+                            for x_var_bin_2d, y_var_bin_2d in zip(x_vars_bins_2d, y_vars_bins_2d):
+                                binnings2d[namePrefix+'2d_best_probe'+eta_min_str+eta_max_str+probe_ptmin_str+delta_str+'_matched_l1_muon'+qual_min_str+ptmin_str+'_'+x_var_bin_2d[0]] = [x_var_bin_2d[1:]+[x_title_vars_2d[x_var_bin_2d[0]], x_title_units_2d[x_var_bin_2d[0]]], y_var_bin_2d[1:]+[y_title_vars_2d[y_var_bin_2d[0]], y_title_units_2d[y_var_bin_2d[0]]]]
 
                             binnings[namePrefix+'best_l1_muon'+qual_min_str+ptmin_str+delta_str+'_matched_probe'+eta_min_str+eta_max_str+probe_ptmin_str+'_'+delta_type] = [60, 0., 0.6, delta_type]
 

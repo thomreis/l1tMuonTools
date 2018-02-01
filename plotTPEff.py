@@ -517,7 +517,10 @@ def draw_tf_eta_regions(hName='', xMin=0., yMin=0., xMax=1., yMax=1., twoD=False
             lines[-1].Draw('same')
 
     if drawDiag:
-        lines.append(root.TLine(xMin, yMin, xMax, yMax))
+        if yMax < xMax:
+            lines.append(root.TLine(xMin, yMin, yMax, yMax))
+        else:
+            lines.append(root.TLine(xMin, yMin, xMax, xMax))
         lines[-1].SetLineStyle(root.kSolid)
         lines[-1].SetLineColor(root.kMagenta)
         lines[-1].Draw('same')
