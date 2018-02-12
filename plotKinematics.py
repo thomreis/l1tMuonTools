@@ -234,6 +234,16 @@ def main():
         objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.deta', stacked=True, data=isData, xMax=0.5))
         objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.dphi', stacked=True, data=isData))
         objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.dphi', stacked=True, data=isData, xMax=0.5))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.invM', stacked=True, data=isData))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.invM', stacked=True, data=isData, xMax=50))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.drAtVtx', stacked=True, data=isData))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.drAtVtx', stacked=True, data=isData, xMax=0.5))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.detaAtVtx', stacked=True, data=isData))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.detaAtVtx', stacked=True, data=isData, xMax=0.5))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.dphiAtVtx', stacked=True, data=isData))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.dphiAtVtx', stacked=True, data=isData, xMax=0.5))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.invMAtVtx', stacked=True, data=isData))
+        objects.append(plot_hists_qstack(hm, 'l1_muon_qXX.invMAtVtx', stacked=True, data=isData, xMax=50))
 
     # 2d reco vs. L1 plots
     if opts.twod:
